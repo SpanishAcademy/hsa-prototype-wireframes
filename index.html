@@ -4,8 +4,232 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HSA Prototype Wireframes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f6fa;
+            color: #1a1d23;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e5ec;
+            padding: 20px 40px;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1d23;
+            letter-spacing: -0.01em;
+        }
+
+        header span {
+            color: #6c7280;
+            font-weight: 400;
+        }
+
+        main {
+            max-width: 960px;
+            width: 100%;
+            margin: 48px auto;
+            padding: 0 40px;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            color: #6c7280;
+            font-size: 0.95rem;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            background: #ffffff;
+            border: 1px solid #e2e5ec;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e5ec;
+            background-color: #fafbfc;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #eff1ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-icon svg {
+            width: 16px;
+            height: 16px;
+            stroke: #4f5ef7;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a1d23;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-count {
+            margin-left: auto;
+            font-size: 0.78rem;
+            color: #6c7280;
+            background: #f0f1f5;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .link-list {
+            list-style: none;
+        }
+
+        .link-list li {
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .link-list li:last-child {
+            border-bottom: none;
+        }
+
+        .link-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            text-decoration: none;
+            color: #1a1d23;
+            font-size: 0.9rem;
+            transition: background-color 0.15s ease;
+        }
+
+        .link-list a:hover {
+            background-color: #f7f8ff;
+            color: #4f5ef7;
+        }
+
+        .link-list a:hover .arrow {
+            opacity: 1;
+            transform: translateX(2px);
+        }
+
+        .link-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .version-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: #eff1ff;
+            color: #4f5ef7;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .arrow {
+            opacity: 0.3;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 24px;
+            font-size: 0.8rem;
+            color: #a0a7b5;
+        }
+    </style>
 </head>
 <body>
-    HSA Prototype Wireframes
+    <header>
+        <h1>HSA <span>/ Prototype Wireframes</span></h1>
+    </header>
+
+    <main>
+        <h2 class="page-title">Sitemap</h2>
+        <p class="page-subtitle">Browse all prototype wireframes by design area.</p>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                </div>
+                <span class="section-title">Bulk Scheduling</span>
+                <span class="section-count">3 designs</span>
+            </div>
+            <ul class="link-list">
+                <li>
+                    <a href="design/bulk-scheduling/bulk-scheduling-v1.html">
+                        <span class="link-label">
+                            <span class="version-badge">V1</span>
+                            Bulk Scheduling
+                        </span>
+                        <svg class="arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="design/bulk-scheduling/bulk-scheduling-v2.html">
+                        <span class="link-label">
+                            <span class="version-badge">V2</span>
+                            Bulk Scheduling
+                        </span>
+                        <svg class="arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="design/bulk-scheduling/bulk-scheduling-v3.html">
+                        <span class="link-label">
+                            <span class="version-badge">V3</span>
+                            Bulk Scheduling
+                        </span>
+                        <svg class="arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <footer>HSA Prototype Wireframes &mdash; Internal Use Only</footer>
 </body>
 </html>

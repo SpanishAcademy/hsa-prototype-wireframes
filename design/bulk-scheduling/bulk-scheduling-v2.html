@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Scheduling — V2 (Simple &amp; UX-Focused)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --font: 'Inter', sans-serif;
+      --blue: #2563EB;
+      --blue-light: #EFF6FF;
+      --blue-dark: #1D4ED8;
+      --green: #16A34A;
+      --green-light: #F0FDF4;
+      --orange: #EA580C;
+      --orange-light: #FFF7ED;
+      --red: #DC2626;
+      --red-light: #FEF2F2;
+      --purple: #7C3AED;
+      --purple-light: #F5F3FF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    }
+    body { font-family: var(--font); font-size: 14px; line-height: 1.5; color: var(--gray-700); background: #E5E7EB; -webkit-font-smoothing: antialiased; }
+
+    /* ── Flow chrome ── */
+    .flow { max-width: 1360px; margin: 0 auto; padding: 32px; }
+    .banner { background: var(--gray-900); color: white; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .step-label { background: var(--blue); color: white; padding: 14px 24px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; gap: 12px; margin-top: 48px; }
+    .step-label:first-of-type { margin-top: 24px; }
+    .step-num { background: rgba(255,255,255,0.2); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .step-desc { background: var(--blue-light); border: 1px solid rgba(37,99,235,0.15); border-top: none; padding: 12px 24px; font-size: 13px; color: var(--blue-dark); line-height: 1.5; }
+    .screen { background: var(--gray-50); border: 1px solid var(--gray-300); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; margin-bottom: 8px; box-shadow: var(--shadow-md); }
+    .note { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: #92400E; line-height: 1.4; margin-top: 8px; font-style: italic; }
+
+    /* ── Minimal nav ── */
+    .topbar { background: white; border-bottom: 1px solid var(--gray-200); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 52px; }
+    .topbar-left { display: flex; align-items: center; gap: 24px; }
+    .logo { font-weight: 700; font-size: 16px; color: var(--gray-900); }
+    .nav { display: flex; gap: 4px; }
+    .nav-item { padding: 6px 12px; font-size: 13px; color: var(--gray-500); border-radius: 6px; cursor: default; }
+    .nav-item.active { color: var(--blue); background: var(--blue-light); font-weight: 500; }
+    .user-pill { display: flex; align-items: center; gap: 8px; }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+    .user-name { font-size: 13px; color: var(--gray-600); }
+
+    /* ── Simplified page header ── */
+    .pg-header { padding: 20px 32px 16px; background: white; border-bottom: 1px solid var(--gray-200); }
+    .pg-title { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+    .pg-sub { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+    .pg-actions { display: flex; align-items: center; gap: 8px; }
+    .pg-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+
+    /* ── Cards (warm, rounded) ── */
+    .card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+    .card-head { padding: 14px 20px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+    .card-head-title { font-size: 15px; font-weight: 600; color: var(--gray-800); }
+    .card-body { padding: 20px; }
+
+    /* ── Buttons (larger, friendlier) ── */
+    .btn { font-family: var(--font); font-weight: 500; font-size: 13px; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; border: none; white-space: nowrap; transition: all 0.15s; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-blue { background: var(--blue); color: white; }
+    .btn-blue:hover { background: var(--blue-dark); }
+    .btn-outline { background: white; color: var(--blue); border: 1px solid var(--gray-300); }
+    .btn-outline:hover { background: var(--blue-light); border-color: var(--blue); }
+    .btn-ghost { background: transparent; color: var(--gray-500); }
+    .btn-ghost:hover { background: var(--gray-100); }
+    .btn-red { background: var(--red); color: white; }
+    .btn-green { background: var(--green); color: white; }
+    .btn-disabled { background: var(--gray-100); color: var(--gray-400); cursor: not-allowed; }
+
+    /* ── Badges ── */
+    .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .pill-red { background: var(--red-light); color: var(--red); }
+    .pill-orange { background: var(--orange-light); color: var(--orange); }
+    .pill-green { background: var(--green-light); color: var(--green); }
+    .pill-blue { background: var(--blue-light); color: var(--blue); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-gray { background: var(--gray-100); color: var(--gray-500); }
+
+    /* ── Content ── */
+    .content { padding: 24px 32px; }
+
+    /* ── Kanban-style conflict landing ── */
+    .event-list { display: flex; flex-direction: column; gap: 12px; }
+    .event-row { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow-sm); transition: border-color 0.15s, box-shadow 0.15s; cursor: pointer; }
+    .event-row:hover { border-color: var(--blue); box-shadow: var(--shadow); }
+    .event-severity { width: 4px; height: 48px; border-radius: 2px; flex-shrink: 0; }
+    .event-severity.critical { background: var(--red); }
+    .event-severity.warn { background: var(--orange); }
+    .event-severity.ok { background: var(--green); }
+    .event-main { flex: 1; min-width: 0; }
+    .event-title { font-size: 15px; font-weight: 600; color: var(--gray-800); }
+    .event-meta { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+    .event-stats { display: flex; gap: 20px; flex-shrink: 0; }
+    .event-stat { text-align: center; }
+    .event-stat-val { font-size: 18px; font-weight: 700; }
+    .event-stat-val.red { color: var(--red); }
+    .event-stat-val.orange { color: var(--orange); }
+    .event-stat-lbl { font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+    .event-action { flex-shrink: 0; }
+
+    /* ── Inline stat chips ── */
+    .stat-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .stat-chip { display: inline-flex; align-items: center; gap: 6px; background: white; border: 1px solid var(--gray-200); border-radius: 99px; padding: 6px 14px; font-size: 13px; }
+    .stat-chip strong { font-weight: 700; }
+
+    /* ── Filter pills ── */
+    .filters { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .f-pill { padding: 5px 14px; border-radius: 99px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-200); background: white; color: var(--gray-500); cursor: pointer; }
+    .f-pill.on { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+    .f-pill .cnt { font-weight: 700; }
+    .f-input { border: 1px solid var(--gray-200); border-radius: 99px; padding: 5px 14px; font-size: 13px; font-family: var(--font); width: 200px; }
+    .f-input::placeholder { color: var(--gray-400); }
+
+    /* ── Session cards (card per session, not rows) ── */
+    .session-cards { display: flex; flex-direction: column; gap: 8px; }
+    .s-card { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 14px 18px; display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: center; transition: border-color 0.15s, box-shadow 0.15s; cursor: pointer; }
+    .s-card:hover { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+    .s-card.selected { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); background: var(--blue-light); }
+    .s-card.resolved { border-left: 3px solid var(--green); }
+    .s-card.child { border-left: 3px solid var(--purple); background: var(--purple-light); }
+    .s-card.canceled { border-left: 3px solid var(--red); background: var(--red-light); }
+    .s-card.overridden { border-left: 3px solid var(--orange); background: var(--orange-light); }
+    .s-check { width: 20px; height: 20px; border: 2px solid var(--gray-300); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; flex-shrink: 0; }
+    .s-check.on { background: var(--blue); border-color: var(--blue); color: white; }
+    .s-main { min-width: 0; }
+    .s-student { font-weight: 600; color: var(--gray-800); font-size: 14px; }
+    .s-detail { font-size: 12px; color: var(--gray-500); margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .s-detail .sep { color: var(--gray-300); }
+    .s-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .s-action-btn { font-family: var(--font); font-size: 12px; font-weight: 500; padding: 5px 12px; border: 1px solid var(--gray-300); border-radius: 6px; background: white; color: var(--gray-600); cursor: pointer; min-width: 110px; text-align: left; }
+    .s-action-btn.set { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 600; }
+
+    /* ── Detail drawer (right panel) ── */
+    .split { display: grid; grid-template-columns: 1fr 380px; min-height: 580px; }
+    .split-main { border-right: 1px solid var(--gray-200); overflow-y: auto; }
+    .split-aside { background: white; overflow-y: auto; }
+    .aside-head { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); }
+    .aside-title { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+    .aside-sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+    .aside-section { padding: 14px 20px; border-bottom: 1px solid var(--gray-100); }
+    .aside-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 8px; }
+    .aside-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .aside-label { color: var(--gray-500); }
+    .aside-val { font-weight: 500; color: var(--gray-800); }
+
+    /* ── Teacher pick list (simplified) ── */
+    .t-pick { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius); margin-bottom: 6px; cursor: pointer; transition: all 0.12s; }
+    .t-pick:hover { border-color: var(--blue); background: var(--blue-light); }
+    .t-pick.chosen { border-color: var(--blue); background: var(--blue-light); box-shadow: inset 0 0 0 1px var(--blue); }
+    .t-pick.best { border-left: 3px solid var(--green); }
+    .t-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; flex-shrink: 0; }
+    .t-dot.fav { background: #2563EB; }
+    .t-dot.reg { background: #16A34A; }
+    .t-dot.oc { background: #EA580C; }
+    .t-dot.ahod { background: #7C3AED; }
+    .t-info { flex: 1; min-width: 0; }
+    .t-name { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+    .t-meta { font-size: 11px; color: var(--gray-500); }
+    .t-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+    .t-badge.fav { background: var(--blue-light); color: var(--blue); }
+    .t-badge.reg { background: var(--green-light); color: var(--green); }
+    .t-badge.oc { background: var(--orange-light); color: var(--orange); }
+    .t-badge.ahod { background: var(--purple-light); color: var(--purple); }
+
+    /* ── Recommendation callout ── */
+    .reco { background: var(--green-light); border: 1px solid rgba(22,163,74,0.25); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 10px; }
+    .reco-title { font-size: 12px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .reco-body { font-size: 13px; color: var(--gray-700); }
+    .reco-body strong { color: var(--gray-900); }
+
+    /* ── Time grid ── */
+    .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .time-slot { padding: 7px 4px; text-align: center; font-size: 11px; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200); background: white; cursor: pointer; }
+    .time-slot.open { border-color: var(--green); color: var(--green); }
+    .time-slot.open:hover { background: var(--green-light); }
+    .time-slot.picked { background: var(--blue); color: white; border-color: var(--blue); }
+    .time-slot.off { background: var(--gray-100); color: var(--gray-400); cursor: not-allowed; }
+    .time-slot.booked { background: var(--red-light); color: var(--red); border-color: rgba(220,38,38,0.25); }
+
+    /* ── Batch bar ── */
+    .batch { background: var(--gray-900); color: white; padding: 10px 20px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; box-shadow: var(--shadow-md); }
+    .batch-left { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+    .batch-count { font-weight: 700; color: #93C5FD; }
+    .batch-right { display: flex; align-items: center; gap: 6px; }
+    .batch-btn { font-family: var(--font); font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.25); background: transparent; color: white; cursor: pointer; }
+    .batch-btn:hover { background: rgba(255,255,255,0.08); }
+    .batch-btn.hi { background: var(--blue); border-color: var(--blue); }
+
+    /* ── Progress inline ── */
+    .progress { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .progress-track { flex: 1; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.4s; }
+    .progress-lbl { font-size: 12px; font-weight: 600; color: var(--gray-500); white-space: nowrap; }
+
+    /* ── Dep pill ── */
+    .dep-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; background: var(--purple-light); color: var(--purple); padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+
+    /* ── Summary table ── */
+    .sum-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .sum-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-400); border-bottom: 2px solid var(--gray-200); }
+    .sum-table td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    .sum-table tr:hover { background: var(--gray-50); }
+
+    /* ── Reason chips ── */
+    .reason-chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 500; border: 1px solid var(--gray-200); background: white; color: var(--gray-500); cursor: pointer; margin: 2px; }
+    .reason-chip.on { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+
+    /* ── Dialog ── */
+    .dialog-bg { background: rgba(0,0,0,0.4); padding: 60px 24px; display: flex; justify-content: center; align-items: flex-start; }
+    .dialog { background: white; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); max-width: 680px; width: 100%; overflow: hidden; }
+    .dialog-head { padding: 20px 24px; border-bottom: 1px solid var(--gray-100); }
+    .dialog-head-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+    .dialog-body { padding: 20px 24px; max-height: 440px; overflow-y: auto; }
+    .dialog-foot { padding: 14px 24px; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* ── Alerts ── */
+    .alert { border-radius: var(--radius); padding: 12px 16px; font-size: 13px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .alert-icon { font-size: 16px; flex-shrink: 0; line-height: 1; }
+    .alert-warn { background: #FFF7ED; border: 1px solid #FED7AA; color: #9A3412; }
+    .alert-info { background: var(--blue-light); border: 1px solid #BFDBFE; color: #1E40AF; }
+    .alert-ok { background: var(--green-light); border: 1px solid #BBF7D0; color: #166534; }
+
+    /* ── Action blocks (big friendly buttons) ── */
+    .action-block { padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: var(--radius); cursor: pointer; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; transition: all 0.12s; }
+    .action-block:hover { border-color: var(--blue); background: var(--blue-light); }
+    .action-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .action-icon.move { background: var(--blue-light); color: var(--blue); }
+    .action-icon.cancel { background: var(--red-light); color: var(--red); }
+    .action-icon.override { background: var(--orange-light); color: var(--orange); }
+    .action-icon.noact { background: var(--gray-100); color: var(--gray-500); }
+    .action-text { font-size: 13px; font-weight: 500; color: var(--gray-700); }
+    .action-sub { font-size: 11px; color: var(--gray-400); }
+
+    /* ── Audit log ── */
+    .audit-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .audit-table th { text-align: left; padding: 8px 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-400); border-bottom: 2px solid var(--gray-200); }
+    .audit-table td { padding: 8px 10px; border-bottom: 1px solid var(--gray-100); vertical-align: top; font-size: 12px; }
+
+    /* ── Misc ── */
+    .muted { color: var(--gray-500); }
+    .bold { font-weight: 600; }
+    .tiny { font-size: 11px; }
+    .mt-1 { margin-top: 8px; }
+    .mt-2 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 16px; }
+    .mb-3 { margin-bottom: 24px; }
+    .tag { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag-conf { background: var(--blue-light); color: var(--blue); }
+    .tag-prosp { background: var(--orange-light); color: var(--orange); }
+    .divider { border: none; border-top: 1px solid var(--gray-200); margin: 16px 0; }
+    .confirm-check { display: flex; align-items: flex-start; gap: 10px; background: #FEF3C7; border: 1px solid #FDE68A; border-radius: var(--radius); padding: 12px 16px; margin-top: 12px; }
+    .confirm-check-box { width: 18px; height: 18px; border: 2px solid var(--orange); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--orange); flex-shrink: 0; margin-top: 2px; }
+    .confirm-check-text { font-size: 13px; color: #92400E; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+<div class="banner">Wireframe — Bulk Scheduling — V2 (Simple &amp; UX-Focused)</div>
+<div style="height:30px;"></div>
+
+<div class="flow">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STEP 1 — CLEAN EVENT LIST                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">1</div> Conflict Events — What Needs Attention</div>
+<div class="step-desc">The admin opens the bulk scheduling workspace. Instead of a dense dashboard, they see a clean list of conflict groups ranked by urgency. Each row answers: "What happened?", "How many sessions?", and "How urgent?"</div>
+
+<div class="screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">HSA Admin</div>
+      <div class="nav">
+        <div class="nav-item">Dashboard</div>
+        <div class="nav-item">Students</div>
+        <div class="nav-item">Teachers</div>
+        <div class="nav-item active">Scheduling</div>
+      </div>
+    </div>
+    <div class="user-pill">
+      <span class="user-name">Alex Chen</span>
+      <div class="avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="pg-header">
+    <div class="pg-row">
+      <div>
+        <div class="pg-title">Bulk Scheduling</div>
+        <div class="pg-sub">3 conflict groups need attention &middot; 24 sessions total</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stat-chips">
+      <div class="stat-chip"><strong style="color:var(--red);">8</strong> Blocking</div>
+      <div class="stat-chip"><strong style="color:var(--orange);">16</strong> Non-Blocking</div>
+      <div class="stat-chip"><strong style="color:var(--green);">3</strong> Resolved Today</div>
+    </div>
+
+    <div class="event-list">
+      <!-- Primary event -->
+      <div class="event-row" style="border-left:4px solid var(--red);">
+        <div class="event-severity critical"></div>
+        <div class="event-main">
+          <div class="event-title">Maria Lopez — Time Off Request</div>
+          <div class="event-meta">Apr 1–3 &middot; Teacher Schedule Conflict &middot; Created Mar 26</div>
+        </div>
+        <div class="event-stats">
+          <div class="event-stat"><div class="event-stat-val red">8</div><div class="event-stat-lbl">Sessions</div></div>
+          <div class="event-stat"><div class="event-stat-val red">5</div><div class="event-stat-lbl">Blocking</div></div>
+        </div>
+        <div class="event-action"><button class="btn btn-blue btn-sm">Resolve →</button></div>
+      </div>
+
+      <div class="event-row" style="border-left:4px solid var(--orange);">
+        <div class="event-severity warn"></div>
+        <div class="event-main">
+          <div class="event-title">Spring Break — Holiday Conflict</div>
+          <div class="event-meta">Apr 6–10 &middot; Holiday &middot; Created Mar 20</div>
+        </div>
+        <div class="event-stats">
+          <div class="event-stat"><div class="event-stat-val orange">12</div><div class="event-stat-lbl">Sessions</div></div>
+          <div class="event-stat"><div class="event-stat-val">0</div><div class="event-stat-lbl">Blocking</div></div>
+        </div>
+        <div class="event-action"><button class="btn btn-outline btn-sm">Resolve →</button></div>
+      </div>
+
+      <div class="event-row" style="border-left:4px solid var(--red);">
+        <div class="event-severity critical"></div>
+        <div class="event-main">
+          <div class="event-title">Daniel Perez — Teacher Departure</div>
+          <div class="event-meta">Departing Apr 15 &middot; Staffing Change &middot; Created Mar 25</div>
+        </div>
+        <div class="event-stats">
+          <div class="event-stat"><div class="event-stat-val red">4</div><div class="event-stat-lbl">Sessions</div></div>
+          <div class="event-stat"><div class="event-stat-val red">4</div><div class="event-stat-lbl">Blocking</div></div>
+        </div>
+        <div class="event-action"><button class="btn btn-outline btn-sm">Resolve →</button></div>
+      </div>
+
+      <div class="event-row" style="border-left:4px solid var(--green); opacity:0.6;">
+        <div class="event-severity ok"></div>
+        <div class="event-main">
+          <div class="event-title">Ana Torres — Emergency Absence</div>
+          <div class="event-meta">Resolved Mar 26 by Alex Chen &middot; 3 sessions rescheduled</div>
+        </div>
+        <div class="event-stats">
+          <div class="event-stat"><div class="event-stat-val" style="color:var(--green);">3</div><div class="event-stat-lbl">Resolved</div></div>
+        </div>
+        <div class="event-action"><button class="btn btn-ghost btn-sm">View →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note">&#9432; V2 uses a simple stacked list instead of a card grid. Each row is scannable in one glance — severity bar on left, key stats on right, single action button. Reduces cognitive load.</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STEP 2 — SESSION LIST (CARD-BASED)                -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">2</div> Review Sessions — Card-Based Layout</div>
+<div class="step-desc">Instead of a dense table, each session is a card row. The layout focuses on the three key questions: What session? What conflict? What to do? Sessions are easy to scan, select, and act on.</div>
+
+<div class="screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">HSA Admin</div>
+      <div class="nav"><div class="nav-item active">Scheduling</div></div>
+    </div>
+    <div class="user-pill"><span class="user-name">Alex Chen</span><div class="avatar">AC</div></div>
+  </div>
+
+  <div class="pg-header">
+    <div class="pg-row">
+      <div>
+        <div class="pg-title">Maria Lopez — Time Off</div>
+        <div class="pg-sub">Apr 1–3, 2026 &middot; 8 sessions &middot; Can't Schedule Over (Apr 1), High Priority (Apr 2–3)</div>
+      </div>
+      <div class="pg-actions">
+        <button class="btn btn-disabled btn-sm">Commit (0 ready)</button>
+      </div>
+    </div>
+    <div class="progress">
+      <div class="progress-track"><div class="progress-fill" style="width:0%;"></div></div>
+      <div class="progress-lbl">0 / 8</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filters">
+      <input type="text" class="f-input" placeholder="Search students…">
+      <div class="f-pill on">All <span class="cnt">8</span></div>
+      <div class="f-pill">Blocking <span class="cnt">5</span></div>
+      <div class="f-pill">Non-Blocking <span class="cnt">3</span></div>
+      <span style="color:var(--gray-300);">|</span>
+      <div class="f-pill">Confirmed <span class="cnt">5</span></div>
+      <div class="f-pill">Prospective <span class="cnt">3</span></div>
+    </div>
+
+    <div class="session-cards">
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Emma Johnson</div>
+          <div class="s-detail">
+            <span class="tag tag-conf">Confirmed</span>
+            <span class="sep">·</span>
+            Wed, Apr 1 · 4:00–4:50 PM
+            <span class="sep">·</span>
+            Maria Lopez
+          </div>
+          <div class="s-detail mt-1">
+            <span class="pill pill-red" style="font-size:10px;">Blocking</span>
+            <span style="font-size:12px;color:var(--red);">Time Off — Can't Schedule Over</span>
+          </div>
+        </div>
+        <div class="s-right">
+          <button class="s-action-btn">Select action ▾</button>
+        </div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Liam Park</div>
+          <div class="s-detail">
+            <span class="tag tag-conf">Confirmed</span> <span class="sep">·</span>
+            Wed, Apr 1 · 5:00–5:50 PM <span class="sep">·</span> Maria Lopez
+          </div>
+          <div class="s-detail mt-1">
+            <span class="pill pill-red" style="font-size:10px;">Blocking</span>
+            <span style="font-size:12px;color:var(--red);">Time Off — Can't Schedule Over</span>
+          </div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Sophia Chen</div>
+          <div class="s-detail">
+            <span class="tag tag-conf">Confirmed</span> <span class="sep">·</span>
+            Thu, Apr 2 · 3:00–3:50 PM <span class="sep">·</span> Maria Lopez
+          </div>
+          <div class="s-detail mt-1">
+            <span class="pill pill-orange" style="font-size:10px;">Non-Blocking</span>
+            <span style="font-size:12px;color:var(--orange);">Time Off — High Priority</span>
+          </div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Noah Williams</div>
+          <div class="s-detail"><span class="tag tag-conf">Confirmed</span> <span class="sep">·</span> Thu, Apr 2 · 4:00–4:50 PM <span class="sep">·</span> Maria Lopez</div>
+          <div class="s-detail mt-1"><span class="pill pill-orange" style="font-size:10px;">Non-Blocking</span> <span style="font-size:12px;color:var(--orange);">Time Off — High Priority</span></div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Olivia Davis</div>
+          <div class="s-detail"><span class="tag tag-conf">Confirmed</span> <span class="sep">·</span> Thu, Apr 2 · 5:00–5:50 PM <span class="sep">·</span> Maria Lopez</div>
+          <div class="s-detail mt-1"><span class="pill pill-orange" style="font-size:10px;">Non-Blocking</span> <span style="font-size:12px;color:var(--orange);">Time Off — High Priority</span></div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Aiden Martinez</div>
+          <div class="s-detail"><span class="tag tag-prosp">Prospective</span> <span class="sep">·</span> Fri, Apr 3 · 3:00–3:50 PM <span class="sep">·</span> Maria Lopez</div>
+          <div class="s-detail mt-1"><span class="pill pill-red" style="font-size:10px;">Blocking</span> <span style="font-size:12px;color:var(--red);">Time Off — Can't Schedule Over</span></div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Mia Thompson</div>
+          <div class="s-detail"><span class="tag tag-prosp">Prospective</span> <span class="sep">·</span> Fri, Apr 3 · 4:00–4:50 PM <span class="sep">·</span> Maria Lopez</div>
+          <div class="s-detail mt-1"><span class="pill pill-red" style="font-size:10px;">Blocking</span> <span style="font-size:12px;color:var(--red);">Time Off — Can't Schedule Over</span></div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+
+      <div class="s-card">
+        <div class="s-check"></div>
+        <div class="s-main">
+          <div class="s-student">Ethan Garcia</div>
+          <div class="s-detail"><span class="tag tag-prosp">Prospective</span> <span class="sep">·</span> Fri, Apr 3 · 5:00–5:50 PM <span class="sep">·</span> Maria Lopez</div>
+          <div class="s-detail mt-1"><span class="pill pill-red" style="font-size:10px;">Blocking</span> <span style="font-size:12px;color:var(--red);">Time Off — Can't Schedule Over</span></div>
+        </div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note">&#9432; V2 replaces dense table rows with card-style rows. Each session card groups: student name (bold top), session details (type + time + teacher in one line), and conflict (severity pill + description) — all scannable without column headers.</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STEP 3 — DETAIL DRAWER + BIG ACTION BUTTONS       -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">3</div> Evaluate Options — Drawer with Action Blocks</div>
+<div class="step-desc">Clicking a session opens a detail drawer on the right. Instead of dropdowns, resolution options are presented as large, tappable action blocks. The system recommendation is highlighted prominently. Teacher options use a visual pick list.</div>
+
+<div class="screen">
+  <div class="topbar">
+    <div class="topbar-left"><div class="logo">HSA Admin</div><div class="nav"><div class="nav-item active">Scheduling</div></div></div>
+    <div class="user-pill"><span class="user-name">Alex Chen</span><div class="avatar">AC</div></div>
+  </div>
+
+  <div class="pg-header" style="padding-bottom:10px;">
+    <div class="pg-row">
+      <div><div class="pg-title" style="font-size:17px;">Maria Lopez — Time Off</div></div>
+      <div class="pg-actions"><button class="btn btn-disabled btn-sm">Commit (0 ready)</button></div>
+    </div>
+    <div class="progress"><div class="progress-track"><div class="progress-fill" style="width:0%;"></div></div><div class="progress-lbl">0 / 8</div></div>
+  </div>
+
+  <div class="split">
+    <!-- Left: session cards -->
+    <div class="split-main" style="padding:16px 20px;">
+      <div class="filters" style="margin-bottom:10px;">
+        <div class="f-pill on">All <span class="cnt">8</span></div>
+        <div class="f-pill">Blocking <span class="cnt">5</span></div>
+        <div class="f-pill">Non-Blocking <span class="cnt">3</span></div>
+      </div>
+      <div class="session-cards">
+        <div class="s-card selected" style="grid-template-columns:1fr;">
+          <div class="s-main">
+            <div class="s-student">Emma Johnson</div>
+            <div class="s-detail"><span class="tag tag-conf">Confirmed</span> <span class="sep">·</span> Wed 4/1 4:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div>
+          </div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Liam Park</div><div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Wed 4/1 5:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Sophia Chen</div><div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Thu 4/2 3:00 PM <span class="sep">·</span> <span class="pill pill-orange" style="font-size:10px;">Non-Block</span></div></div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Noah Williams</div><div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Thu 4/2 4:00 PM <span class="sep">·</span> <span class="pill pill-orange" style="font-size:10px;">Non-Block</span></div></div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Olivia Davis</div><div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Thu 4/2 5:00 PM <span class="sep">·</span> <span class="pill pill-orange" style="font-size:10px;">Non-Block</span></div></div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Aiden Martinez</div><div class="s-detail"><span class="tag tag-prosp">Prosp</span> <span class="sep">·</span> Fri 4/3 3:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Mia Thompson</div><div class="s-detail"><span class="tag tag-prosp">Prosp</span> <span class="sep">·</span> Fri 4/3 4:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        </div>
+        <div class="s-card" style="grid-template-columns:1fr;">
+          <div class="s-main"><div class="s-student">Ethan Garcia</div><div class="s-detail"><span class="tag tag-prosp">Prosp</span> <span class="sep">·</span> Fri 4/3 5:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Detail drawer -->
+    <div class="split-aside">
+      <div class="aside-head">
+        <div class="aside-title">Emma Johnson</div>
+        <div class="aside-sub">Confirmed · Wed, Apr 1 · 4:00–4:50 PM · Maria Lopez</div>
+      </div>
+
+      <div class="aside-section">
+        <div class="aside-section-title">Session Info</div>
+        <div class="aside-row"><span class="aside-label">Flexibility</span><span class="aside-val" style="color:var(--green);">Flexible</span></div>
+        <div class="aside-row"><span class="aside-label">If teacher unavailable</span><span class="aside-val">Prefers Substitute</span></div>
+        <div class="aside-row"><span class="aside-label">Booking Series</span><span class="aside-val">Wed 4:00 PM weekly</span></div>
+      </div>
+
+      <div class="aside-section" style="background:var(--red-light);">
+        <div class="aside-section-title" style="color:var(--red);">Conflict</div>
+        <div style="font-size:13px;color:var(--red);font-weight:500;">Time Off — Can't Schedule Over</div>
+        <div style="font-size:12px;color:var(--gray-600);margin-top:4px;">Maria Lopez has all-day time off on Apr 1. This is a blocking conflict that must be resolved.</div>
+      </div>
+
+      <!-- System recommendation -->
+      <div class="aside-section" style="padding:0;">
+        <div class="reco" style="margin:0;border-radius:0;">
+          <div class="reco-title">✦ Recommended</div>
+          <div class="reco-body"><strong>Reschedule with Jose Ramirez</strong> at Wed 4:00 PM. Jose is in Emma's Favorite Teacher Pool and available. Same time, familiar teacher.</div>
+        </div>
+      </div>
+
+      <!-- Teachers -->
+      <div class="aside-section">
+        <div class="aside-section-title">Available Teachers</div>
+        <div class="t-pick best chosen">
+          <div class="t-dot fav">JR</div>
+          <div class="t-info"><div class="t-name">Jose Ramirez</div><div class="t-meta">Available · No conflicts</div></div>
+          <span class="t-badge fav">★ Favorite</span>
+        </div>
+        <div class="t-pick">
+          <div class="t-dot reg">ST</div>
+          <div class="t-info"><div class="t-name">Susan Taylor</div><div class="t-meta">Available · No conflicts</div></div>
+          <span class="t-badge reg">Regular</span>
+        </div>
+        <div class="t-pick">
+          <div class="t-dot oc">KW</div>
+          <div class="t-info"><div class="t-name">Kevin Wright</div><div class="t-meta">Available · No conflicts</div></div>
+          <span class="t-badge oc">On-Call</span>
+        </div>
+        <div class="t-pick" style="opacity:0.5;">
+          <div class="t-dot ahod">PL</div>
+          <div class="t-info"><div class="t-name">Dr. Patricia Lee</div><div class="t-meta">Available · Last resort</div></div>
+          <span class="t-badge ahod">AHOD</span>
+        </div>
+      </div>
+
+      <!-- Big action blocks -->
+      <div class="aside-section" style="background:var(--gray-50);">
+        <div class="aside-section-title">Choose Action</div>
+        <div class="action-block" style="border-color:var(--green);background:var(--green-light);">
+          <div class="action-icon move">↻</div>
+          <div><div class="action-text" style="color:var(--green);">Reschedule → Jose Ramirez, Wed 4:00 PM</div><div class="action-sub">Recommended · Same time, favorite teacher</div></div>
+        </div>
+        <div class="action-block">
+          <div class="action-icon move">↻</div>
+          <div><div class="action-text">Reschedule → Choose different teacher/time</div><div class="action-sub">Pick from available options above</div></div>
+        </div>
+        <div class="action-block">
+          <div class="action-icon cancel">✕</div>
+          <div><div class="action-text" style="color:var(--red);">Cancel Session</div><div class="action-sub">Remove from schedule · Requires reason</div></div>
+        </div>
+        <div class="action-block">
+          <div class="action-icon noact">—</div>
+          <div><div class="action-text">No Action</div><div class="action-sub">Leave as-is, don't change anything</div></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:12px;">
+          <button class="btn btn-ghost btn-sm">Hold Off</button>
+          <button class="btn btn-ghost btn-sm">Defer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note">&#9432; V2 replaces small dropdown selects with large action blocks — each one clearly states what it does and the impact. The recommended action is highlighted in green. This reduces errors and builds confidence.</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STEP 4 — RESOLVED STATE + BATCH + CHILD CONFLICT  -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">4</div> Apply Actions — Batch Selection &amp; Child Conflicts</div>
+<div class="step-desc">Sessions are in various states. Resolved cards have a green left border. A child conflict (purple) appeared when Liam was rescheduled on top of Noah. 3 prospective sessions are batch-selected with the floating batch bar visible. One non-blocking conflict is overridden.</div>
+
+<div class="screen">
+  <div class="topbar">
+    <div class="topbar-left"><div class="logo">HSA Admin</div><div class="nav"><div class="nav-item active">Scheduling</div></div></div>
+    <div class="user-pill"><span class="user-name">Alex Chen</span><div class="avatar">AC</div></div>
+  </div>
+
+  <div class="pg-header" style="padding-bottom:10px;">
+    <div class="pg-row">
+      <div><div class="pg-title" style="font-size:17px;">Maria Lopez — Time Off</div></div>
+      <div class="pg-actions"><button class="btn btn-blue btn-sm">Commit (6 ready) →</button></div>
+    </div>
+    <div class="progress"><div class="progress-track"><div class="progress-fill" style="width:75%;"></div></div><div class="progress-lbl" style="color:var(--green);">6 / 8</div></div>
+  </div>
+
+  <div class="content">
+    <!-- Batch bar -->
+    <div class="batch">
+      <div class="batch-left"><span class="batch-count">3 selected</span> <span style="opacity:0.4;">·</span> <span style="font-size:12px;opacity:0.7;">Prospective sessions, Fri Apr 3</span></div>
+      <div class="batch-right">
+        <button class="batch-btn">Skip All</button>
+        <button class="batch-btn hi">Move All → New teacher…</button>
+        <button class="batch-btn">Hold Off</button>
+        <button class="batch-btn" style="opacity:0.5;">✕</button>
+      </div>
+    </div>
+
+    <div class="session-cards">
+      <!-- Resolved -->
+      <div class="s-card resolved" style="grid-template-columns:28px 1fr auto;">
+        <div class="s-check on">✓</div>
+        <div class="s-main">
+          <div class="s-student">Emma Johnson <span class="pill pill-green" style="margin-left:4px;">Ready</span></div>
+          <div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Wed 4/1 4:00 PM <span class="sep">·</span> <del style="color:var(--gray-400);">Maria Lopez</del> → <strong style="color:var(--green);">Jose Ramirez</strong></div>
+          <div class="tiny muted mt-1">Approved as Suggested</div>
+        </div>
+        <div class="s-right"><button class="s-action-btn set">Reschedule ▾</button></div>
+      </div>
+
+      <!-- Resolved but blocked by child -->
+      <div class="s-card" style="grid-template-columns:28px 1fr auto; border-left:3px solid var(--orange);">
+        <div class="s-check on">✓</div>
+        <div class="s-main">
+          <div class="s-student">Liam Park <span class="pill pill-orange">Blocked</span></div>
+          <div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Wed 4/1 5:00 PM → <strong>Susan Taylor, Thu 4/2 4:00 PM</strong></div>
+          <div class="tiny" style="color:var(--orange);margin-top:4px;">⚠ Blocked by child conflict below</div>
+        </div>
+        <div class="s-right"><button class="s-action-btn set">Reschedule ▾</button></div>
+      </div>
+
+      <!-- Child conflict -->
+      <div class="s-card child" style="grid-template-columns:28px 1fr auto; margin-left:24px;">
+        <div class="s-check on">✓</div>
+        <div class="s-main">
+          <div class="s-student">Noah Williams <span class="dep-tag">↳ Child of Liam's reschedule</span></div>
+          <div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Thu 4/2 4:00 PM → <strong style="color:var(--green);">Susan Taylor, Thu 4/2 5:00 PM</strong></div>
+          <div class="tiny muted mt-1">Resolved · Overridden</div>
+        </div>
+        <div class="s-right"><button class="s-action-btn set">Reschedule ▾</button><span class="pill pill-green" style="margin-left:4px;">Ready</span></div>
+      </div>
+
+      <!-- Overridden -->
+      <div class="s-card overridden" style="grid-template-columns:28px 1fr auto;">
+        <div class="s-check on">✓</div>
+        <div class="s-main">
+          <div class="s-student">Sophia Chen <span class="pill pill-orange">Overridden</span></div>
+          <div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Thu 4/2 3:00 PM · Keep Maria Lopez (High Priority time off overridden)</div>
+          <div class="tiny muted mt-1">Ready to commit</div>
+        </div>
+        <div class="s-right"><button class="s-action-btn set">Override ▾</button></div>
+      </div>
+
+      <!-- Canceled -->
+      <div class="s-card canceled" style="grid-template-columns:28px 1fr auto;">
+        <div class="s-check on">✓</div>
+        <div class="s-main">
+          <div class="s-student">Olivia Davis <span class="pill pill-red">Cancel</span></div>
+          <div class="s-detail"><span class="tag tag-conf">Conf</span> <span class="sep">·</span> Thu 4/2 5:00 PM · Session will be canceled</div>
+          <div class="tiny muted mt-1">Client requested cancellation · Ready</div>
+        </div>
+        <div class="s-right"><button class="s-action-btn set" style="background:var(--red-light);border-color:var(--red);color:var(--red);">Cancel ▾</button></div>
+      </div>
+
+      <!-- Batch selected prospective -->
+      <div class="s-card selected" style="grid-template-columns:28px 1fr auto;">
+        <div class="s-check on">✓</div>
+        <div class="s-main"><div class="s-student">Aiden Martinez</div><div class="s-detail"><span class="tag tag-prosp">Prosp</span> <span class="sep">·</span> Fri 4/3 3:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+      <div class="s-card selected" style="grid-template-columns:28px 1fr auto;">
+        <div class="s-check on">✓</div>
+        <div class="s-main"><div class="s-student">Mia Thompson</div><div class="s-detail"><span class="tag tag-prosp">Prosp</span> <span class="sep">·</span> Fri 4/3 4:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+      <div class="s-card selected" style="grid-template-columns:28px 1fr auto;">
+        <div class="s-check on">✓</div>
+        <div class="s-main"><div class="s-student">Ethan Garcia</div><div class="s-detail"><span class="tag tag-prosp">Prosp</span> <span class="sep">·</span> Fri 4/3 5:00 PM <span class="sep">·</span> <span class="pill pill-red" style="font-size:10px;">Blocking</span></div></div>
+        <div class="s-right"><button class="s-action-btn">Select action ▾</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note">&#9432; V2 uses color-coded left borders on cards to show state at a glance: green = resolved, orange = blocked/overridden, purple = child conflict, red = cancel. Child conflicts are indented to show hierarchy visually.</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STEP 5 — COMMIT DIALOG (SIMPLIFIED)               -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">5</div> Commit — Simple Confirmation with Warnings</div>
+<div class="step-desc">The commit dialog is streamlined: clear warnings at top, a compact summary of actions grouped by type, and a single confirmation checkbox. No information overload — just confidence builders.</div>
+
+<div class="screen">
+  <div class="topbar">
+    <div class="topbar-left"><div class="logo">HSA Admin</div><div class="nav"><div class="nav-item active">Scheduling</div></div></div>
+    <div class="user-pill"><span class="user-name">Alex Chen</span><div class="avatar">AC</div></div>
+  </div>
+
+  <div class="dialog-bg">
+    <div class="dialog" style="max-width:600px;">
+      <div class="dialog-head">
+        <div class="dialog-head-title">Confirm 8 Actions</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-top:2px;">Maria Lopez — Time Off Request</div>
+      </div>
+      <div class="dialog-body">
+        <!-- Warnings -->
+        <div class="alert alert-warn">
+          <span class="alert-icon">⚠</span>
+          <div><strong>1 confirmed session will be canceled</strong> (Olivia Davis). The student will be notified.</div>
+        </div>
+        <div class="alert alert-info">
+          <span class="alert-icon">ℹ</span>
+          <div><strong>1 non-blocking override</strong> (Sophia Chen). Session kept despite High Priority time off.</div>
+        </div>
+
+        <!-- Compact summary -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0;">
+          <div style="text-align:center;padding:12px;background:var(--green-light);border-radius:8px;">
+            <div style="font-size:22px;font-weight:700;color:var(--green);">4</div>
+            <div style="font-size:11px;color:var(--green);">Reschedule</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--blue-light);border-radius:8px;">
+            <div style="font-size:22px;font-weight:700;color:var(--blue);">3</div>
+            <div style="font-size:11px;color:var(--blue);">Move</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--orange-light);border-radius:8px;">
+            <div style="font-size:22px;font-weight:700;color:var(--orange);">1</div>
+            <div style="font-size:11px;color:var(--orange);">Override</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--red-light);border-radius:8px;">
+            <div style="font-size:22px;font-weight:700;color:var(--red);">1</div>
+            <div style="font-size:11px;color:var(--red);">Cancel</div>
+          </div>
+        </div>
+
+        <!-- Quick list -->
+        <div style="font-size:13px;font-weight:600;color:var(--gray-800);margin-bottom:8px;">What will happen:</div>
+        <div style="font-size:13px;line-height:1.8;color:var(--gray-600);">
+          <div>✓ Emma Johnson → Jose Ramirez (same time)</div>
+          <div>✓ Liam Park → Susan Taylor, Thu 4/2 4:00 PM</div>
+          <div>↳ Noah Williams → Susan Taylor, Thu 4/2 5:00 PM <span class="dep-tag">child</span></div>
+          <div>⚡ Sophia Chen → Keep Maria (override)</div>
+          <div style="color:var(--red);">✕ Olivia Davis → Cancel</div>
+          <div>✓ Aiden Martinez → Kevin Wright (same time)</div>
+          <div>✓ Mia Thompson → Jose Ramirez (same time)</div>
+          <div>✓ Ethan Garcia → Susan Taylor (same time)</div>
+        </div>
+
+        <div class="confirm-check">
+          <div class="confirm-check-box">✓</div>
+          <div class="confirm-check-text">I've reviewed all 8 actions including <strong>1 cancellation</strong> and <strong>1 override</strong>. These changes will update student and teacher schedules.</div>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <button class="btn btn-ghost">Go Back</button>
+        <button class="btn btn-blue" style="min-width:160px;">Commit 8 Actions</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  STEP 6 — SUCCESS + AUDIT                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">6</div> Done — Success &amp; Audit Trail</div>
+<div class="step-desc">Clean success state with a compact audit log. Each row captures original state → action → result, decision type, reasons, and admin + timestamp. The admin can download the report or go back.</div>
+
+<div class="screen">
+  <div class="topbar">
+    <div class="topbar-left"><div class="logo">HSA Admin</div><div class="nav"><div class="nav-item active">Scheduling</div></div></div>
+    <div class="user-pill"><span class="user-name">Alex Chen</span><div class="avatar">AC</div></div>
+  </div>
+
+  <div class="pg-header">
+    <div class="pg-row">
+      <div>
+        <div class="pg-title">All Done ✓</div>
+        <div class="pg-sub">Maria Lopez — Time Off · 8 actions committed</div>
+      </div>
+      <div class="pg-actions">
+        <button class="btn btn-outline btn-sm">Download Report</button>
+        <button class="btn btn-blue btn-sm">← Back to Scheduling</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="alert alert-ok" style="margin-bottom:20px;">
+      <span class="alert-icon">✓</span>
+      <div><strong>8 actions committed successfully.</strong> 4 rescheduled · 3 moved · 1 override · 1 canceled. All changes recorded.</div>
+    </div>
+
+    <div class="stat-chips mb-3">
+      <div class="stat-chip"><strong style="color:var(--green);">8</strong> Committed</div>
+      <div class="stat-chip"><strong>6</strong> Students</div>
+      <div class="stat-chip"><strong>3</strong> Teachers Reassigned</div>
+      <div class="stat-chip"><strong style="color:var(--red);">1</strong> Canceled</div>
+      <div class="stat-chip"><strong style="color:var(--orange);">1</strong> Override</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-head-title">Audit Trail</div>
+        <div style="font-size:12px;color:var(--gray-500);">Alex Chen · Mar 28, 2026 at 2:47 PM</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Type</th>
+              <th>Original</th>
+              <th>Action</th>
+              <th>Result</th>
+              <th>Decision</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Emma Johnson</strong></td><td>Confirmed</td><td>Wed 4/1 4:00 PM · Maria</td><td><span class="pill pill-blue">Reschedule</span></td><td>Wed 4/1 4:00 PM · Jose Ramirez</td><td style="color:var(--green);">Approved</td><td>Auto: Schedule Conflict</td></tr>
+            <tr><td>2</td><td><strong>Liam Park</strong></td><td>Confirmed</td><td>Wed 4/1 5:00 PM · Maria</td><td><span class="pill pill-blue">Reschedule</span></td><td>Thu 4/2 4:00 PM · Susan Taylor</td><td style="color:var(--orange);">Overridden</td><td>Auto: Schedule Conflict</td></tr>
+            <tr style="background:var(--purple-light);"><td>3</td><td><strong>Noah Williams</strong> <span class="dep-tag">↳ #2</span></td><td>Confirmed</td><td>Thu 4/2 4:00 PM · Maria</td><td><span class="pill pill-purple">Reschedule</span></td><td>Thu 4/2 5:00 PM · Susan Taylor</td><td style="color:var(--orange);">Overridden</td><td>Auto: Child Conflict</td></tr>
+            <tr><td>4</td><td><strong>Sophia Chen</strong></td><td>Confirmed</td><td>Thu 4/2 3:00 PM · Maria</td><td><span class="pill pill-orange">Override</span></td><td>Thu 4/2 3:00 PM · Maria (kept)</td><td style="color:var(--orange);">Overridden</td><td>Auto: High Priority override</td></tr>
+            <tr style="background:var(--red-light);"><td>5</td><td><strong>Olivia Davis</strong></td><td>Confirmed</td><td>Thu 4/2 5:00 PM · Maria</td><td><span class="pill pill-red">Cancel</span></td><td>—</td><td style="color:var(--orange);">Overridden</td><td>Auto + Client Request<br><span class="tiny muted">"Parent requested cancellation — traveling."</span></td></tr>
+            <tr><td>6</td><td><strong>Aiden Martinez</strong></td><td>Prospective</td><td>Fri 4/3 3:00 PM · Maria</td><td><span class="pill pill-blue">Move</span></td><td>Fri 4/3 3:00 PM · Kevin Wright</td><td style="color:var(--green);">Approved</td><td>Auto: Schedule Conflict</td></tr>
+            <tr><td>7</td><td><strong>Mia Thompson</strong></td><td>Prospective</td><td>Fri 4/3 4:00 PM · Maria</td><td><span class="pill pill-blue">Move</span></td><td>Fri 4/3 4:00 PM · Jose Ramirez</td><td style="color:var(--green);">Approved</td><td>Auto: Schedule Conflict</td></tr>
+            <tr><td>8</td><td><strong>Ethan Garcia</strong></td><td>Prospective</td><td>Fri 4/3 5:00 PM · Maria</td><td><span class="pill pill-blue">Move</span></td><td>Fri 4/3 5:00 PM · Susan Taylor</td><td style="color:var(--green);">Approved</td><td>Auto: Schedule Conflict</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:40px;color:var(--gray-400);font-size:12px;">End of V2 — Simple &amp; UX-Focused Wireframe</div>
+
+</div>
+</body>
+</html>

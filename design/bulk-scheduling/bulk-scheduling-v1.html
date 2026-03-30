@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Scheduling &amp; Rescheduling — Happy Path Flow</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --font-family: 'Open Sans', sans-serif;
+      --color-primary: #1A7ABC;
+      --color-primary-dark: #135B8D;
+      --color-primary-lightest: #F2F9FD;
+      --color-text-primary: #424B52;
+      --color-text-secondary: #63717B;
+      --color-text-disabled: #8896A0;
+      --color-border: #B8C0C6;
+      --color-divider: #C9D0D4;
+      --color-hover-bg: #EDEFF1;
+      --color-page-bg: #F4F5F6;
+      --color-surface: #FFFFFF;
+      --color-dark-text: #323232;
+      --color-success: #2E7D32;
+      --color-success-bg: #E8F5E9;
+      --color-warning: #E65100;
+      --color-warning-bg: #FFF3E0;
+      --color-error: #C62828;
+      --color-error-bg: #FFEBEE;
+      --color-info: #1565C0;
+      --color-info-bg: #E3F2FD;
+      --color-purple: #6A1B9A;
+      --color-purple-bg: #F3E5F5;
+      --space-0-5: 4px; --space-1: 8px; --space-1-5: 12px; --space-2: 16px;
+      --space-3: 24px; --space-4: 32px; --space-5: 40px; --space-6: 48px; --space-8: 64px;
+      --radius: 4px; --radius-lg: 8px;
+      --elevation-1: 0px 2px 1px -1px rgba(0,0,0,0.12), 0px 1px 1px 0px rgba(0,0,0,0.08), 0px 1px 3px 0px rgba(0,0,0,0.06);
+      --elevation-2: 0px 3px 5px -1px rgba(0,0,0,0.12), 0px 5px 8px 0px rgba(0,0,0,0.08), 0px 1px 14px 0px rgba(0,0,0,0.06);
+    }
+    body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color: var(--color-text-primary); background: #E8EAED; }
+
+    /* ── Flow wrapper ── */
+    .flow { max-width: 1400px; margin: 0 auto; padding: var(--space-4); }
+    .wireframe-banner { background: var(--color-dark-text); color: white; padding: var(--space-1) var(--space-2); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .flow-step-label { background: var(--color-primary); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1-5); margin-top: var(--space-6); }
+    .flow-step-label:first-of-type { margin-top: var(--space-3); }
+    .flow-step-label .step-num { background: rgba(255,255,255,0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .flow-step-desc { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.2); border-top: none; padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-primary-dark); line-height: 1.5; }
+
+    /* ── Screen frame ── */
+    .screen { background: var(--color-page-bg); border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; margin-bottom: var(--space-2); box-shadow: var(--elevation-2); }
+
+    /* ── Admin shell ── */
+    .admin-topbar { background: #263238; color: white; padding: var(--space-1-5) var(--space-3); display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .admin-topbar-left { display: flex; align-items: center; gap: var(--space-3); }
+    .admin-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+    .admin-nav { display: flex; gap: var(--space-2); }
+    .admin-nav-item { color: rgba(255,255,255,0.6); padding: var(--space-0-5) var(--space-1); border-radius: var(--radius); font-size: 13px; cursor: default; }
+    .admin-nav-item.active { color: white; background: rgba(255,255,255,0.12); font-weight: 500; }
+    .admin-topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+    .admin-avatar { width: 28px; height: 28px; border-radius: 50%; background: #546E7A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+    .admin-user-name { font-size: 12px; color: rgba(255,255,255,0.8); }
+
+    /* ── Page header ── */
+    .page-header { background: var(--color-surface); border-bottom: 1px solid var(--color-divider); padding: var(--space-3) var(--space-4); }
+    .page-header-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+    .page-title { font-size: 22px; font-weight: 600; color: var(--color-dark-text); }
+    .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: var(--space-0-5); }
+    .breadcrumb { font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1); }
+    .breadcrumb a { color: var(--color-primary); text-decoration: none; }
+
+    /* ── Cards ── */
+    .card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); }
+    .card-header { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
+    .card-body { padding: var(--space-3); }
+
+    /* ── Content area ── */
+    .content { padding: var(--space-3) var(--space-4); }
+
+    /* ── Buttons ── */
+    .btn { font-family: var(--font-family); font-weight: 500; font-size: 13px; line-height: 1.5; letter-spacing: 0.03em; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 6px 16px; transition: background 0.15s; text-decoration: none; border: none; white-space: nowrap; }
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+    .btn-primary { background: var(--color-primary); color: white; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-outlined { background: transparent; color: var(--color-primary); border: 1px solid rgba(26,122,188,0.5); }
+    .btn-outlined:hover { background: var(--color-primary-lightest); }
+    .btn-ghost { background: transparent; color: var(--color-text-secondary); border: 1px solid transparent; }
+    .btn-ghost:hover { background: var(--color-hover-bg); }
+    .btn-success { background: var(--color-success); color: white; }
+    .btn-warning { background: var(--color-warning); color: white; }
+    .btn-error { background: var(--color-error); color: white; }
+    .btn-disabled { background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed; border: 1px solid var(--color-divider); }
+    .btn-group { display: flex; gap: var(--space-1); }
+
+    /* ── Badges / Tags ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+    .badge-error { background: var(--color-error-bg); color: var(--color-error); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-info { background: var(--color-info-bg); color: var(--color-info); }
+    .badge-purple { background: var(--color-purple-bg); color: var(--color-purple); }
+    .badge-neutral { background: var(--color-hover-bg); color: var(--color-text-secondary); }
+    .badge-blocking { background: var(--color-error-bg); color: var(--color-error); border: 1px solid rgba(198,40,40,0.3); }
+    .badge-nonblocking { background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid rgba(230,81,0,0.3); }
+
+    /* ── Conflict event cards (Step 1) ── */
+    .event-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .event-card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); padding: var(--space-3); cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+    .event-card:hover { border-color: var(--color-primary); box-shadow: var(--elevation-2); }
+    .event-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: var(--space-2); }
+    .event-card-title { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
+    .event-card-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+    .event-card-stats { display: flex; gap: var(--space-3); margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--color-divider); }
+    .event-stat { text-align: center; }
+    .event-stat-value { font-size: 20px; font-weight: 700; color: var(--color-dark-text); }
+    .event-stat-label { font-size: 11px; color: var(--color-text-secondary); }
+    .event-stat-value.error { color: var(--color-error); }
+    .event-stat-value.warning { color: var(--color-warning); }
+
+    /* ── Stat summary bar ── */
+    .stat-bar { display: flex; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-3); }
+    .stat-item { display: flex; align-items: center; gap: var(--space-1); font-size: 13px; }
+    .stat-count { font-weight: 700; font-size: 16px; }
+    .stat-count.text-error { color: var(--color-error); }
+    .stat-count.text-warning { color: var(--color-warning); }
+    .stat-count.text-info { color: var(--color-info); }
+    .stat-count.text-success { color: var(--color-success); }
+
+    /* ── Filter bar ── */
+    .filter-bar { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1-5) var(--space-3); background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-2); flex-wrap: wrap; }
+    .filter-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; border: 1px solid var(--color-border); background: white; color: var(--color-text-secondary); cursor: pointer; }
+    .filter-chip.active { background: var(--color-primary-lightest); border-color: var(--color-primary); color: var(--color-primary); }
+    .filter-chip .count { background: var(--color-hover-bg); padding: 0 6px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+    .filter-chip.active .count { background: rgba(26,122,188,0.15); }
+    .search-input { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 5px 12px; font-size: 13px; font-family: var(--font-family); width: 220px; color: var(--color-text-primary); }
+    .search-input::placeholder { color: var(--color-text-disabled); }
+    .filter-separator { width: 1px; height: 24px; background: var(--color-divider); }
+
+    /* ── Session table ── */
+    .session-table { width: 100%; border-collapse: collapse; }
+    .session-table th { text-align: left; padding: var(--space-1) var(--space-1-5); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); border-bottom: 2px solid var(--color-divider); background: var(--color-surface); position: sticky; top: 0; }
+    .session-table td { padding: var(--space-1-5); font-size: 13px; border-bottom: 1px solid var(--color-divider); vertical-align: middle; }
+    .session-table tr { background: white; }
+    .session-table tr:hover { background: var(--color-primary-lightest); }
+    .session-table tr.selected { background: #E3F2FD; }
+    .session-table tr.child-row { background: #FAFAFA; }
+    .session-table tr.child-row td:first-child { padding-left: var(--space-5); }
+    .session-table .checkbox { width: 16px; height: 16px; border: 2px solid var(--color-border); border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+    .session-table .checkbox.checked { background: var(--color-primary); border-color: var(--color-primary); color: white; font-size: 10px; }
+    .cell-student { font-weight: 500; color: var(--color-dark-text); }
+    .cell-teacher { color: var(--color-text-primary); }
+    .cell-time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .cell-type { font-size: 12px; }
+    .conflict-icon { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; flex-shrink: 0; }
+    .conflict-icon.blocking { background: var(--color-error); }
+    .conflict-icon.nonblocking { background: var(--color-warning); }
+    .conflict-icon.child { background: var(--color-purple); }
+    .action-select { font-family: var(--font-family); font-size: 12px; padding: 4px 8px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; color: var(--color-text-primary); cursor: pointer; min-width: 120px; }
+    .action-select.has-action { border-color: var(--color-primary); background: var(--color-primary-lightest); color: var(--color-primary); font-weight: 500; }
+
+    /* ── Batch action bar (floating) ── */
+    .batch-bar { background: var(--color-dark-text); color: white; padding: var(--space-1-5) var(--space-3); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); box-shadow: var(--elevation-2); }
+    .batch-bar-left { display: flex; align-items: center; gap: var(--space-2); font-size: 13px; }
+    .batch-count { font-weight: 700; color: #64B5F6; }
+    .batch-bar-right { display: flex; align-items: center; gap: var(--space-1); }
+    .batch-btn { font-family: var(--font-family); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.3); background: transparent; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+    .batch-btn:hover { background: rgba(255,255,255,0.1); }
+    .batch-btn.primary { background: var(--color-primary); border-color: var(--color-primary); }
+
+    /* ── Detail panel (right side) ── */
+    .workspace-layout { display: grid; grid-template-columns: 1fr 400px; gap: 0; min-height: 600px; }
+    .workspace-main { overflow-x: auto; border-right: 1px solid var(--color-divider); }
+    .detail-panel { background: var(--color-surface); overflow-y: auto; }
+    .detail-header { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); background: #FAFAFA; }
+    .detail-header-title { font-size: 14px; font-weight: 600; color: var(--color-dark-text); }
+    .detail-header-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+    .detail-section { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); }
+    .detail-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); margin-bottom: var(--space-1); }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; }
+    .detail-label { color: var(--color-text-secondary); }
+    .detail-value { font-weight: 500; color: var(--color-dark-text); text-align: right; }
+    .detail-conflict-item { display: flex; align-items: flex-start; gap: var(--space-1); padding: var(--space-1) 0; font-size: 13px; line-height: 1.4; }
+
+    /* ── Teacher suggestion cards ── */
+    .teacher-option { display: flex; align-items: center; gap: var(--space-1-5); padding: var(--space-1-5); border: 1px solid var(--color-divider); border-radius: var(--radius); margin-bottom: var(--space-1); cursor: pointer; transition: border-color 0.15s; }
+    .teacher-option:hover { border-color: var(--color-primary); background: var(--color-primary-lightest); }
+    .teacher-option.selected { border-color: var(--color-primary); background: var(--color-primary-lightest); box-shadow: inset 0 0 0 1px var(--color-primary); }
+    .teacher-option.recommended { border-left: 3px solid var(--color-success); }
+    .teacher-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: white; flex-shrink: 0; }
+    .teacher-avatar.fav { background: #1565C0; }
+    .teacher-avatar.reg { background: #2E7D32; }
+    .teacher-avatar.oncall { background: #E65100; }
+    .teacher-avatar.ahod { background: #6A1B9A; }
+    .teacher-info { flex: 1; min-width: 0; }
+    .teacher-name { font-size: 13px; font-weight: 500; color: var(--color-dark-text); }
+    .teacher-meta { font-size: 11px; color: var(--color-text-secondary); }
+    .teacher-badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 8px; }
+    .teacher-badge.fav { background: #E3F2FD; color: #1565C0; }
+    .teacher-badge.reg { background: #E8F5E9; color: #2E7D32; }
+    .teacher-badge.oncall { background: #FFF3E0; color: #E65100; }
+    .teacher-badge.ahod { background: #F3E5F5; color: #6A1B9A; }
+
+    /* ── Time slot picker ── */
+    .timeslot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: var(--space-1); }
+    .timeslot { padding: 6px 4px; text-align: center; font-size: 11px; font-weight: 500; border-radius: var(--radius); border: 1px solid var(--color-divider); background: white; cursor: pointer; }
+    .timeslot.available { border-color: var(--color-success); color: var(--color-success); }
+    .timeslot.available:hover { background: var(--color-success-bg); }
+    .timeslot.selected { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+    .timeslot.unavailable { background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed; }
+    .timeslot.conflict { background: var(--color-error-bg); color: var(--color-error); border-color: rgba(198,40,40,0.3); }
+
+    /* ── Commit summary ── */
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+    .summary-card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; }
+    .summary-card-header { padding: var(--space-1-5) var(--space-3); background: #FAFAFA; border-bottom: 1px solid var(--color-divider); font-size: 13px; font-weight: 600; color: var(--color-dark-text); display: flex; align-items: center; justify-content: space-between; }
+    .summary-card-body { padding: var(--space-2) var(--space-3); }
+    .summary-item { display: flex; align-items: center; gap: var(--space-1-5); padding: var(--space-1) 0; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
+    .summary-item:last-child { border-bottom: none; }
+    .summary-item-main { flex: 1; }
+    .summary-item-student { font-weight: 500; color: var(--color-dark-text); }
+    .summary-item-detail { font-size: 12px; color: var(--color-text-secondary); }
+
+    /* ── Warning box ── */
+    .warning-box { background: var(--color-warning-bg); border: 1px solid rgba(230,81,0,0.3); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .warning-icon { font-size: 18px; flex-shrink: 0; line-height: 1; }
+    .warning-text { font-size: 13px; color: var(--color-warning); line-height: 1.5; }
+    .warning-text strong { font-weight: 600; }
+    .info-box { background: var(--color-info-bg); border: 1px solid rgba(21,101,192,0.2); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .info-text { font-size: 13px; color: var(--color-info); line-height: 1.5; }
+    .success-box { background: var(--color-success-bg); border: 1px solid rgba(46,125,50,0.2); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .success-text { font-size: 13px; color: var(--color-success); line-height: 1.5; }
+
+    /* ── Override callout ── */
+    .override-callout { background: #FFF8E1; border: 1px solid rgba(255,160,0,0.35); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); margin-top: var(--space-1); font-size: 12px; color: #E65100; display: flex; align-items: center; gap: var(--space-1); }
+
+    /* ── Status row ── */
+    .status-row { display: flex; align-items: center; gap: var(--space-1); }
+
+    /* ── Dependency pill ── */
+    .dep-pill { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; background: var(--color-purple-bg); color: var(--color-purple); padding: 2px 8px; border-radius: 10px; font-weight: 500; }
+    .dep-arrow { font-size: 10px; }
+
+    /* ── Audit table ── */
+    .audit-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .audit-table th { text-align: left; padding: var(--space-1) var(--space-1-5); font-weight: 600; color: var(--color-text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid var(--color-divider); }
+    .audit-table td { padding: var(--space-1) var(--space-1-5); border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+
+    /* ── Deferred tray ── */
+    .deferred-tray { background: #FAFAFA; border: 1px dashed var(--color-border); border-radius: var(--radius-lg); padding: var(--space-2) var(--space-3); margin-top: var(--space-2); }
+    .deferred-tray-header { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-1); cursor: pointer; }
+    .deferred-item { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1) 0; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
+    .deferred-item:last-child { border-bottom: none; }
+
+    /* ── Confirm dialog ── */
+    .dialog-overlay { background: rgba(0,0,0,0.35); padding: var(--space-8) var(--space-4); display: flex; align-items: flex-start; justify-content: center; }
+    .dialog { background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--elevation-2); max-width: 560px; width: 100%; }
+    .dialog-header { padding: var(--space-3); border-bottom: 1px solid var(--color-divider); }
+    .dialog-title { font-size: 18px; font-weight: 600; color: var(--color-dark-text); }
+    .dialog-body { padding: var(--space-3); }
+    .dialog-footer { padding: var(--space-2) var(--space-3); border-top: 1px solid var(--color-divider); display: flex; justify-content: flex-end; gap: var(--space-1); }
+
+    /* ── Action reason selector ── */
+    .reason-selector { margin-top: var(--space-1); }
+    .reason-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 14px; font-size: 11px; font-weight: 500; border: 1px solid var(--color-border); background: white; color: var(--color-text-secondary); cursor: pointer; margin: 2px; }
+    .reason-chip.selected { background: var(--color-info-bg); border-color: var(--color-info); color: var(--color-info); }
+
+    /* ── Misc ── */
+    .text-muted { color: var(--color-text-secondary); }
+    .text-bold { font-weight: 600; }
+    .text-sm { font-size: 12px; }
+    .text-xs { font-size: 11px; }
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: var(--space-1); }
+    .gap-2 { gap: var(--space-2); }
+    .gap-3 { gap: var(--space-3); }
+    .mt-1 { margin-top: var(--space-1); }
+    .mt-2 { margin-top: var(--space-2); }
+    .mt-3 { margin-top: var(--space-3); }
+    .mb-2 { margin-bottom: var(--space-2); }
+    .mb-3 { margin-bottom: var(--space-3); }
+    .ml-auto { margin-left: auto; }
+    .w-full { width: 100%; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .link { color: var(--color-primary); text-decoration: none; cursor: pointer; }
+    .link:hover { text-decoration: underline; }
+    .divider { border: none; border-top: 1px solid var(--color-divider); margin: var(--space-2) 0; }
+    .tag { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+    .tag-confirmed { background: #E3F2FD; color: #1565C0; }
+    .tag-prospective { background: #FFF3E0; color: #E65100; }
+
+    /* ── Annotation arrows ── */
+    .annotation { background: #FFFDE7; border: 1px solid #FBC02D; border-radius: var(--radius); padding: var(--space-1) var(--space-1-5); font-size: 11px; color: #F57F17; line-height: 1.4; margin-top: var(--space-1); font-style: italic; }
+
+    /* ── Progress dots ── */
+    .progress-dots { display: flex; gap: 6px; }
+    .progress-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .progress-dot.resolved { background: var(--color-success); }
+    .progress-dot.pending { background: var(--color-warning); }
+    .progress-dot.unresolved { background: var(--color-error); }
+    .progress-dot.held { background: var(--color-info); }
+
+    /* ── Held/Blocked/Deferred indicators ── */
+    .state-indicator { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+    .state-held { background: #E3F2FD; color: #1565C0; }
+    .state-blocked { background: #FFEBEE; color: #C62828; }
+    .state-deferred { background: #ECEFF1; color: #546E7A; }
+    .state-overridden { background: #FFF3E0; color: #E65100; }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe — Bulk Scheduling &amp; Rescheduling — Happy Path Flow</div>
+<div style="height: 32px;"></div>
+
+<div class="flow">
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 1 — CONFLICT EVENTS LANDING                              ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">1</div> Sessions Require Review — Conflict Events Landing</div>
+<div class="flow-step-desc">An operational event has created scheduling conflicts. The administrator opens the Bulk Scheduling workspace and sees a dashboard of active conflict groups requiring resolution.</div>
+
+<div class="screen">
+  <!-- Admin Top Bar -->
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item active">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Scheduling</a> &rsaquo; Bulk Scheduling &amp; Rescheduling</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Bulk Scheduling &amp; Rescheduling</div>
+        <div class="page-subtitle">Centralized workspace for reviewing and resolving scheduling conflicts across sessions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Summary stats -->
+    <div class="stat-bar">
+      <div class="stat-item"><span class="stat-count text-error">3</span> Active Conflict Groups</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count text-warning">24</span> Sessions Require Review</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count text-info">8</span> Blocking Conflicts</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count text-success">3</span> Resolved Today</div>
+    </div>
+
+    <!-- Conflict Event Cards -->
+    <div class="event-grid">
+      <!-- Active Event — Teacher Time Off (this is the one we'll resolve) -->
+      <div class="event-card" style="border-left: 4px solid var(--color-error);">
+        <div class="event-card-header">
+          <div>
+            <div class="event-card-title">Maria Lopez — Time Off Request</div>
+            <div class="event-card-meta">Created Mar 26, 2026 &middot; Teacher Schedule Conflict</div>
+          </div>
+          <span class="badge badge-error">Urgent</span>
+        </div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:var(--space-1);">
+          Maria Lopez has submitted time off for Apr 1–3. 8 sessions are affected across 6 students.
+        </div>
+        <div class="event-card-stats">
+          <div class="event-stat"><div class="event-stat-value error">8</div><div class="event-stat-label">Affected</div></div>
+          <div class="event-stat"><div class="event-stat-value">6</div><div class="event-stat-label">Students</div></div>
+          <div class="event-stat"><div class="event-stat-value error">5</div><div class="event-stat-label">Blocking</div></div>
+          <div class="event-stat"><div class="event-stat-value warning">3</div><div class="event-stat-label">Non-Blocking</div></div>
+        </div>
+        <div style="margin-top:var(--space-2);"><button class="btn btn-primary btn-sm">Open &amp; Resolve →</button></div>
+      </div>
+
+      <!-- Active Event — Holiday -->
+      <div class="event-card" style="border-left: 4px solid var(--color-warning);">
+        <div class="event-card-header">
+          <div>
+            <div class="event-card-title">Spring Break — Holiday Conflict</div>
+            <div class="event-card-meta">Created Mar 20, 2026 &middot; Holiday</div>
+          </div>
+          <span class="badge badge-warning">Pending</span>
+        </div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:var(--space-1);">
+          12 prospective sessions fall on Spring Break week (Apr 6–10). Review and skip or reschedule.
+        </div>
+        <div class="event-card-stats">
+          <div class="event-stat"><div class="event-stat-value warning">12</div><div class="event-stat-label">Affected</div></div>
+          <div class="event-stat"><div class="event-stat-value">9</div><div class="event-stat-label">Students</div></div>
+          <div class="event-stat"><div class="event-stat-value">0</div><div class="event-stat-label">Blocking</div></div>
+          <div class="event-stat"><div class="event-stat-value warning">12</div><div class="event-stat-label">Non-Blocking</div></div>
+        </div>
+        <div style="margin-top:var(--space-2);"><button class="btn btn-outlined btn-sm">Open &amp; Resolve →</button></div>
+      </div>
+
+      <!-- Active Event — Teacher Departure -->
+      <div class="event-card" style="border-left: 4px solid var(--color-error);">
+        <div class="event-card-header">
+          <div>
+            <div class="event-card-title">Daniel Perez — Teacher Departure</div>
+            <div class="event-card-meta">Created Mar 25, 2026 &middot; Staffing Change</div>
+          </div>
+          <span class="badge badge-error">Critical</span>
+        </div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:var(--space-1);">
+          Daniel Perez is departing Apr 15. 4 recurring booking series (16 sessions) need teacher reassignment.
+        </div>
+        <div class="event-card-stats">
+          <div class="event-stat"><div class="event-stat-value error">4</div><div class="event-stat-label">Affected</div></div>
+          <div class="event-stat"><div class="event-stat-value">4</div><div class="event-stat-label">Students</div></div>
+          <div class="event-stat"><div class="event-stat-value error">4</div><div class="event-stat-label">Blocking</div></div>
+          <div class="event-stat"><div class="event-stat-value">0</div><div class="event-stat-label">Non-Blocking</div></div>
+        </div>
+        <div style="margin-top:var(--space-2);"><button class="btn btn-outlined btn-sm">Open &amp; Resolve →</button></div>
+      </div>
+
+      <!-- Recently Resolved -->
+      <div class="event-card" style="border-left: 4px solid var(--color-success); opacity: 0.7;">
+        <div class="event-card-header">
+          <div>
+            <div class="event-card-title">Ana Torres — Emergency Absence</div>
+            <div class="event-card-meta">Resolved Mar 26, 2026 by Alex Chen</div>
+          </div>
+          <span class="badge badge-success">Resolved</span>
+        </div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:var(--space-1);">
+          3 sessions rescheduled, 0 canceled. All conflicts resolved.
+        </div>
+        <div class="event-card-stats">
+          <div class="event-stat"><div class="event-stat-value" style="color:var(--color-success);">3</div><div class="event-stat-label">Resolved</div></div>
+          <div class="event-stat"><div class="event-stat-value">3</div><div class="event-stat-label">Students</div></div>
+          <div class="event-stat"><div class="event-stat-value" style="color:var(--color-success);">0</div><div class="event-stat-label">Canceled</div></div>
+        </div>
+        <div style="margin-top:var(--space-2);"><button class="btn btn-ghost btn-sm">View Summary →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 2 — REVIEW AFFECTED SESSIONS                             ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">2</div> Administrator Reviews Affected Sessions</div>
+<div class="flow-step-desc">The administrator opens the "Maria Lopez — Time Off Request" conflict group. The workspace presents 8 sessions requiring resolution with clear conflict information, session types, and status indicators.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item active">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Scheduling</a> &rsaquo; <a href="#">Bulk Scheduling</a> &rsaquo; Maria Lopez — Time Off</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Maria Lopez — Time Off Request</div>
+        <div class="page-subtitle">Apr 1–3, 2026 &middot; 8 sessions affected &middot; Time Off Priority: <strong style="color:var(--color-error);">Can't Schedule Over</strong> (Apr 1), <strong style="color:var(--color-warning);">High Priority</strong> (Apr 2–3)</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined btn-sm">Export List</button>
+        <button class="btn btn-primary btn-sm" style="opacity:0.5;cursor:not-allowed;">Commit Actions (0 ready)</button>
+      </div>
+    </div>
+    <!-- Progress bar -->
+    <div style="margin-top:var(--space-2);display:flex;align-items:center;gap:var(--space-2);">
+      <div style="font-size:12px;color:var(--color-text-secondary);">Resolution Progress</div>
+      <div style="flex:1;height:6px;background:var(--color-hover-bg);border-radius:3px;overflow:hidden;">
+        <div style="width:0%;height:100%;background:var(--color-success);border-radius:3px;"></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--color-text-secondary);">0 / 8</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <input type="text" class="search-input" placeholder="Search students, teachers…">
+      <div class="filter-separator"></div>
+      <div class="filter-chip active">All <span class="count">8</span></div>
+      <div class="filter-chip">Blocking <span class="count">5</span></div>
+      <div class="filter-chip">Non-Blocking <span class="count">3</span></div>
+      <div class="filter-separator"></div>
+      <div class="filter-chip">Confirmed <span class="count">5</span></div>
+      <div class="filter-chip">Prospective <span class="count">3</span></div>
+      <div class="filter-separator"></div>
+      <div class="filter-chip">Needs Review <span class="count">8</span></div>
+      <div class="filter-chip">Action Assigned <span class="count">0</span></div>
+    </div>
+
+    <!-- Session table -->
+    <div class="card">
+      <table class="session-table">
+        <thead>
+          <tr>
+            <th style="width:32px;"><div class="checkbox"></div></th>
+            <th>Student</th>
+            <th>Session Type</th>
+            <th>Original Schedule</th>
+            <th>Teacher</th>
+            <th>Conflict</th>
+            <th>Severity</th>
+            <th style="width:140px;">Action</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Emma Johnson</span><br><span class="text-xs text-muted">Series: Wed 4:00 PM</span></td>
+            <td><span class="tag tag-confirmed">Confirmed</span></td>
+            <td class="cell-time">Wed, Apr 1 &middot; 4:00–4:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon blocking"></span> Time Off (Can't Schedule Over)</td>
+            <td><span class="badge badge-blocking">Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Cancel</option><option>Reschedule</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Liam Park</span><br><span class="text-xs text-muted">Series: Wed 5:00 PM</span></td>
+            <td><span class="tag tag-confirmed">Confirmed</span></td>
+            <td class="cell-time">Wed, Apr 1 &middot; 5:00–5:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon blocking"></span> Time Off (Can't Schedule Over)</td>
+            <td><span class="badge badge-blocking">Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Cancel</option><option>Reschedule</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Sophia Chen</span><br><span class="text-xs text-muted">Series: Thu 3:00 PM</span></td>
+            <td><span class="tag tag-confirmed">Confirmed</span></td>
+            <td class="cell-time">Thu, Apr 2 &middot; 3:00–3:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon nonblocking"></span> Time Off (High Priority)</td>
+            <td><span class="badge badge-nonblocking">Non-Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Cancel</option><option>Reschedule</option><option>Override</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Noah Williams</span><br><span class="text-xs text-muted">Series: Thu 4:00 PM</span></td>
+            <td><span class="tag tag-confirmed">Confirmed</span></td>
+            <td class="cell-time">Thu, Apr 2 &middot; 4:00–4:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon nonblocking"></span> Time Off (High Priority)</td>
+            <td><span class="badge badge-nonblocking">Non-Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Cancel</option><option>Reschedule</option><option>Override</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Olivia Davis</span><br><span class="text-xs text-muted">Series: Thu 5:00 PM</span></td>
+            <td><span class="tag tag-confirmed">Confirmed</span></td>
+            <td class="cell-time">Thu, Apr 2 &middot; 5:00–5:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon nonblocking"></span> Time Off (High Priority)</td>
+            <td><span class="badge badge-nonblocking">Non-Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Cancel</option><option>Reschedule</option><option>Override</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Aiden Martinez</span><br><span class="text-xs text-muted">Series: Fri 3:00 PM</span></td>
+            <td><span class="tag tag-prospective">Prospective</span></td>
+            <td class="cell-time">Fri, Apr 3 &middot; 3:00–3:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon blocking"></span> Time Off (Can't Schedule Over)</td>
+            <td><span class="badge badge-blocking">Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Skip</option><option>Move</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Mia Thompson</span><br><span class="text-xs text-muted">Series: Fri 4:00 PM</span></td>
+            <td><span class="tag tag-prospective">Prospective</span></td>
+            <td class="cell-time">Fri, Apr 3 &middot; 4:00–4:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon blocking"></span> Time Off (Can't Schedule Over)</td>
+            <td><span class="badge badge-blocking">Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Skip</option><option>Move</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr>
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Ethan Garcia</span><br><span class="text-xs text-muted">Series: Fri 5:00 PM</span></td>
+            <td><span class="tag tag-prospective">Prospective</span></td>
+            <td class="cell-time">Fri, Apr 3 &middot; 5:00–5:50 PM</td>
+            <td class="cell-teacher">Maria Lopez</td>
+            <td><span class="conflict-icon blocking"></span> Time Off (Can't Schedule Over)</td>
+            <td><span class="badge badge-blocking">Blocking</span></td>
+            <td><select class="action-select"><option>Select action…</option><option>Skip</option><option>Move</option><option>No Action</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="annotation" style="margin-top:var(--space-2);">
+      &#9432; Each row shows: Student, Session Type (Confirmed/Prospective), Original Schedule, Teacher, Conflict Type &amp; Reason, Severity (Blocking/Non-Blocking), Action dropdown (different options per session type), and current Status. Admins can quickly scan to understand "what, why, and what to do."
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 3 — EVALUATE RESOLUTION OPTIONS (DETAIL PANEL)           ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">3</div> Administrator Evaluates Resolution Options</div>
+<div class="flow-step-desc">The administrator selects a session to see detailed resolution options in the right panel. The system shows alternative teachers ranked by team priority (Favorite → Regular → On-Call → AHOD), available time slots, risk indicators, and the student's schedule flexibility setting.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item active">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header" style="padding-bottom:var(--space-1-5);">
+    <div class="breadcrumb"><a href="#">Scheduling</a> &rsaquo; <a href="#">Bulk Scheduling</a> &rsaquo; Maria Lopez — Time Off</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title" style="font-size:18px;">Maria Lopez — Time Off Request</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined btn-sm">Export</button>
+        <button class="btn btn-primary btn-sm" style="opacity:0.5;cursor:not-allowed;">Commit Actions (0 ready)</button>
+      </div>
+    </div>
+    <!-- Progress -->
+    <div style="margin-top:var(--space-1);display:flex;align-items:center;gap:var(--space-2);">
+      <div style="font-size:12px;color:var(--color-text-secondary);">Progress</div>
+      <div style="flex:1;height:6px;background:var(--color-hover-bg);border-radius:3px;overflow:hidden;">
+        <div style="width:0%;height:100%;background:var(--color-success);border-radius:3px;"></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--color-text-secondary);">0 / 8</div>
+    </div>
+  </div>
+
+  <!-- Split layout: table + detail panel -->
+  <div class="workspace-layout">
+    <!-- Left: Session List -->
+    <div class="workspace-main">
+      <div style="padding:var(--space-2) var(--space-3);">
+        <div class="filter-bar" style="margin-bottom:var(--space-1-5);">
+          <input type="text" class="search-input" placeholder="Search…" style="width:160px;">
+          <div class="filter-chip active">All <span class="count">8</span></div>
+          <div class="filter-chip">Blocking <span class="count">5</span></div>
+          <div class="filter-chip">Non-Blocking <span class="count">3</span></div>
+        </div>
+
+        <table class="session-table">
+          <thead>
+            <tr>
+              <th style="width:28px;"><div class="checkbox"></div></th>
+              <th>Student</th>
+              <th>Type</th>
+              <th>Schedule</th>
+              <th>Conflict</th>
+              <th>Action</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="selected">
+              <td><div class="checkbox checked">✓</div></td>
+              <td><span class="cell-student">Emma Johnson</span></td>
+              <td><span class="tag tag-confirmed">Conf</span></td>
+              <td class="cell-time">Wed 4/1 4:00 PM</td>
+              <td><span class="badge badge-blocking" style="font-size:10px;">Blocking</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Liam Park</span></td>
+              <td><span class="tag tag-confirmed">Conf</span></td>
+              <td class="cell-time">Wed 4/1 5:00 PM</td>
+              <td><span class="badge badge-blocking" style="font-size:10px;">Blocking</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Sophia Chen</span></td>
+              <td><span class="tag tag-confirmed">Conf</span></td>
+              <td class="cell-time">Thu 4/2 3:00 PM</td>
+              <td><span class="badge badge-nonblocking" style="font-size:10px;">Non-Block</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Noah Williams</span></td>
+              <td><span class="tag tag-confirmed">Conf</span></td>
+              <td class="cell-time">Thu 4/2 4:00 PM</td>
+              <td><span class="badge badge-nonblocking" style="font-size:10px;">Non-Block</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Olivia Davis</span></td>
+              <td><span class="tag tag-confirmed">Conf</span></td>
+              <td class="cell-time">Thu 4/2 5:00 PM</td>
+              <td><span class="badge badge-nonblocking" style="font-size:10px;">Non-Block</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Aiden Martinez</span></td>
+              <td><span class="tag tag-prospective">Prosp</span></td>
+              <td class="cell-time">Fri 4/3 3:00 PM</td>
+              <td><span class="badge badge-blocking" style="font-size:10px;">Blocking</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Mia Thompson</span></td>
+              <td><span class="tag tag-prospective">Prosp</span></td>
+              <td class="cell-time">Fri 4/3 4:00 PM</td>
+              <td><span class="badge badge-blocking" style="font-size:10px;">Blocking</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+            <tr>
+              <td><div class="checkbox"></div></td>
+              <td><span class="cell-student">Ethan Garcia</span></td>
+              <td><span class="tag tag-prospective">Prosp</span></td>
+              <td class="cell-time">Fri 4/3 5:00 PM</td>
+              <td><span class="badge badge-blocking" style="font-size:10px;">Blocking</span></td>
+              <td><select class="action-select"><option>Select action…</option></select></td>
+              <td><span class="badge badge-error" style="font-size:10px;">Review</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right: Detail Panel -->
+    <div class="detail-panel">
+      <div class="detail-header">
+        <div class="detail-header-title">Emma Johnson — Session Detail</div>
+        <div class="detail-header-sub">Confirmed Booking &middot; Booking Series: Wed 4:00 PM</div>
+      </div>
+
+      <!-- Session Info -->
+      <div class="detail-section">
+        <div class="detail-section-title">Session Information</div>
+        <div class="detail-row"><span class="detail-label">Student</span><span class="detail-value">Emma Johnson</span></div>
+        <div class="detail-row"><span class="detail-label">Schedule</span><span class="detail-value">Wed, Apr 1 &middot; 4:00–4:50 PM</span></div>
+        <div class="detail-row"><span class="detail-label">Teacher</span><span class="detail-value">Maria Lopez</span></div>
+        <div class="detail-row"><span class="detail-label">Session Type</span><span class="detail-value"><span class="tag tag-confirmed">Confirmed</span></span></div>
+        <div class="detail-row"><span class="detail-label">Schedule Flexibility</span><span class="detail-value" style="color:var(--color-success);">Flexible</span></div>
+        <div class="detail-row"><span class="detail-label">Cancel Preference</span><span class="detail-value">Prefers Substitute</span></div>
+      </div>
+
+      <!-- Conflict Details -->
+      <div class="detail-section">
+        <div class="detail-section-title">Conflict Details</div>
+        <div class="detail-conflict-item">
+          <span class="conflict-icon blocking"></span>
+          <div>
+            <div style="font-weight:500;color:var(--color-error);">Conflict with Time Off — Can't Schedule Over</div>
+            <div class="text-xs text-muted">Maria Lopez has time off Apr 1 (all day) marked as "Can't Schedule Over." This session cannot remain with Maria at this time.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommended Resolution -->
+      <div class="detail-section" style="background:#F1F8E9;border-left:3px solid var(--color-success);">
+        <div class="detail-section-title" style="color:var(--color-success);">✦ System Recommendation</div>
+        <div style="font-size:13px;color:var(--color-dark-text);font-weight:500;">Reschedule with Jose Ramirez (Wed 4:00 PM)</div>
+        <div class="text-xs text-muted mt-1">Jose Ramirez is in Emma's Favorite Teacher Pool and is available at the same time. Preserves schedule continuity.</div>
+      </div>
+
+      <!-- Available Teachers -->
+      <div class="detail-section">
+        <div class="detail-section-title">Available Teachers (Wed 4:00–4:50 PM)</div>
+
+        <div class="teacher-option recommended selected">
+          <div class="teacher-avatar fav">JR</div>
+          <div class="teacher-info">
+            <div class="teacher-name">Jose Ramirez <span class="teacher-badge fav">★ Favorite</span></div>
+            <div class="teacher-meta">Available Wed 4:00 PM &middot; No conflicts</div>
+          </div>
+          <span style="color:var(--color-success);font-size:12px;font-weight:600;">Best Match</span>
+        </div>
+
+        <div class="teacher-option">
+          <div class="teacher-avatar reg">ST</div>
+          <div class="teacher-info">
+            <div class="teacher-name">Susan Taylor <span class="teacher-badge reg">Regular</span></div>
+            <div class="teacher-meta">Available Wed 4:00 PM &middot; No conflicts</div>
+          </div>
+        </div>
+
+        <div class="teacher-option">
+          <div class="teacher-avatar oncall">KW</div>
+          <div class="teacher-info">
+            <div class="teacher-name">Kevin Wright <span class="teacher-badge oncall">On-Call</span></div>
+            <div class="teacher-meta">Available Wed 4:00 PM &middot; No conflicts</div>
+          </div>
+        </div>
+
+        <div class="teacher-option" style="opacity:0.6;">
+          <div class="teacher-avatar ahod">DP</div>
+          <div class="teacher-info">
+            <div class="teacher-name">Dr. Patricia Lee <span class="teacher-badge ahod">AHOD</span></div>
+            <div class="teacher-meta">Available Wed 4:00 PM &middot; Last resort</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alternative Time Slots -->
+      <div class="detail-section">
+        <div class="detail-section-title">Alternative Time Slots (Maria Lopez)</div>
+        <div class="text-xs text-muted mb-2">Maria is unavailable Apr 1. Showing Maria's availability on other days this week:</div>
+        <div class="timeslot-grid">
+          <div class="timeslot unavailable">Mon 3 PM<br>×</div>
+          <div class="timeslot available">Tue 4 PM<br>✓</div>
+          <div class="timeslot unavailable">Wed 4 PM<br>Off</div>
+          <div class="timeslot available">Thu 4 PM<br>✓</div>
+          <div class="timeslot unavailable">Mon 4 PM<br>×</div>
+          <div class="timeslot available">Tue 5 PM<br>✓</div>
+          <div class="timeslot unavailable">Wed 5 PM<br>Off</div>
+          <div class="timeslot conflict">Thu 5 PM<br>Booked</div>
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="detail-section" style="background:#FAFAFA;">
+        <div class="detail-section-title">Assign Resolution</div>
+        <div style="display:flex;flex-direction:column;gap:var(--space-1);">
+          <button class="btn btn-primary btn-sm w-full">Reschedule → Jose Ramirez, Wed 4:00 PM</button>
+          <button class="btn btn-outlined btn-sm w-full">Reschedule → Different teacher/time…</button>
+          <button class="btn btn-ghost btn-sm w-full" style="color:var(--color-error);">Cancel Session</button>
+          <button class="btn btn-ghost btn-sm w-full">No Action</button>
+        </div>
+        <div style="margin-top:var(--space-2);display:flex;gap:var(--space-1);">
+          <button class="btn btn-ghost btn-sm" style="font-size:11px;">Hold Off</button>
+          <button class="btn btn-ghost btn-sm" style="font-size:11px;">Defer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 4 — APPLY RESOLUTION ACTIONS (IN PROGRESS)               ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">4</div> Administrator Applies Resolution Actions (Batch + Individual)</div>
+<div class="flow-step-desc">The admin has resolved several sessions individually and is now using batch selection to apply actions to multiple remaining sessions at once. The interface shows sessions in various states: resolved, held, deferred, and a child conflict created by a prior action. One non-blocking conflict has been overridden.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item active">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header" style="padding-bottom:var(--space-1-5);">
+    <div class="breadcrumb"><a href="#">Scheduling</a> &rsaquo; <a href="#">Bulk Scheduling</a> &rsaquo; Maria Lopez — Time Off</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title" style="font-size:18px;">Maria Lopez — Time Off Request</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined btn-sm">Export</button>
+        <button class="btn btn-primary btn-sm">Commit Actions (6 ready) →</button>
+      </div>
+    </div>
+    <!-- Progress bar -->
+    <div style="margin-top:var(--space-1);display:flex;align-items:center;gap:var(--space-2);">
+      <div style="font-size:12px;color:var(--color-text-secondary);">Progress</div>
+      <div style="flex:1;height:6px;background:var(--color-hover-bg);border-radius:3px;overflow:hidden;">
+        <div style="width:75%;height:100%;background:var(--color-success);border-radius:3px;transition:width 0.5s;"></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--color-text-secondary);">6 / 8 resolved</div>
+      <div class="progress-dots">
+        <div class="progress-dot resolved" title="Resolved"></div>
+        <div class="progress-dot resolved" title="Resolved"></div>
+        <div class="progress-dot resolved" title="Resolved"></div>
+        <div class="progress-dot resolved" title="Resolved"></div>
+        <div class="progress-dot resolved" title="Resolved"></div>
+        <div class="progress-dot resolved" title="Resolved"></div>
+        <div class="progress-dot held" title="Held"></div>
+        <div class="progress-dot pending" title="Deferred"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Batch action bar (visible when items selected) -->
+    <div class="batch-bar">
+      <div class="batch-bar-left">
+        <span class="batch-count">3 sessions selected</span>
+        <span style="opacity:0.6;">|</span>
+        <span style="font-size:12px;opacity:0.8;">All are Prospective Bookings on Fri, Apr 3</span>
+      </div>
+      <div class="batch-bar-right">
+        <button class="batch-btn">Skip All</button>
+        <button class="batch-btn primary">Move All → Same time, new teacher…</button>
+        <button class="batch-btn">Hold Off</button>
+        <button class="batch-btn">Defer</button>
+        <button class="batch-btn" style="opacity:0.6;">✕ Clear</button>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar" style="margin-bottom:var(--space-1-5);">
+      <input type="text" class="search-input" placeholder="Search…" style="width:160px;">
+      <div class="filter-chip">All <span class="count">8</span></div>
+      <div class="filter-chip">Blocking <span class="count">5</span></div>
+      <div class="filter-chip">Non-Blocking <span class="count">3</span></div>
+      <div class="filter-separator"></div>
+      <div class="filter-chip active">Active Queue <span class="count">7</span></div>
+      <div class="filter-chip">Deferred <span class="count">1</span></div>
+    </div>
+
+    <!-- Updated session table showing resolution states -->
+    <div class="card">
+      <table class="session-table">
+        <thead>
+          <tr>
+            <th style="width:28px;"><div class="checkbox"></div></th>
+            <th>Student</th>
+            <th>Type</th>
+            <th>Original Schedule</th>
+            <th>Conflict</th>
+            <th>Resolution Action</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Resolved: Reschedule with alt teacher -->
+          <tr style="background:#F1F8E9;">
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Emma Johnson</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Wed 4/1 4:00 PM</td>
+            <td><span class="conflict-icon blocking"></span> Can't Schedule Over</td>
+            <td>
+              <select class="action-select has-action"><option>Reschedule</option></select>
+              <div class="text-xs" style="color:var(--color-success);margin-top:2px;">→ Jose Ramirez, Wed 4/1 4:00 PM</div>
+            </td>
+            <td>
+              <span class="badge badge-success">Ready</span>
+              <div class="text-xs text-muted">Approved as Suggested</div>
+            </td>
+          </tr>
+
+          <!-- Resolved: Reschedule with alt teacher — triggers child conflict -->
+          <tr style="background:#F1F8E9;">
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Liam Park</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Wed 4/1 5:00 PM</td>
+            <td><span class="conflict-icon blocking"></span> Can't Schedule Over</td>
+            <td>
+              <select class="action-select has-action"><option>Reschedule</option></select>
+              <div class="text-xs" style="color:var(--color-success);margin-top:2px;">→ Susan Taylor, Thu 4/2 4:00 PM</div>
+            </td>
+            <td>
+              <div class="status-row">
+                <span class="badge badge-warning">Blocked</span>
+              </div>
+              <div class="text-xs" style="color:var(--color-warning);">Blocked by child conflict ↓</div>
+            </td>
+          </tr>
+
+          <!-- CHILD CONFLICT — Created by moving Liam to Thu 4:00 PM (Noah was there) -->
+          <tr class="child-row" style="background:#FCF3FF;">
+            <td></td>
+            <td>
+              <span class="cell-student">Noah Williams</span>
+              <div class="dep-pill mt-1"><span class="dep-arrow">↳</span> Child of Liam Park's reschedule</div>
+            </td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Thu 4/2 4:00 PM</td>
+            <td><span class="conflict-icon child"></span> Double-Booked (Child)</td>
+            <td>
+              <select class="action-select has-action"><option>Reschedule</option></select>
+              <div class="text-xs" style="color:var(--color-success);margin-top:2px;">→ Susan Taylor, Thu 4/2 5:00 PM</div>
+            </td>
+            <td>
+              <span class="badge badge-success">Ready</span>
+              <div class="text-xs text-muted">Overridden</div>
+            </td>
+          </tr>
+
+          <!-- Resolved: Override non-blocking conflict -->
+          <tr style="background:#FFF8E1;">
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Sophia Chen</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Thu 4/2 3:00 PM</td>
+            <td><span class="conflict-icon nonblocking"></span> High Priority Time Off</td>
+            <td>
+              <select class="action-select has-action"><option>Override</option></select>
+              <div class="text-xs" style="color:var(--color-warning);margin-top:2px;">Keep with Maria Lopez (override)</div>
+            </td>
+            <td>
+              <div class="status-row">
+                <span class="state-indicator state-overridden">Overridden</span>
+              </div>
+              <div class="text-xs text-muted">Ready to commit</div>
+            </td>
+          </tr>
+
+          <!-- Resolved: Cancel with reason -->
+          <tr style="background:#FFEBEE;">
+            <td><div class="checkbox"></div></td>
+            <td><span class="cell-student">Olivia Davis</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Thu 4/2 5:00 PM</td>
+            <td><span class="conflict-icon nonblocking"></span> High Priority Time Off</td>
+            <td>
+              <select class="action-select has-action"><option>Cancel</option></select>
+              <div class="text-xs" style="color:var(--color-error);margin-top:2px;">Student requested cancellation</div>
+            </td>
+            <td>
+              <span class="badge badge-success">Ready</span>
+              <div class="text-xs text-muted">Overridden</div>
+            </td>
+          </tr>
+
+          <!-- Batch-selected prospective bookings -->
+          <tr class="selected">
+            <td><div class="checkbox checked">✓</div></td>
+            <td><span class="cell-student">Aiden Martinez</span></td>
+            <td><span class="tag tag-prospective">Prosp</span></td>
+            <td class="cell-time">Fri 4/3 3:00 PM</td>
+            <td><span class="conflict-icon blocking"></span> Can't Schedule Over</td>
+            <td><select class="action-select"><option>Select action…</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr class="selected">
+            <td><div class="checkbox checked">✓</div></td>
+            <td><span class="cell-student">Mia Thompson</span></td>
+            <td><span class="tag tag-prospective">Prosp</span></td>
+            <td class="cell-time">Fri 4/3 4:00 PM</td>
+            <td><span class="conflict-icon blocking"></span> Can't Schedule Over</td>
+            <td><select class="action-select"><option>Select action…</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+          <tr class="selected">
+            <td><div class="checkbox checked">✓</div></td>
+            <td><span class="cell-student">Ethan Garcia</span></td>
+            <td><span class="tag tag-prospective">Prosp</span></td>
+            <td class="cell-time">Fri 4/3 5:00 PM</td>
+            <td><span class="conflict-icon blocking"></span> Can't Schedule Over</td>
+            <td><select class="action-select"><option>Select action…</option></select></td>
+            <td><span class="badge badge-error">Needs Review</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Deferred tray -->
+    <div class="deferred-tray" style="display:none;">
+      <div class="deferred-tray-header">▸ Deferred Sessions (1) — <span class="link" style="font-size:12px;">Show</span></div>
+    </div>
+
+    <!-- Annotations -->
+    <div class="annotation" style="margin-top:var(--space-2);">
+      &#9432; <strong>Key states shown:</strong> Emma's session is "Ready" (approved as suggested). Liam's reschedule created a Child Conflict with Noah (purple row) — Noah was rescheduled to resolve it. Sophia's non-blocking conflict was overridden. Olivia's session was canceled per student request. Three prospective sessions (Aiden, Mia, Ethan) are batch-selected for a group action. The batch bar at top allows applying "Move All" or "Skip All" simultaneously.
+    </div>
+
+    <div class="annotation">
+      &#9432; <strong>Dependency visualization:</strong> The child conflict row for Noah shows a purple dependency pill "↳ Child of Liam Park's reschedule" — making it clear this conflict was created by a staged action, not the original event. If Liam's reschedule were changed or removed, Noah's child conflict would automatically collapse per the Dependency Collapse Rule.
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 4b — BATCH ACTION APPLIED + REASON DIALOG                ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">4b</div> Batch Action Applied — Add Reason (Optional)</div>
+<div class="flow-step-desc">After applying a batch "Move" action to the 3 prospective sessions, the admin optionally adds a reason. The system has auto-detected "Teacher Schedule Conflict" as the reason. The admin can add additional reasons if needed. All 8 sessions now have actions assigned.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item active">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header" style="padding-bottom:var(--space-1-5);">
+    <div class="breadcrumb"><a href="#">Scheduling</a> &rsaquo; <a href="#">Bulk Scheduling</a> &rsaquo; Maria Lopez — Time Off</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title" style="font-size:18px;">Maria Lopez — Time Off Request</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-sm">Commit Actions (8 ready) →</button>
+      </div>
+    </div>
+    <!-- Progress bar — nearly done -->
+    <div style="margin-top:var(--space-1);display:flex;align-items:center;gap:var(--space-2);">
+      <div style="font-size:12px;color:var(--color-text-secondary);">Progress</div>
+      <div style="flex:1;height:6px;background:var(--color-hover-bg);border-radius:3px;overflow:hidden;">
+        <div style="width:100%;height:100%;background:var(--color-success);border-radius:3px;"></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--color-success);">8 / 8 resolved ✓</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="info-box">
+      <span style="font-size:16px;">ℹ</span>
+      <div class="info-text">
+        <strong>Batch action applied:</strong> 3 prospective sessions on Fri, Apr 3 have been moved to alternate teachers at the same times. Review the assignments below and commit when ready.
+      </div>
+    </div>
+
+    <!-- Quick summary of all assigned actions -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="card-title">Action Summary</div>
+        <div style="display:flex;gap:var(--space-2);font-size:12px;">
+          <span><strong style="color:var(--color-success);">4</strong> Reschedule</span>
+          <span><strong style="color:var(--color-warning);">1</strong> Override</span>
+          <span><strong style="color:var(--color-error);">1</strong> Cancel</span>
+          <span><strong style="color:var(--color-info);">3</strong> Move (Prospective)</span>
+        </div>
+      </div>
+      <table class="session-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Type</th>
+            <th>Original</th>
+            <th>Action</th>
+            <th>Resolution Detail</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#F1F8E9;">
+            <td><span class="cell-student">Emma Johnson</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Wed 4/1 4:00 PM</td>
+            <td><span class="badge badge-info">Reschedule</span></td>
+            <td>→ Jose Ramirez, Wed 4/1 4:00 PM</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+          <tr style="background:#F1F8E9;">
+            <td><span class="cell-student">Liam Park</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Wed 4/1 5:00 PM</td>
+            <td><span class="badge badge-info">Reschedule</span></td>
+            <td>→ Susan Taylor, Thu 4/2 4:00 PM</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+          <tr style="background:#FCF3FF;">
+            <td>
+              <span class="cell-student">Noah Williams</span>
+              <div class="dep-pill" style="margin-top:2px;"><span class="dep-arrow">↳</span> Child</div>
+            </td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Thu 4/2 4:00 PM</td>
+            <td><span class="badge badge-purple">Reschedule (Child)</span></td>
+            <td>→ Susan Taylor, Thu 4/2 5:00 PM</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+          <tr style="background:#FFF8E1;">
+            <td><span class="cell-student">Sophia Chen</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Thu 4/2 3:00 PM</td>
+            <td><span class="badge badge-warning">Override</span></td>
+            <td>Keep Maria Lopez (override High Priority time off)</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="state-indicator state-overridden">Overridden</span></td>
+          </tr>
+          <tr style="background:#FFEBEE;">
+            <td><span class="cell-student">Olivia Davis</span></td>
+            <td><span class="tag tag-confirmed">Conf</span></td>
+            <td class="cell-time">Thu 4/2 5:00 PM</td>
+            <td><span class="badge badge-error">Cancel</span></td>
+            <td>Session canceled</td>
+            <td>
+              <span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span>
+              <span class="badge badge-info" style="margin-left:2px;">+ Client Request</span>
+            </td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+          <tr style="background:#E3F2FD;">
+            <td><span class="cell-student">Aiden Martinez</span></td>
+            <td><span class="tag tag-prospective">Prosp</span></td>
+            <td class="cell-time">Fri 4/3 3:00 PM</td>
+            <td><span class="badge badge-info">Move</span></td>
+            <td>→ Kevin Wright, Fri 4/3 3:00 PM</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+          <tr style="background:#E3F2FD;">
+            <td><span class="cell-student">Mia Thompson</span></td>
+            <td><span class="tag tag-prospective">Prosp</span></td>
+            <td class="cell-time">Fri 4/3 4:00 PM</td>
+            <td><span class="badge badge-info">Move</span></td>
+            <td>→ Jose Ramirez, Fri 4/3 4:00 PM</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+          <tr style="background:#E3F2FD;">
+            <td><span class="cell-student">Ethan Garcia</span></td>
+            <td><span class="tag tag-prospective">Prosp</span></td>
+            <td class="cell-time">Fri 4/3 5:00 PM</td>
+            <td><span class="badge badge-info">Move</span></td>
+            <td>→ Susan Taylor, Fri 4/3 5:00 PM</td>
+            <td><span class="badge badge-neutral">Auto: Teacher Schedule Conflict</span></td>
+            <td><span class="badge badge-success">Ready</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add Reason Panel -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="card-title">Add Optional Reason</div>
+        <div class="text-sm text-muted">For Olivia Davis — Cancel action</div>
+      </div>
+      <div class="card-body">
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:var(--space-1-5);">
+          The system automatically detected <strong>"Teacher Schedule Conflict"</strong> as the reason. You may add additional reasons:
+        </div>
+        <div class="reason-selector">
+          <span class="reason-chip">Teacher External Conflict</span>
+          <span class="reason-chip selected">Client Request</span>
+          <span class="reason-chip">Staffing Limitation</span>
+          <span class="reason-chip">VIP Prioritization</span>
+          <span class="reason-chip">Other HSA Reason</span>
+          <span class="reason-chip">Other Client Reason</span>
+        </div>
+        <div style="margin-top:var(--space-2);">
+          <textarea style="width:100%;font-family:var(--font-family);font-size:13px;padding:var(--space-1-5);border:1px solid var(--color-border);border-radius:var(--radius);resize:vertical;height:60px;" placeholder="Optional: Add a note about this action…">Parent called to request cancellation as family will be traveling.</textarea>
+        </div>
+        <div style="margin-top:var(--space-1);display:flex;justify-content:flex-end;">
+          <button class="btn btn-primary btn-sm">Save Reason</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation">
+      &#9432; <strong>Action Reasons:</strong> Auto-detected reasons are shown as "Auto: Teacher Schedule Conflict". Admins can add additional non-auto-detectable reasons (e.g., "Client Request"). "Other HSA Reason" and "Other Client Reason" require mandatory text. Each committed action will include all associated reasons in the audit log.
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 5 — PRE-COMMIT CONFIRMATION DIALOG                       ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">5</div> Pre-Commit Confirmation &amp; High-Impact Warnings</div>
+<div class="flow-step-desc">The administrator clicks "Commit Actions." Before executing, the system presents a comprehensive summary of all pending changes with high-impact action warnings requiring explicit confirmation. The admin reviews and confirms.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item active">Scheduling</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- Dimmed background with dialog overlay -->
+  <div class="dialog-overlay">
+    <div class="dialog" style="max-width:720px;">
+      <div class="dialog-header">
+        <div class="dialog-title">Confirm Scheduling Actions</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;">Maria Lopez — Time Off Request &middot; 8 actions to commit</div>
+      </div>
+      <div class="dialog-body" style="max-height:500px;overflow-y:auto;">
+
+        <!-- High-impact warnings -->
+        <div class="warning-box">
+          <span class="warning-icon">⚠</span>
+          <div class="warning-text">
+            <strong>1 confirmed session will be canceled.</strong> This will remove the class from Olivia Davis's schedule. The student and teacher will be notified.
+          </div>
+        </div>
+
+        <div class="warning-box" style="background:var(--color-info-bg);border-color:rgba(21,101,192,0.2);">
+          <span class="warning-icon" style="color:var(--color-info);">ℹ</span>
+          <div style="font-size:13px;color:var(--color-info);line-height:1.5;">
+            <strong>1 session committed with an override.</strong> Sophia Chen's session will be kept with Maria Lopez despite a High Priority time-off conflict. This was explicitly overridden.
+          </div>
+        </div>
+
+        <!-- Summary by action type -->
+        <div style="font-size:13px;font-weight:600;color:var(--color-dark-text);margin-bottom:var(--space-1-5);">Action Breakdown</div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-2);margin-bottom:var(--space-3);">
+          <div style="text-align:center;padding:var(--space-1-5);background:var(--color-success-bg);border-radius:var(--radius);">
+            <div style="font-size:24px;font-weight:700;color:var(--color-success);">4</div>
+            <div style="font-size:11px;color:var(--color-success);font-weight:500;">Reschedule</div>
+          </div>
+          <div style="text-align:center;padding:var(--space-1-5);background:var(--color-info-bg);border-radius:var(--radius);">
+            <div style="font-size:24px;font-weight:700;color:var(--color-info);">3</div>
+            <div style="font-size:11px;color:var(--color-info);font-weight:500;">Move (Prosp.)</div>
+          </div>
+          <div style="text-align:center;padding:var(--space-1-5);background:var(--color-warning-bg);border-radius:var(--radius);">
+            <div style="font-size:24px;font-weight:700;color:var(--color-warning);">1</div>
+            <div style="font-size:11px;color:var(--color-warning);font-weight:500;">Override</div>
+          </div>
+          <div style="text-align:center;padding:var(--space-1-5);background:var(--color-error-bg);border-radius:var(--radius);">
+            <div style="font-size:24px;font-weight:700;color:var(--color-error);">1</div>
+            <div style="font-size:11px;color:var(--color-error);font-weight:500;">Cancel</div>
+          </div>
+        </div>
+
+        <!-- Session-by-session detail -->
+        <div style="font-size:13px;font-weight:600;color:var(--color-dark-text);margin-bottom:var(--space-1);">Session Details</div>
+        <table class="audit-table" style="margin-bottom:var(--space-2);">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Original</th>
+              <th>Action</th>
+              <th>New Schedule</th>
+              <th>Decision</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Emma Johnson</strong></td>
+              <td>Wed 4/1 4:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Reschedule</span></td>
+              <td>Wed 4/1 4:00 PM<br>Jose Ramirez</td>
+              <td><span class="text-xs" style="color:var(--color-success);">Approved as Suggested</span></td>
+            </tr>
+            <tr>
+              <td><strong>Liam Park</strong></td>
+              <td>Wed 4/1 5:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Reschedule</span></td>
+              <td>Thu 4/2 4:00 PM<br>Susan Taylor</td>
+              <td><span class="text-xs" style="color:var(--color-warning);">Overridden</span></td>
+            </tr>
+            <tr style="background:var(--color-purple-bg);">
+              <td><strong>Noah Williams</strong><br><span class="dep-pill"><span class="dep-arrow">↳</span> Child</span></td>
+              <td>Thu 4/2 4:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-purple">Reschedule</span></td>
+              <td>Thu 4/2 5:00 PM<br>Susan Taylor</td>
+              <td><span class="text-xs" style="color:var(--color-warning);">Overridden</span></td>
+            </tr>
+            <tr>
+              <td><strong>Sophia Chen</strong></td>
+              <td>Thu 4/2 3:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-warning">Override</span></td>
+              <td>Thu 4/2 3:00 PM<br>Maria Lopez</td>
+              <td><span class="text-xs" style="color:var(--color-warning);">Overridden</span></td>
+            </tr>
+            <tr style="background:var(--color-error-bg);">
+              <td><strong>Olivia Davis</strong></td>
+              <td>Thu 4/2 5:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-error">Cancel</span></td>
+              <td>—</td>
+              <td><span class="text-xs" style="color:var(--color-warning);">Overridden</span><br><span class="text-xs text-muted">Reason: Client Request</span></td>
+            </tr>
+            <tr>
+              <td><strong>Aiden Martinez</strong></td>
+              <td>Fri 4/3 3:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Move</span></td>
+              <td>Fri 4/3 3:00 PM<br>Kevin Wright</td>
+              <td><span class="text-xs" style="color:var(--color-success);">Approved as Suggested</span></td>
+            </tr>
+            <tr>
+              <td><strong>Mia Thompson</strong></td>
+              <td>Fri 4/3 4:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Move</span></td>
+              <td>Fri 4/3 4:00 PM<br>Jose Ramirez</td>
+              <td><span class="text-xs" style="color:var(--color-success);">Approved as Suggested</span></td>
+            </tr>
+            <tr>
+              <td><strong>Ethan Garcia</strong></td>
+              <td>Fri 4/3 5:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Move</span></td>
+              <td>Fri 4/3 5:00 PM<br>Susan Taylor</td>
+              <td><span class="text-xs" style="color:var(--color-success);">Approved as Suggested</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Explicit confirmation checkbox -->
+        <div style="background:#FFF3E0;border:1px solid rgba(230,81,0,0.3);border-radius:var(--radius);padding:var(--space-2);margin-top:var(--space-2);display:flex;align-items:flex-start;gap:var(--space-1-5);">
+          <div class="checkbox checked" style="margin-top:2px;">✓</div>
+          <div style="font-size:13px;color:var(--color-warning);line-height:1.5;">
+            I confirm that I have reviewed all 8 actions, including <strong>1 cancellation</strong> affecting a confirmed booking and <strong>1 non-blocking conflict override</strong>. I understand these changes will modify student and teacher schedules.
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-primary" style="min-width:180px;">Commit 8 Actions</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 6 — POST-COMMIT SUCCESS & AUDIT TRAIL                    ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">6</div> System Records Changes — Post-Commit Confirmation &amp; Audit Trail</div>
+<div class="flow-step-desc">All actions are committed. The system records every change with the original state, action taken, administrator, timestamp, and reason. The admin sees a success confirmation with a complete audit trail and may return to the workspace.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item active">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Scheduling</a> &rsaquo; <a href="#">Bulk Scheduling</a> &rsaquo; Maria Lopez — Time Off &rsaquo; Commit Summary</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Commit Complete</div>
+        <div class="page-subtitle">Maria Lopez — Time Off Request &middot; 8 actions committed successfully</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined btn-sm">Download Audit Report</button>
+        <button class="btn btn-primary btn-sm">← Back to Bulk Scheduling</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Success banner -->
+    <div class="success-box" style="margin-bottom:var(--space-3);">
+      <span style="font-size:20px;">✓</span>
+      <div class="success-text">
+        <strong>All 8 scheduling actions have been committed successfully.</strong><br>
+        4 confirmed sessions rescheduled &middot; 1 confirmed session canceled &middot; 1 non-blocking conflict overridden &middot; 3 prospective sessions moved to alternate teachers.
+        All changes have been recorded in the audit log.
+      </div>
+    </div>
+
+    <!-- Summary stats -->
+    <div class="stat-bar" style="margin-bottom:var(--space-3);">
+      <div class="stat-item"><span class="stat-count text-success">8</span> Actions Committed</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count">6</span> Students Affected</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count">3</span> Teachers Reassigned</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count text-error">1</span> Session Canceled</div>
+      <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+      <div class="stat-item"><span class="stat-count text-warning">1</span> Override Applied</div>
+    </div>
+
+    <!-- Audit Trail -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Audit Trail</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);">Committed by <strong>Alex Chen</strong> on <strong>Mar 28, 2026 at 2:47 PM</strong></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Session Type</th>
+              <th>Original State</th>
+              <th>Action</th>
+              <th>New State</th>
+              <th>Decision Type</th>
+              <th>Reason(s)</th>
+              <th>Admin</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Emma Johnson</strong></td>
+              <td>Confirmed</td>
+              <td>Wed 4/1 4:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Reschedule</span></td>
+              <td>Wed 4/1 4:00 PM<br>Jose Ramirez</td>
+              <td><span style="color:var(--color-success);font-weight:500;">Approved as Suggested</span></td>
+              <td>Teacher Schedule Conflict (auto)</td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Liam Park</strong></td>
+              <td>Confirmed</td>
+              <td>Wed 4/1 5:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Reschedule</span></td>
+              <td>Thu 4/2 4:00 PM<br>Susan Taylor</td>
+              <td><span style="color:var(--color-warning);font-weight:500;">Overridden</span></td>
+              <td>Teacher Schedule Conflict (auto)</td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr style="background:var(--color-purple-bg);">
+              <td>3</td>
+              <td><strong>Noah Williams</strong><br><span class="dep-pill"><span class="dep-arrow">↳</span> Child of #2</span></td>
+              <td>Confirmed</td>
+              <td>Thu 4/2 4:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-purple">Reschedule</span></td>
+              <td>Thu 4/2 5:00 PM<br>Susan Taylor</td>
+              <td><span style="color:var(--color-warning);font-weight:500;">Overridden</span></td>
+              <td>Teacher Schedule Conflict (auto)<br><span class="text-xs">Child conflict from Liam Park reschedule</span></td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Sophia Chen</strong></td>
+              <td>Confirmed</td>
+              <td>Thu 4/2 3:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-warning">Override</span></td>
+              <td>Thu 4/2 3:00 PM<br>Maria Lopez (kept)</td>
+              <td><span style="color:var(--color-warning);font-weight:500;">Overridden</span></td>
+              <td>Teacher Schedule Conflict (auto)<br><span class="text-xs">Non-blocking: High Priority time off overridden</span></td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr style="background:var(--color-error-bg);">
+              <td>5</td>
+              <td><strong>Olivia Davis</strong></td>
+              <td>Confirmed</td>
+              <td>Thu 4/2 5:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-error">Cancel</span></td>
+              <td>— (Canceled)</td>
+              <td><span style="color:var(--color-warning);font-weight:500;">Overridden</span></td>
+              <td>Teacher Schedule Conflict (auto)<br>Client Request<br><span class="text-xs">"Parent called to request cancellation as family will be traveling."</span></td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Aiden Martinez</strong></td>
+              <td>Prospective</td>
+              <td>Fri 4/3 3:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Move</span></td>
+              <td>Fri 4/3 3:00 PM<br>Kevin Wright</td>
+              <td><span style="color:var(--color-success);font-weight:500;">Approved as Suggested</span></td>
+              <td>Teacher Schedule Conflict (auto)</td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Mia Thompson</strong></td>
+              <td>Prospective</td>
+              <td>Fri 4/3 4:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Move</span></td>
+              <td>Fri 4/3 4:00 PM<br>Jose Ramirez</td>
+              <td><span style="color:var(--color-success);font-weight:500;">Approved as Suggested</span></td>
+              <td>Teacher Schedule Conflict (auto)</td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Ethan Garcia</strong></td>
+              <td>Prospective</td>
+              <td>Fri 4/3 5:00 PM<br>Maria Lopez</td>
+              <td><span class="badge badge-info">Move</span></td>
+              <td>Fri 4/3 5:00 PM<br>Susan Taylor</td>
+              <td><span style="color:var(--color-success);font-weight:500;">Approved as Suggested</span></td>
+              <td>Teacher Schedule Conflict (auto)</td>
+              <td>Alex Chen</td>
+              <td>Mar 28, 2:47 PM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="annotation" style="margin-top:var(--space-3);">
+      &#9432; <strong>Audit completeness:</strong> Every row captures the original state, action taken, resulting state, decision type (Approved as Suggested / Overridden), reason(s), the performing admin, and timestamp. Child conflicts show their dependency origin. Override actions show what was overridden. The admin-provided note on Olivia's cancellation is preserved verbatim.
+    </div>
+
+    <div style="height:var(--space-4);"></div>
+
+    <!-- Help text -->
+    <div style="text-align:center;padding:var(--space-4);color:var(--color-text-disabled);font-size:12px;">
+      End of Happy Path Flow — Bulk Scheduling &amp; Rescheduling Wireframe
+    </div>
+  </div>
+</div>
+
+<div style="height:var(--space-8);"></div>
+
+</div><!-- .flow -->
+</body>
+</html>
