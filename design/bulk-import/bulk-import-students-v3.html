@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Import Students — Complete Flow</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+    /* === RESET === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* === DESIGN TOKENS === */
+    :root {
+      --font-family: 'Open Sans', sans-serif;
+      /* Primary */
+      --color-primary: #1A7ABC;
+      --color-primary-dark: #135B8D;
+      --color-primary-light: #56ACE8;
+      --color-primary-lighter: #A4D2F2;
+      --color-primary-lightest: #F2F9FD;
+      /* Secondary */
+      --color-secondary: #9C27B0;
+      --color-secondary-dark: #7B1FA2;
+      --color-secondary-light: #BA68C8;
+      /* Semantic */
+      --color-success: #2E7D32;
+      --color-success-bg: #E8F5E9;
+      --color-warning: #E65100;
+      --color-warning-bg: #FFF3E0;
+      --color-error: #C62828;
+      --color-error-bg: #FFEBEE;
+      --color-info: #1565C0;
+      --color-info-bg: #E3F2FD;
+      --color-purple: #6A1B9A;
+      --color-purple-bg: #F3E5F5;
+      /* Neutrals */
+      --color-text-primary: #424B52;
+      --color-text-secondary: #63717B;
+      --color-text-disabled: #8896A0;
+      --color-border: #B8C0C6;
+      --color-divider: #C9D0D4;
+      --color-disabled-bg: #DBDFE3;
+      --color-hover-bg: #EDEFF1;
+      --color-page-bg: #F4F5F6;
+      --color-surface: #FFFFFF;
+      --color-dark-text: #323232;
+      /* Spacing (8px base) */
+      --space-0: 0px; --space-0-5: 4px; --space-1: 8px; --space-1-5: 12px; --space-2: 16px;
+      --space-3: 24px; --space-4: 32px; --space-5: 40px; --space-6: 48px; --space-8: 64px;
+      /* Border radius */
+      --radius: 4px; --radius-lg: 8px; --radius-pill: 100px;
+      /* Elevation */
+      --elevation-1: 0px 2px 1px -1px rgba(0,0,0,0.12), 0px 1px 1px 0px rgba(0,0,0,0.08), 0px 1px 3px 0px rgba(0,0,0,0.06);
+      --elevation-2: 0px 3px 5px -1px rgba(0,0,0,0.12), 0px 5px 8px 0px rgba(0,0,0,0.08), 0px 1px 14px 0px rgba(0,0,0,0.06);
+      --elevation-4: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
+    }
+
+    body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color: var(--color-text-primary); background: #E8EAED; }
+
+    /* ── SHELL ── */
+    .wireframe-banner { background: var(--color-dark-text); color: white; padding: var(--space-1) var(--space-2); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .flow { max-width: 1400px; margin: 0 auto; padding: var(--space-4); }
+    .flow-step-label { background: var(--color-primary); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1-5); margin-top: var(--space-6); }
+    .flow-step-label:first-of-type { margin-top: var(--space-3); }
+    .flow-step-label .step-num { background: rgba(255,255,255,0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .flow-step-desc { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.2); border-top: none; padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-primary-dark); line-height: 1.5; }
+    .screen { background: var(--color-page-bg); border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; margin-bottom: var(--space-2); box-shadow: var(--elevation-2); }
+
+    /* ── APP CHROME ── */
+    .admin-topbar { background: #263238; color: white; padding: var(--space-1-5) var(--space-3); display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .admin-topbar-left { display: flex; align-items: center; gap: var(--space-3); }
+    .admin-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+    .admin-nav { display: flex; gap: var(--space-2); }
+    .admin-nav-item { color: rgba(255,255,255,0.6); padding: var(--space-0-5) var(--space-1); border-radius: var(--radius); font-size: 13px; cursor: default; }
+    .admin-nav-item.active { color: white; background: rgba(255,255,255,0.12); font-weight: 500; }
+    .admin-topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+    .admin-avatar { width: 28px; height: 28px; border-radius: 50%; background: #546E7A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+    .admin-user-name { font-size: 12px; color: rgba(255,255,255,0.8); }
+    .page-header { background: var(--color-surface); border-bottom: 1px solid var(--color-divider); padding: var(--space-3) var(--space-4); }
+    .page-header-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+    .page-title { font-size: 22px; font-weight: 600; color: var(--color-dark-text); }
+    .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: var(--space-0-5); }
+    .breadcrumb { font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1); }
+    .breadcrumb a { color: var(--color-primary); text-decoration: none; }
+    .content { padding: var(--space-3) var(--space-4); }
+
+    /* ── BUTTONS ── */
+    .btn { font-family: var(--font-family); font-weight: 500; font-size: 13px; line-height: 1.5; letter-spacing: 0.03em; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 6px 16px; transition: background 0.15s; text-decoration: none; border: none; white-space: nowrap; }
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+    .btn-lg { padding: 8px 22px; font-size: 15px; }
+    .btn-primary { background: var(--color-primary); color: white; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-outlined { background: transparent; color: var(--color-primary); border: 1px solid rgba(26,122,188,0.5); }
+    .btn-outlined:hover { background: var(--color-primary-lightest); }
+    .btn-ghost { background: transparent; color: var(--color-text-secondary); border: 1px solid transparent; }
+    .btn-ghost:hover { background: var(--color-hover-bg); }
+    .btn-success { background: var(--color-success); color: white; }
+    .btn-warning { background: var(--color-warning); color: white; }
+    .btn-error { background: var(--color-error); color: white; }
+    .btn-disabled { background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed; border: 1px solid var(--color-divider); }
+    .btn-group { display: flex; gap: var(--space-1); }
+
+    /* ── CARDS ── */
+    .card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); }
+    .card-header { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
+    .card-body { padding: var(--space-3); }
+
+    /* ── BADGES / TAGS ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+    .badge-error { background: var(--color-error-bg); color: var(--color-error); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-info { background: var(--color-info-bg); color: var(--color-info); }
+    .badge-purple { background: var(--color-purple-bg); color: var(--color-purple); }
+    .badge-neutral { background: var(--color-hover-bg); color: var(--color-text-secondary); }
+    .tag { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+
+    /* ── TABLES ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: var(--space-1) var(--space-1-5); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); border-bottom: 2px solid var(--color-divider); background: var(--color-surface); }
+    .data-table td { padding: var(--space-1-5); font-size: 13px; border-bottom: 1px solid var(--color-divider); vertical-align: middle; }
+    .data-table tr { background: white; }
+    .data-table tr:hover { background: var(--color-primary-lightest); }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1-5) var(--space-3); background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-2); flex-wrap: wrap; }
+    .filter-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 500; border: 1px solid var(--color-border); background: white; color: var(--color-text-secondary); cursor: pointer; }
+    .filter-chip.active { background: var(--color-primary-lightest); border-color: var(--color-primary); color: var(--color-primary); }
+    .filter-chip .count { background: var(--color-hover-bg); padding: 0 6px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+    .filter-chip.active .count { background: rgba(26,122,188,0.15); }
+    .filter-separator { width: 1px; height: 24px; background: var(--color-divider); }
+
+    /* ── STAT BAR ── */
+    .stat-bar { display: flex; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-3); }
+    .stat-item { display: flex; align-items: center; gap: var(--space-1); font-size: 13px; }
+    .stat-count { font-weight: 700; font-size: 16px; }
+    .stat-count.text-error { color: var(--color-error); }
+    .stat-count.text-warning { color: var(--color-warning); }
+    .stat-count.text-info { color: var(--color-info); }
+    .stat-count.text-success { color: var(--color-success); }
+
+    /* ── INPUTS ── */
+    .search-input { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 5px 12px; font-size: 13px; font-family: var(--font-family); width: 220px; color: var(--color-text-primary); }
+    .search-input::placeholder { color: var(--color-text-disabled); }
+    .input { font-family: var(--font-family); font-size: 14px; padding: 8px 12px; border: 1px solid rgba(0,0,0,0.23); border-radius: var(--radius); background: var(--color-surface); color: var(--color-text-primary); width: 100%; }
+    .input:focus { border-color: var(--color-primary); outline: 2px solid var(--color-primary-lighter); }
+    .input-label { font-size: 12px; font-weight: 400; color: var(--color-text-secondary); margin-bottom: 4px; }
+    .select { font-family: var(--font-family); font-size: 13px; padding: 5px 8px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; color: var(--color-text-primary); cursor: pointer; }
+
+    /* ── CHIPS ── */
+    .chip { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 400; gap: 4px; }
+    .chip-filled { background: var(--color-hover-bg); color: var(--color-text-primary); }
+    .chip-outlined { border: 1px solid var(--color-border); background: transparent; }
+    .chip-primary { background: var(--color-primary-lightest); color: var(--color-primary-dark); }
+    .chip-success { background: var(--color-success-bg); color: var(--color-success); }
+    .chip-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .chip-error { background: var(--color-error-bg); color: var(--color-error); }
+
+    /* ── ALERTS ── */
+    .alert { padding: var(--space-1-5) var(--space-2); border-radius: var(--radius); font-size: 13px; display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .alert-info { background: var(--color-info-bg); color: var(--color-info); border: 1px solid rgba(21,101,192,0.2); }
+    .alert-success { background: var(--color-success-bg); color: var(--color-success); border: 1px solid rgba(46,125,50,0.2); }
+    .alert-warning { background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid rgba(230,81,0,0.3); }
+    .alert-error { background: var(--color-error-bg); color: var(--color-error); border: 1px solid rgba(198,40,40,0.3); }
+
+    /* ── DIALOGS ── */
+    .dialog-overlay { background: rgba(0,0,0,0.35); padding: var(--space-8) var(--space-4); display: flex; align-items: flex-start; justify-content: center; }
+    .dialog { background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--elevation-2); max-width: 560px; width: 100%; }
+    .dialog-header { padding: var(--space-3); border-bottom: 1px solid var(--color-divider); }
+    .dialog-title { font-size: 18px; font-weight: 600; color: var(--color-dark-text); }
+    .dialog-body { padding: var(--space-3); }
+    .dialog-footer { padding: var(--space-2) var(--space-3); border-top: 1px solid var(--color-divider); display: flex; justify-content: flex-end; gap: var(--space-1); }
+
+    /* ── MISC COMPONENTS ── */
+    .divider { border: none; border-top: 1px solid var(--color-divider); margin: var(--space-2) 0; }
+    .img-placeholder { background: var(--color-hover-bg); border: 1px dashed var(--color-border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--color-text-disabled); font-size: 14px; }
+    .checkbox { width: 16px; height: 16px; border: 2px solid var(--color-border); border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+    .checkbox.checked { background: var(--color-primary); border-color: var(--color-primary); color: white; font-size: 10px; }
+
+    /* ── TYPOGRAPHY ── */
+    .h4 { font-size: 34px; font-weight: 400; line-height: 1.235; }
+    .h5 { font-size: 24px; font-weight: 400; line-height: 1.334; }
+    .h6 { font-size: 20px; font-weight: 500; line-height: 1.6; }
+    .subtitle1 { font-size: 16px; font-weight: 400; line-height: 1.75; }
+    .subtitle2 { font-size: 14px; font-weight: 500; line-height: 1.57; }
+    .body1 { font-size: 16px; font-weight: 400; line-height: 1.5; }
+    .body2 { font-size: 14px; font-weight: 400; line-height: 1.43; }
+    .caption { font-size: 12px; font-weight: 400; line-height: 1.66; color: var(--color-text-secondary); }
+    .overline { font-size: 12px; font-weight: 400; line-height: 2.66; letter-spacing: 0.08em; text-transform: uppercase; }
+    .annotation { background: #FFFDE7; border: 1px solid #FBC02D; border-radius: var(--radius); padding: var(--space-1) var(--space-1-5); font-size: 11px; color: #F57F17; line-height: 1.4; margin-top: var(--space-1); font-style: italic; }
+
+    /* ── UTILITIES ── */
+    .text-muted { color: var(--color-text-secondary); }
+    .text-bold { font-weight: 600; }
+    .text-sm { font-size: 12px; }
+    .text-xs { font-size: 11px; }
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-0-5 { gap: var(--space-0-5); }
+    .gap-1 { gap: var(--space-1); }
+    .gap-2 { gap: var(--space-2); }
+    .gap-3 { gap: var(--space-3); }
+    .gap-4 { gap: var(--space-4); }
+    .mt-1 { margin-top: var(--space-1); }
+    .mt-2 { margin-top: var(--space-2); }
+    .mt-3 { margin-top: var(--space-3); }
+    .mb-2 { margin-bottom: var(--space-2); }
+    .mb-3 { margin-bottom: var(--space-3); }
+    .ml-auto { margin-left: auto; }
+    .w-full { width: 100%; }
+    .text-center { text-align: center; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .link { color: var(--color-primary); text-decoration: none; cursor: pointer; }
+    .link:hover { text-decoration: underline; }
+
+    /* ── ADD DOMAIN-SPECIFIC CSS BELOW THIS LINE ── */
+
+    /* ── Wizard sidebar stepper ── */
+    .wizard-layout { display: grid; grid-template-columns: 220px 1fr; min-height: 500px; }
+    .wizard-sidebar { background: var(--color-surface); border-right: 1px solid var(--color-divider); padding: var(--space-3) 0; }
+    .wizard-step { display: flex; align-items: center; gap: var(--space-1-5); padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-text-secondary); cursor: default; border-left: 3px solid transparent; }
+    .wizard-step.active { color: var(--color-primary); font-weight: 600; background: var(--color-primary-lightest); border-left-color: var(--color-primary); }
+    .wizard-step.completed { color: var(--color-success); }
+    .wizard-step.disabled { color: var(--color-text-disabled); }
+    .wizard-step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 2px solid var(--color-border); background: white; flex-shrink: 0; }
+    .wizard-step.active .wizard-step-num { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+    .wizard-step.completed .wizard-step-num { border-color: var(--color-success); background: var(--color-success); color: white; }
+    .wizard-step.disabled .wizard-step-num { border-color: var(--color-disabled-bg); color: var(--color-text-disabled); }
+    .wizard-main { padding: var(--space-4); }
+    .wizard-footer { display: flex; justify-content: flex-end; gap: var(--space-1); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--color-divider); background: var(--color-surface); }
+
+    /* ── Upload dropzone ── */
+    .dropzone { border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: var(--space-8) var(--space-4); text-align: center; background: var(--color-surface); transition: border-color 0.15s; cursor: pointer; }
+    .dropzone:hover { border-color: var(--color-primary); }
+    .dropzone-icon { font-size: 48px; color: var(--color-text-disabled); margin-bottom: var(--space-2); }
+    .dropzone-title { font-size: 16px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
+    .dropzone-desc { font-size: 13px; color: var(--color-text-secondary); }
+    .dropzone-link { color: var(--color-primary); font-weight: 500; cursor: pointer; }
+
+    /* ── Radio options ── */
+    .radio-option { display: flex; align-items: flex-start; gap: var(--space-1-5); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-1-5); cursor: pointer; transition: border-color 0.15s; }
+    .radio-option:hover { border-color: var(--color-primary); }
+    .radio-option.selected { border-color: var(--color-primary); background: var(--color-primary-lightest); }
+    .radio-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--color-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .radio-option.selected .radio-circle { border-color: var(--color-primary); }
+    .radio-option.selected .radio-circle::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary); }
+    .radio-label { font-size: 14px; font-weight: 500; color: var(--color-dark-text); }
+    .radio-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+
+    /* ── Spinner ── */
+    .spinner { width: 48px; height: 48px; border: 4px solid var(--color-hover-bg); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto var(--space-2); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error row in table ── */
+    .data-table tr.row-error { background: var(--color-error-bg); }
+    .data-table tr.row-error td { color: var(--color-error); }
+    .cell-error { color: var(--color-error); font-weight: 500; }
+    .cell-valid { color: var(--color-dark-text); }
+    .error-cell-icon { display: inline-flex; align-items: center; gap: 4px; }
+    .error-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-error); flex-shrink: 0; }
+
+    /* ── Progress bar ── */
+    .progress-bar { height: 6px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+    .progress-bar-fill.success { background: var(--color-success); }
+    .progress-bar-fill.primary { background: var(--color-primary); }
+
+    /* ── Import method cards layout ── */
+    .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); max-width: 700px; }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe — Bulk Import Students — Complete Flow</div>
+<div style="height: 32px;"></div>
+
+<div class="flow">
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 1 — CHOOSE IMPORT METHOD                                  ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">1</div> Choose Import Method</div>
+<div class="flow-step-desc">The administrator navigates to Students &rsaquo; Import and selects how they want to import new students. Two methods are available: upload a CSV file or copy from another course.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; Import</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">How would you like to import new students?</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="wizard-layout" style="border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface);overflow:hidden;">
+      <!-- Sidebar stepper -->
+      <div class="wizard-sidebar">
+        <div class="wizard-step active">
+          <div class="wizard-step-num">1</div>
+          <span>File Upload</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">2</div>
+          <span>Data Mapping</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">3</div>
+          <span>Preview &amp; Import</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">4</div>
+          <span>Summary</span>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div style="display:flex;flex-direction:column;">
+        <div class="wizard-main" style="flex:1;">
+          <div style="text-align:center;padding:var(--space-6) 0;">
+            <div style="font-size:48px;color:var(--color-text-disabled);margin-bottom:var(--space-2);">☁️</div>
+            <div style="font-size:18px;font-weight:600;color:var(--color-dark-text);margin-bottom:var(--space-1);">Import Students</div>
+            <div style="font-size:13px;color:var(--color-text-secondary);max-width:400px;margin:0 auto var(--space-4);">
+              Select an import method below to get started. You can upload a CSV file or copy students from an existing course.
+            </div>
+
+            <div class="method-grid" style="margin:0 auto;">
+              <div class="radio-option selected">
+                <div class="radio-circle"></div>
+                <div>
+                  <div class="radio-label">CSV File</div>
+                  <div class="radio-desc">Upload a CSV file with student records. Map columns to fields in the next step.</div>
+                </div>
+              </div>
+              <div class="radio-option">
+                <div class="radio-circle"></div>
+                <div>
+                  <div class="radio-label">Copy from Another Course</div>
+                  <div class="radio-desc">Import students already enrolled in another course. No file upload needed.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-success">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 2 — CSV FILE UPLOAD                                       ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">2</div> Upload CSV File</div>
+<div class="flow-step-desc">The administrator drags or browses for a CSV file. The dropzone accepts .csv files only. After selecting, the system begins parsing the file.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; CSV Upload</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Upload your CSV file containing student records</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="wizard-layout" style="border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface);overflow:hidden;">
+      <div class="wizard-sidebar">
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>File Upload</span>
+        </div>
+        <div class="wizard-step active">
+          <div class="wizard-step-num">2</div>
+          <span>Data Mapping</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">3</div>
+          <span>Preview &amp; Import</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">4</div>
+          <span>Summary</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <div class="wizard-main" style="flex:1;">
+          <div class="dropzone">
+            <div class="dropzone-icon">📄</div>
+            <div class="dropzone-title">Drag &amp; drop your CSV file here</div>
+            <div class="dropzone-desc">or <span class="dropzone-link">browse files</span> to upload</div>
+            <div style="font-size:12px;color:var(--color-text-disabled);margin-top:var(--space-1);">Accepted format: .csv &middot; Max size: 5MB</div>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <button class="btn btn-outlined">&larr; Back</button>
+          <button class="btn btn-disabled" style="pointer-events:none;">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 3 — PROCESSING FILE                                       ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">3</div> Processing File</div>
+<div class="flow-step-desc">Once a file is selected, the system parses it and validates the structure. A loading spinner is displayed while processing.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; CSV Upload</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Processing your file…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="wizard-layout" style="border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface);overflow:hidden;">
+      <div class="wizard-sidebar">
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>File Upload</span>
+        </div>
+        <div class="wizard-step active">
+          <div class="wizard-step-num">2</div>
+          <span>Data Mapping</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">3</div>
+          <span>Preview &amp; Import</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">4</div>
+          <span>Summary</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <div class="wizard-main" style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;">
+            <div class="spinner"></div>
+            <div style="font-size:15px;font-weight:600;color:var(--color-dark-text);margin-bottom:var(--space-0-5);">Processing file…</div>
+            <div style="font-size:13px;color:var(--color-text-secondary);">Validating structure and reading rows</div>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <button class="btn btn-ghost">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 3a — FILE ERROR (modal dialog)                            ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">3a</div> File Error</div>
+<div class="flow-step-desc">If the file is invalid (wrong format, empty, corrupted), a modal dialog is shown with the error details. The user can dismiss and try again.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; CSV Upload</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Upload your CSV file containing student records</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Dimmed background with dialog overlay -->
+    <div class="dialog-overlay" style="min-height:400px;border-radius:var(--radius-lg);">
+      <div class="dialog" style="max-width:480px;">
+        <div class="dialog-header">
+          <div class="dialog-title" style="display:flex;align-items:center;gap:var(--space-1);">
+            <span style="color:var(--color-error);">⚠</span> An error with the CSV file
+          </div>
+        </div>
+        <div class="dialog-body">
+          <p style="font-size:13px;color:var(--color-text-primary);margin-bottom:var(--space-2);">
+            The file you uploaded could not be processed. Please check the following:
+          </p>
+          <ul style="font-size:13px;color:var(--color-text-secondary);padding-left:var(--space-3);list-style:disc;">
+            <li style="margin-bottom:var(--space-0-5);">File must be in .csv format</li>
+            <li style="margin-bottom:var(--space-0-5);">File must not exceed 5MB</li>
+            <li>File must contain at least one row of data with headers</li>
+          </ul>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn btn-success">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 4 — DATA PREVIEW & VALIDATION                            ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">4</div> Data Preview &amp; Validation</div>
+<div class="flow-step-desc">The parsed CSV data is displayed in a table. Rows with validation errors are highlighted in red. The administrator reviews the data and can proceed to import or go back to fix issues.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; Preview</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Review the data below before importing. Rows with errors must be corrected or will be skipped.</div>
+      </div>
+      <div class="btn-group">
+        <span class="badge badge-error">2 Errors</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="wizard-layout" style="border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface);overflow:hidden;">
+      <div class="wizard-sidebar">
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>File Upload</span>
+        </div>
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>Data Mapping</span>
+        </div>
+        <div class="wizard-step active">
+          <div class="wizard-step-num">3</div>
+          <span>Preview &amp; Import</span>
+        </div>
+        <div class="wizard-step disabled">
+          <div class="wizard-step-num">4</div>
+          <span>Summary</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <div class="wizard-main" style="flex:1;overflow-x:auto;">
+          <!-- Stat summary -->
+          <div class="stat-bar" style="margin-bottom:var(--space-2);">
+            <div class="stat-item"><span class="stat-count text-info">8</span> Total Rows</div>
+            <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+            <div class="stat-item"><span class="stat-count text-success">6</span> Valid</div>
+            <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+            <div class="stat-item"><span class="stat-count text-error">2</span> Errors</div>
+          </div>
+
+          <!-- Data table -->
+          <div class="card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:32px;">#</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Date of Birth</th>
+                  <th>Course</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-muted">1</td>
+                  <td class="cell-valid">Emma</td>
+                  <td class="cell-valid">Johnson</td>
+                  <td class="cell-valid">emma.johnson@email.com</td>
+                  <td class="cell-valid">+1 555-0101</td>
+                  <td class="cell-valid">Mar 15, 2012</td>
+                  <td class="cell-valid">Arabic 101</td>
+                  <td><span class="badge badge-success">Valid</span></td>
+                </tr>
+                <tr>
+                  <td class="text-muted">2</td>
+                  <td class="cell-valid">Liam</td>
+                  <td class="cell-valid">Park</td>
+                  <td class="cell-valid">liam.park@email.com</td>
+                  <td class="cell-valid">+1 555-0102</td>
+                  <td class="cell-valid">Jun 22, 2013</td>
+                  <td class="cell-valid">Arabic 101</td>
+                  <td><span class="badge badge-success">Valid</span></td>
+                </tr>
+                <tr class="row-error">
+                  <td class="text-muted">3</td>
+                  <td class="cell-valid">Sophia</td>
+                  <td class="cell-valid">Chen</td>
+                  <td class="cell-error"><span class="error-cell-icon"><span class="error-dot"></span> invalid-email</span></td>
+                  <td class="cell-valid">+1 555-0103</td>
+                  <td class="cell-valid">Sep 8, 2011</td>
+                  <td class="cell-valid">Arabic 201</td>
+                  <td><span class="badge badge-error">Error</span></td>
+                </tr>
+                <tr>
+                  <td class="text-muted">4</td>
+                  <td class="cell-valid">Noah</td>
+                  <td class="cell-valid">Williams</td>
+                  <td class="cell-valid">noah.williams@email.com</td>
+                  <td class="cell-valid">+1 555-0104</td>
+                  <td class="cell-valid">Jan 30, 2012</td>
+                  <td class="cell-valid">Quran Studies</td>
+                  <td><span class="badge badge-success">Valid</span></td>
+                </tr>
+                <tr>
+                  <td class="text-muted">5</td>
+                  <td class="cell-valid">Olivia</td>
+                  <td class="cell-valid">Davis</td>
+                  <td class="cell-valid">olivia.davis@email.com</td>
+                  <td class="cell-valid">+1 555-0105</td>
+                  <td class="cell-valid">Apr 12, 2013</td>
+                  <td class="cell-valid">Arabic 101</td>
+                  <td><span class="badge badge-success">Valid</span></td>
+                </tr>
+                <tr class="row-error">
+                  <td class="text-muted">6</td>
+                  <td class="cell-error"><span class="error-cell-icon"><span class="error-dot"></span> (empty)</span></td>
+                  <td class="cell-valid">Martinez</td>
+                  <td class="cell-valid">a.martinez@email.com</td>
+                  <td class="cell-valid">+1 555-0106</td>
+                  <td class="cell-valid">Jul 19, 2012</td>
+                  <td class="cell-valid">Arabic 101</td>
+                  <td><span class="badge badge-error">Error</span></td>
+                </tr>
+                <tr>
+                  <td class="text-muted">7</td>
+                  <td class="cell-valid">Isabella</td>
+                  <td class="cell-valid">Kim</td>
+                  <td class="cell-valid">isabella.kim@email.com</td>
+                  <td class="cell-valid">+1 555-0107</td>
+                  <td class="cell-valid">Nov 3, 2011</td>
+                  <td class="cell-valid">Quran Studies</td>
+                  <td><span class="badge badge-success">Valid</span></td>
+                </tr>
+                <tr>
+                  <td class="text-muted">8</td>
+                  <td class="cell-valid">Ethan</td>
+                  <td class="cell-valid">Brown</td>
+                  <td class="cell-valid">ethan.brown@email.com</td>
+                  <td class="cell-valid">+1 555-0108</td>
+                  <td class="cell-valid">Feb 28, 2013</td>
+                  <td class="cell-valid">Arabic 201</td>
+                  <td><span class="badge badge-success">Valid</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="alert alert-warning mt-2">
+            <span>⚠</span>
+            <span>2 rows have errors and will be skipped during import. Fix the CSV and re-upload, or proceed to import only valid rows.</span>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <button class="btn btn-outlined">&larr; Back</button>
+          <button class="btn btn-success">Import 6 Students &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 4a — COPY FROM ANOTHER COURSE (alternative path)          ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">4a</div> Copy from Another Course (Alternative Path)</div>
+<div class="flow-step-desc">If the administrator chose "Copy from Another Course" in Step 1, a dialog appears to select the source course. Students from that course will be imported.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; Copy from Course</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Copy students from an existing course</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="dialog-overlay" style="min-height:400px;border-radius:var(--radius-lg);">
+      <div class="dialog" style="max-width:520px;">
+        <div class="dialog-header">
+          <div class="dialog-title">Copy Students from Another Course</div>
+        </div>
+        <div class="dialog-body">
+          <div style="margin-bottom:var(--space-2);">
+            <div class="input-label">Source Course</div>
+            <select class="input" style="cursor:pointer;">
+              <option>Select a course…</option>
+              <option>Arabic 101 — Fall 2025</option>
+              <option>Arabic 201 — Fall 2025</option>
+              <option>Quran Studies — Fall 2025</option>
+            </select>
+          </div>
+
+          <div class="alert alert-info">
+            <span>ℹ</span>
+            <span>All active students from the selected course will be copied. Students already enrolled in the current course will be skipped.</span>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-success">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 5 — PROCESSING IMPORT                                     ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">5</div> Processing Students</div>
+<div class="flow-step-desc">After confirming import, the system processes each student record. A loading spinner is displayed while the import runs.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; Processing</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Importing students…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="wizard-layout" style="border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface);overflow:hidden;">
+      <div class="wizard-sidebar">
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>File Upload</span>
+        </div>
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>Data Mapping</span>
+        </div>
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>Preview &amp; Import</span>
+        </div>
+        <div class="wizard-step active">
+          <div class="wizard-step-num">4</div>
+          <span>Summary</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <div class="wizard-main" style="flex:1;display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;">
+            <div class="spinner"></div>
+            <div style="font-size:15px;font-weight:600;color:var(--color-dark-text);margin-bottom:var(--space-0-5);">Processing students…</div>
+            <div style="font-size:13px;color:var(--color-text-secondary);">Importing 6 of 6 valid records</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 6 — IMPORT RESULTS / SUMMARY                             ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">6</div> Import Results</div>
+<div class="flow-step-desc">The import is complete. The administrator sees a summary of successes and failures, plus a detailed table of each imported student with their status.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Import</a> &rsaquo; Results</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import</div>
+        <div class="page-subtitle">Import completed &middot; 6 students processed</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined btn-sm">Download Report</button>
+        <button class="btn btn-success btn-sm">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="wizard-layout" style="border:1px solid var(--color-divider);border-radius:var(--radius-lg);background:var(--color-surface);overflow:hidden;">
+      <div class="wizard-sidebar">
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>File Upload</span>
+        </div>
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>Data Mapping</span>
+        </div>
+        <div class="wizard-step completed">
+          <div class="wizard-step-num">✓</div>
+          <span>Preview &amp; Import</span>
+        </div>
+        <div class="wizard-step active">
+          <div class="wizard-step-num">4</div>
+          <span>Summary</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;">
+        <div class="wizard-main" style="flex:1;overflow-x:auto;">
+          <!-- Success banner -->
+          <div class="alert alert-success mb-3">
+            <span>✓</span>
+            <span><strong>Import complete.</strong> 5 students were successfully imported. 1 student was skipped due to a duplicate email.</span>
+          </div>
+
+          <!-- Result stats -->
+          <div class="stat-bar" style="margin-bottom:var(--space-2);">
+            <div class="stat-item"><span class="stat-count text-info">6</span> Processed</div>
+            <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+            <div class="stat-item"><span class="stat-count text-success">5</span> Imported</div>
+            <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+            <div class="stat-item"><span class="stat-count text-warning">1</span> Skipped</div>
+            <div style="width:1px;height:24px;background:var(--color-divider);"></div>
+            <div class="stat-item"><span class="stat-count text-error">0</span> Failed</div>
+          </div>
+
+          <!-- Results table -->
+          <div class="card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:32px;">#</th>
+                  <th>Student</th>
+                  <th>Email</th>
+                  <th>Course</th>
+                  <th>Import Status</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-muted">1</td>
+                  <td class="text-bold">Emma Johnson</td>
+                  <td>emma.johnson@email.com</td>
+                  <td>Arabic 101</td>
+                  <td><span class="badge badge-success">Imported</span></td>
+                  <td class="text-muted">New student created</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">2</td>
+                  <td class="text-bold">Liam Park</td>
+                  <td>liam.park@email.com</td>
+                  <td>Arabic 101</td>
+                  <td><span class="badge badge-success">Imported</span></td>
+                  <td class="text-muted">New student created</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">3</td>
+                  <td class="text-bold">Noah Williams</td>
+                  <td>noah.williams@email.com</td>
+                  <td>Quran Studies</td>
+                  <td><span class="badge badge-success">Imported</span></td>
+                  <td class="text-muted">New student created</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">4</td>
+                  <td class="text-bold">Olivia Davis</td>
+                  <td>olivia.davis@email.com</td>
+                  <td>Arabic 101</td>
+                  <td><span class="badge badge-warning">Skipped</span></td>
+                  <td style="color:var(--color-warning);font-size:12px;">Duplicate email — student already enrolled</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">5</td>
+                  <td class="text-bold">Isabella Kim</td>
+                  <td>isabella.kim@email.com</td>
+                  <td>Quran Studies</td>
+                  <td><span class="badge badge-success">Imported</span></td>
+                  <td class="text-muted">New student created</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">6</td>
+                  <td class="text-bold">Ethan Brown</td>
+                  <td>ethan.brown@email.com</td>
+                  <td>Arabic 201</td>
+                  <td><span class="badge badge-success">Imported</span></td>
+                  <td class="text-muted">New student created</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <button class="btn btn-outlined">Import More Students</button>
+          <button class="btn btn-success">Done &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.flow -->
+</body>
+</html>

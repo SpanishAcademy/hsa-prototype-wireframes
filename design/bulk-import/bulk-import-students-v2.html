@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Import Students — V1 Stepper / Wizard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --font-family: 'Open Sans', sans-serif;
+      --color-primary: #1A7ABC;
+      --color-primary-dark: #135B8D;
+      --color-primary-lightest: #F2F9FD;
+      --color-text-primary: #424B52;
+      --color-text-secondary: #63717B;
+      --color-text-disabled: #8896A0;
+      --color-border: #B8C0C6;
+      --color-divider: #C9D0D4;
+      --color-hover-bg: #EDEFF1;
+      --color-page-bg: #F4F5F6;
+      --color-surface: #FFFFFF;
+      --color-dark-text: #323232;
+      --color-success: #2E7D32;
+      --color-success-bg: #E8F5E9;
+      --color-warning: #E65100;
+      --color-warning-bg: #FFF3E0;
+      --color-error: #C62828;
+      --color-error-bg: #FFEBEE;
+      --color-info: #1565C0;
+      --color-info-bg: #E3F2FD;
+      --color-purple: #6A1B9A;
+      --color-purple-bg: #F3E5F5;
+      --space-0-5: 4px; --space-1: 8px; --space-1-5: 12px; --space-2: 16px;
+      --space-3: 24px; --space-4: 32px; --space-5: 40px; --space-6: 48px; --space-8: 64px;
+      --radius: 4px; --radius-lg: 8px;
+      --elevation-1: 0px 2px 1px -1px rgba(0,0,0,0.12), 0px 1px 1px 0px rgba(0,0,0,0.08), 0px 1px 3px 0px rgba(0,0,0,0.06);
+      --elevation-2: 0px 3px 5px -1px rgba(0,0,0,0.12), 0px 5px 8px 0px rgba(0,0,0,0.08), 0px 1px 14px 0px rgba(0,0,0,0.06);
+    }
+    body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color: var(--color-text-primary); background: #E8EAED; }
+
+    /* ── Flow wrapper ── */
+    .flow { max-width: 1400px; margin: 0 auto; padding: var(--space-4); }
+    .wireframe-banner { background: var(--color-dark-text); color: white; padding: var(--space-1) var(--space-2); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .flow-step-label { background: var(--color-primary); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1-5); margin-top: var(--space-6); }
+    .flow-step-label:first-of-type { margin-top: var(--space-3); }
+    .flow-step-label .step-num { background: rgba(255,255,255,0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .flow-step-desc { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.2); border-top: none; padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-primary-dark); line-height: 1.5; }
+
+    /* ── Screen frame ── */
+    .screen { background: var(--color-page-bg); border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; margin-bottom: var(--space-2); box-shadow: var(--elevation-2); }
+
+    /* ── Admin shell ── */
+    .admin-topbar { background: #263238; color: white; padding: var(--space-1-5) var(--space-3); display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .admin-topbar-left { display: flex; align-items: center; gap: var(--space-3); }
+    .admin-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+    .admin-nav { display: flex; gap: var(--space-2); }
+    .admin-nav-item { color: rgba(255,255,255,0.6); padding: var(--space-0-5) var(--space-1); border-radius: var(--radius); font-size: 13px; cursor: default; }
+    .admin-nav-item.active { color: white; background: rgba(255,255,255,0.12); font-weight: 500; }
+    .admin-topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+    .admin-avatar { width: 28px; height: 28px; border-radius: 50%; background: #546E7A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+    .admin-user-name { font-size: 12px; color: rgba(255,255,255,0.8); }
+
+    /* ── Page header ── */
+    .page-header { background: var(--color-surface); border-bottom: 1px solid var(--color-divider); padding: var(--space-3) var(--space-4); }
+    .page-header-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+    .page-title { font-size: 22px; font-weight: 600; color: var(--color-dark-text); }
+    .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: var(--space-0-5); }
+    .breadcrumb { font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1); }
+    .breadcrumb a { color: var(--color-primary); text-decoration: none; }
+
+    /* ── Cards ── */
+    .card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); }
+    .card-header { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
+    .card-body { padding: var(--space-3); }
+
+    /* ── Content area ── */
+    .content { padding: var(--space-3) var(--space-4); }
+
+    /* ── Buttons ── */
+    .btn { font-family: var(--font-family); font-weight: 500; font-size: 13px; line-height: 1.5; letter-spacing: 0.03em; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 6px 16px; transition: background 0.15s; text-decoration: none; border: none; white-space: nowrap; }
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+    .btn-primary { background: var(--color-primary); color: white; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-outlined { background: transparent; color: var(--color-primary); border: 1px solid rgba(26,122,188,0.5); }
+    .btn-outlined:hover { background: var(--color-primary-lightest); }
+    .btn-ghost { background: transparent; color: var(--color-text-secondary); border: 1px solid transparent; }
+    .btn-ghost:hover { background: var(--color-hover-bg); }
+    .btn-success { background: var(--color-success); color: white; }
+    .btn-warning { background: var(--color-warning); color: white; }
+    .btn-error { background: var(--color-error); color: white; }
+    .btn-disabled { background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed; border: 1px solid var(--color-divider); }
+    .btn-group { display: flex; gap: var(--space-1); }
+
+    /* ── Badges / Tags ── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+    .badge-error { background: var(--color-error-bg); color: var(--color-error); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-info { background: var(--color-info-bg); color: var(--color-info); }
+    .badge-neutral { background: var(--color-hover-bg); color: var(--color-text-secondary); }
+
+    /* ── Stat summary bar ── */
+    .stat-bar { display: flex; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-3); }
+    .stat-item { display: flex; align-items: center; gap: var(--space-1); font-size: 13px; }
+    .stat-count { font-weight: 700; font-size: 16px; }
+    .stat-count.text-error { color: var(--color-error); }
+    .stat-count.text-warning { color: var(--color-warning); }
+    .stat-count.text-info { color: var(--color-info); }
+    .stat-count.text-success { color: var(--color-success); }
+
+    /* ── Warning / Info / Success boxes ── */
+    .warning-box { background: var(--color-warning-bg); border: 1px solid rgba(230,81,0,0.3); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .warning-text { font-size: 13px; color: var(--color-warning); line-height: 1.5; }
+    .info-box { background: var(--color-info-bg); border: 1px solid rgba(21,101,192,0.2); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .info-text { font-size: 13px; color: var(--color-info); line-height: 1.5; }
+    .success-box { background: var(--color-success-bg); border: 1px solid rgba(46,125,50,0.2); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .success-text { font-size: 13px; color: var(--color-success); line-height: 1.5; }
+    .error-box { background: var(--color-error-bg); border: 1px solid rgba(198,40,40,0.3); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
+    .error-text { font-size: 13px; color: var(--color-error); line-height: 1.5; }
+
+    /* ── Misc utility ── */
+    .text-muted { color: var(--color-text-secondary); }
+    .text-bold { font-weight: 600; }
+    .text-sm { font-size: 12px; }
+    .text-xs { font-size: 11px; }
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-1 { gap: var(--space-1); }
+    .gap-2 { gap: var(--space-2); }
+    .gap-3 { gap: var(--space-3); }
+    .mt-1 { margin-top: var(--space-1); }
+    .mt-2 { margin-top: var(--space-2); }
+    .mt-3 { margin-top: var(--space-3); }
+    .mb-2 { margin-bottom: var(--space-2); }
+    .mb-3 { margin-bottom: var(--space-3); }
+    .ml-auto { margin-left: auto; }
+
+    /* ══════════════════════════════════════════
+       IMPORT-SPECIFIC STYLES
+    ══════════════════════════════════════════ */
+
+    /* ── Stepper ── */
+    .stepper { display: flex; align-items: center; justify-content: center; padding: var(--space-3) var(--space-4); background: var(--color-surface); border-bottom: 1px solid var(--color-divider); }
+    .stepper-step { display: flex; align-items: center; gap: var(--space-1); }
+    .stepper-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border: 2px solid var(--color-border); color: var(--color-text-disabled); background: var(--color-surface); }
+    .stepper-circle.active { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+    .stepper-circle.completed { background: var(--color-success); border-color: var(--color-success); color: white; }
+    .stepper-label { font-size: 12px; font-weight: 500; color: var(--color-text-disabled); }
+    .stepper-label.active { color: var(--color-primary); font-weight: 600; }
+    .stepper-label.completed { color: var(--color-success); }
+    .stepper-connector { width: 60px; height: 2px; background: var(--color-divider); margin: 0 var(--space-1-5); }
+    .stepper-connector.completed { background: var(--color-success); }
+
+    /* ── Upload zone ── */
+    .upload-zone { border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: var(--space-8) var(--space-4); text-align: center; background: var(--color-page-bg); cursor: pointer; transition: border-color 0.15s; }
+    .upload-zone:hover { border-color: var(--color-primary); }
+    .upload-icon { font-size: 48px; color: var(--color-text-disabled); margin-bottom: var(--space-2); }
+    .upload-title { font-size: 16px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); }
+    .upload-hint { font-size: 13px; color: var(--color-text-secondary); }
+
+    /* ── Or divider ── */
+    .or-divider { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; }
+    .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-divider); }
+    .or-divider span { font-size: 12px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; }
+
+    /* ── Field mapping row ── */
+    .mapping-row { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1-5) 0; border-bottom: 1px solid var(--color-divider); }
+    .mapping-row:last-child { border-bottom: none; }
+    .mapping-csv { flex: 1; font-size: 13px; font-weight: 500; color: var(--color-dark-text); padding: var(--space-1) var(--space-2); background: var(--color-page-bg); border-radius: var(--radius); }
+    .mapping-arrow { color: var(--color-text-disabled); font-size: 16px; flex-shrink: 0; }
+    .mapping-select { flex: 1; font-family: var(--font-family); font-size: 13px; padding: 6px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; color: var(--color-text-primary); }
+    .mapping-select.matched { border-color: var(--color-success); background: var(--color-success-bg); }
+    .mapping-select.unmatched { border-color: var(--color-warning); background: var(--color-warning-bg); }
+
+    /* ── Processing spinner ── */
+    .processing-area { text-align: center; padding: var(--space-8) var(--space-4); }
+    .spinner { width: 48px; height: 48px; border: 4px solid var(--color-divider); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto var(--space-3); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Results layout with sidebar ── */
+    .results-layout { display: grid; grid-template-columns: 1fr 300px; gap: var(--space-3); }
+    .results-main { min-width: 0; }
+    .results-sidebar { position: sticky; top: 80px; align-self: start; }
+
+    /* ── Student card ── */
+    .student-card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); margin-bottom: var(--space-2); overflow: hidden; }
+    .student-card.card-success { border-left: 4px solid var(--color-success); }
+    .student-card.card-error { border-left: 4px solid var(--color-error); }
+    .student-card.card-warning { border-left: 4px solid var(--color-warning); }
+    .student-card-header { padding: var(--space-2) var(--space-3); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-divider); }
+    .student-name { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
+    .student-card-body { padding: var(--space-2) var(--space-3); }
+    .student-fields { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1) var(--space-3); margin-bottom: var(--space-2); }
+    .field-group { }
+    .field-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-secondary); }
+    .field-value { font-size: 13px; color: var(--color-dark-text); }
+    .parent-section { background: var(--color-page-bg); border-radius: var(--radius); padding: var(--space-2); margin-top: var(--space-1); }
+    .parent-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); margin-bottom: var(--space-1); }
+
+    /* ── Sidebar stats ── */
+    .sidebar-card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); overflow: hidden; margin-bottom: var(--space-2); }
+    .sidebar-card-header { padding: var(--space-2) var(--space-3); background: #FAFAFA; border-bottom: 1px solid var(--color-divider); font-size: 13px; font-weight: 600; color: var(--color-dark-text); }
+    .sidebar-card-body { padding: var(--space-2) var(--space-3); }
+    .sidebar-stat { display: flex; justify-content: space-between; align-items: center; padding: var(--space-1) 0; border-bottom: 1px solid var(--color-divider); }
+    .sidebar-stat:last-child { border-bottom: none; }
+    .sidebar-stat-label { font-size: 13px; color: var(--color-text-secondary); }
+    .sidebar-stat-value { font-size: 18px; font-weight: 700; }
+
+    /* ── Table (for mapping preview) ── */
+    .preview-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .preview-table th { text-align: left; padding: var(--space-1) var(--space-1-5); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); border-bottom: 2px solid var(--color-divider); background: var(--color-surface); }
+    .preview-table td { padding: var(--space-1) var(--space-1-5); border-bottom: 1px solid var(--color-divider); vertical-align: middle; }
+    .preview-table tr { background: white; }
+    .preview-table tr:hover { background: var(--color-primary-lightest); }
+
+    /* ── Error dialog ── */
+    .dialog-overlay { background: rgba(0,0,0,0.35); padding: var(--space-8) var(--space-4); display: flex; align-items: flex-start; justify-content: center; }
+    .dialog { background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--elevation-2); max-width: 520px; width: 100%; }
+    .dialog-header { padding: var(--space-3); border-bottom: 1px solid var(--color-divider); }
+    .dialog-title { font-size: 18px; font-weight: 600; color: var(--color-dark-text); }
+    .dialog-body { padding: var(--space-3); }
+    .dialog-footer { padding: var(--space-2) var(--space-3); border-top: 1px solid var(--color-divider); display: flex; justify-content: flex-end; gap: var(--space-1); }
+
+    /* ── Copy course select ── */
+    .course-select { font-family: var(--font-family); font-size: 14px; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; color: var(--color-text-primary); width: 100%; }
+
+    /* ── Tab bar ── */
+    .tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--color-divider); margin-bottom: var(--space-3); }
+    .tab-item { padding: var(--space-1-5) var(--space-3); font-size: 13px; font-weight: 500; color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .tab-item.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe — Bulk Import Students — V1 — Stepper / Wizard Approach</div>
+<div style="height: 32px;"></div>
+
+<div class="flow">
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 1 — UPLOAD FILE                                          ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">1</div> Upload — Choose Import Source</div>
+<div class="flow-step-desc">The administrator opens the Import Students wizard. They can either upload a CSV file or copy students from another course. A four-step stepper shows progress across the entire flow.</div>
+
+<div class="screen">
+  <!-- Admin Top Bar -->
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Students</div>
+        <div class="page-subtitle">Add students to Piano Prep — Grade 3 via CSV upload or from another course</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper">
+    <div class="stepper-step">
+      <div class="stepper-circle active">1</div>
+      <div class="stepper-label active">Upload</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">2</div>
+      <div class="stepper-label">Map Fields</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">3</div>
+      <div class="stepper-label">Review &amp; Import</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">4</div>
+      <div class="stepper-label">Results</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Tab bar for upload method -->
+    <div class="tab-bar">
+      <div class="tab-item active">Upload CSV File</div>
+      <div class="tab-item">Copy from Another Course</div>
+    </div>
+
+    <div style="max-width: 640px; margin: 0 auto;">
+      <div class="upload-zone">
+        <div class="upload-icon">&#128196;</div>
+        <div class="upload-title">Drag &amp; drop your CSV file here</div>
+        <div class="upload-hint">or <a href="#" style="color: var(--color-primary); font-weight: 500;">browse files</a> to select from your computer</div>
+        <div class="upload-hint mt-2" style="font-size: 12px; color: var(--color-text-disabled);">Accepted format: .csv — Maximum 500 records per upload</div>
+      </div>
+
+      <div class="info-box mt-3">
+        <span style="font-size: 16px; flex-shrink: 0;">ℹ</span>
+        <div class="info-text">
+          <strong>CSV Column Requirements:</strong> Your file should include columns for student first name, last name, email, grade/year, and optionally parent/guardian name, parent email, and parent phone.
+          <a href="#" style="color: var(--color-info); font-weight: 500;">Download template CSV</a>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: var(--space-3);">
+        <button class="btn btn-disabled">Next: Map Fields →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Alt: Copy from another course (shown as tab) ── -->
+<div class="flow-step-label"><div class="step-num">1b</div> Upload — Copy From Another Course (Alternate Tab)</div>
+<div class="flow-step-desc">If the user selects the "Copy from Another Course" tab, they see a course picker dropdown instead of the file upload zone.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Students</div>
+        <div class="page-subtitle">Add students to Piano Prep — Grade 3 via CSV upload or from another course</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="stepper-step">
+      <div class="stepper-circle active">1</div>
+      <div class="stepper-label active">Upload</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">2</div>
+      <div class="stepper-label">Map Fields</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">3</div>
+      <div class="stepper-label">Review &amp; Import</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">4</div>
+      <div class="stepper-label">Results</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="tab-bar">
+      <div class="tab-item">Upload CSV File</div>
+      <div class="tab-item active">Copy from Another Course</div>
+    </div>
+
+    <div style="max-width: 640px; margin: 0 auto;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Select Source Course</div>
+        </div>
+        <div class="card-body">
+          <label style="font-size: 13px; font-weight: 500; color: var(--color-dark-text); display: block; margin-bottom: var(--space-1);">Copy students from:</label>
+          <select class="course-select">
+            <option>— Select a course —</option>
+            <option selected>Piano Prep — Grade 2 (24 students)</option>
+            <option>Violin Beginner — Grade 4 (18 students)</option>
+            <option>Music Theory — Grade 5 (31 students)</option>
+          </select>
+          <div style="margin-top: var(--space-2); padding: var(--space-2); background: var(--color-success-bg); border-radius: var(--radius); font-size: 13px; color: var(--color-success);">
+            <strong>24 students</strong> found in Piano Prep — Grade 2. Student and parent records will be copied.
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: var(--space-3); gap: var(--space-1);">
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-primary">Next: Review Records →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 1c — FILE PROCESSING                                     ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">1c</div> Upload — File Processing State</div>
+<div class="flow-step-desc">After a CSV file is selected, the system parses the file. A loading spinner is shown briefly.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Students</div>
+        <div class="page-subtitle">Processing your file…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="stepper-step">
+      <div class="stepper-circle active">1</div>
+      <div class="stepper-label active">Upload</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">2</div>
+      <div class="stepper-label">Map Fields</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">3</div>
+      <div class="stepper-label">Review &amp; Import</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">4</div>
+      <div class="stepper-label">Results</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="processing-area">
+      <div class="spinner"></div>
+      <div style="font-size: 16px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1);">Parsing students_grade3.csv…</div>
+      <div style="font-size: 13px; color: var(--color-text-secondary);">Reading 8 rows and detecting column headers</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── File Error State ── -->
+<div class="flow-step-label"><div class="step-num">1d</div> Upload — File Error State</div>
+<div class="flow-step-desc">If the CSV file has structural problems (wrong format, missing required columns), a file error dialog is shown.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Students</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="dialog-overlay">
+      <div class="dialog">
+        <div class="dialog-header">
+          <div class="dialog-title" style="color: var(--color-error);">&#9888; File Error</div>
+        </div>
+        <div class="dialog-body">
+          <div class="error-box" style="margin-bottom: var(--space-2);">
+            <span style="font-size: 16px; flex-shrink: 0;">&#10060;</span>
+            <div class="error-text">
+              <strong>Unable to parse the uploaded file.</strong><br>
+              The file "roster_export.xlsx" is not a valid CSV file. Please upload a .csv file with comma-separated values.
+            </div>
+          </div>
+          <div style="font-size: 13px; color: var(--color-text-secondary); margin-top: var(--space-2);">
+            <strong>Tips:</strong>
+            <ul style="margin: var(--space-1) 0 0 var(--space-3); font-size: 12px;">
+              <li>Export your spreadsheet as CSV (Comma delimited) format</li>
+              <li>Ensure the first row contains column headers</li>
+              <li>Maximum 500 rows per import</li>
+            </ul>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-primary">Try Another File</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 2 — MAP FIELDS                                           ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">2</div> Map Fields — CSV Column Mapping</div>
+<div class="flow-step-desc">The system auto-detects CSV columns and maps them to student/parent fields. The user can adjust any mapping. A data preview table shows sample rows.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Students</div>
+        <div class="page-subtitle">Map your CSV columns to student and parent fields</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="stepper-step">
+      <div class="stepper-circle completed">&#10003;</div>
+      <div class="stepper-label completed">Upload</div>
+    </div>
+    <div class="stepper-connector completed"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle active">2</div>
+      <div class="stepper-label active">Map Fields</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">3</div>
+      <div class="stepper-label">Review &amp; Import</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">4</div>
+      <div class="stepper-label">Results</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="success-box mb-3">
+      <span style="font-size: 16px; flex-shrink: 0;">&#9989;</span>
+      <div class="success-text"><strong>students_grade3.csv</strong> — 8 records detected. 9 columns found. Auto-mapping applied for 7 of 9 columns.</div>
+    </div>
+
+    <!-- Field Mappings -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="card-title">Column Mapping</div>
+        <span class="badge badge-success">7 / 9 auto-mapped</span>
+      </div>
+      <div class="card-body">
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--space-1) var(--space-2); align-items: center; margin-bottom: var(--space-1);">
+          <div class="text-xs text-bold text-muted" style="text-transform: uppercase; letter-spacing: 0.06em;">CSV Column</div>
+          <div></div>
+          <div class="text-xs text-bold text-muted" style="text-transform: uppercase; letter-spacing: 0.06em;">Maps To</div>
+        </div>
+
+        <div class="mapping-row">
+          <div class="mapping-csv">first_name</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Student First Name</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">last_name</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Student Last Name</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">student_email</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Student Email</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">grade</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Grade / Year</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">parent_name</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Parent / Guardian Name</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">parent_email</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Parent Email</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">parent_phone</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select matched"><option selected>Parent Phone</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">instrument</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select unmatched"><option selected>— Select field —</option><option>Custom Field 1</option></select>
+        </div>
+        <div class="mapping-row">
+          <div class="mapping-csv">notes</div>
+          <div class="mapping-arrow">→</div>
+          <select class="mapping-select unmatched"><option selected>— Select field —</option><option>Notes</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Preview -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Data Preview</div>
+        <span class="text-sm text-muted">Showing first 3 of 8 records</span>
+      </div>
+      <div class="card-body" style="padding: 0; overflow-x: auto;">
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Grade</th>
+              <th>Parent Name</th>
+              <th>Parent Email</th>
+              <th>Parent Phone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Emma</td>
+              <td>Whitfield</td>
+              <td>emma.w@school.edu</td>
+              <td>3</td>
+              <td>Sarah Whitfield</td>
+              <td>s.whitfield@email.com</td>
+              <td>+61 400 111 222</td>
+            </tr>
+            <tr>
+              <td>Liam</td>
+              <td>Nakamura</td>
+              <td>liam.n@school.edu</td>
+              <td>3</td>
+              <td>Yuki Nakamura</td>
+              <td>y.nakamura@email.com</td>
+              <td>+61 400 333 444</td>
+            </tr>
+            <tr>
+              <td>Olivia</td>
+              <td>Chen</td>
+              <td>olivia.c@school.edu</td>
+              <td>3</td>
+              <td>Wei Chen</td>
+              <td>w.chen@email.com</td>
+              <td>+61 400 555 666</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-top: var(--space-3);">
+      <button class="btn btn-outlined">← Back to Upload</button>
+      <button class="btn btn-primary">Next: Review &amp; Import →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 3 — REVIEW & IMPORT                                      ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">3</div> Review &amp; Import — Validate Before Committing</div>
+<div class="flow-step-desc">Before importing, the system validates all records and shows them as student cards. Warnings and errors are flagged. The user reviews and clicks "Import".</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Students</div>
+        <div class="page-subtitle">Review 8 records before importing</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined">← Back</button>
+        <button class="btn btn-success">&#10003; Import 6 Valid Records</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="stepper-step">
+      <div class="stepper-circle completed">&#10003;</div>
+      <div class="stepper-label completed">Upload</div>
+    </div>
+    <div class="stepper-connector completed"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle completed">&#10003;</div>
+      <div class="stepper-label completed">Map Fields</div>
+    </div>
+    <div class="stepper-connector completed"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle active">3</div>
+      <div class="stepper-label active">Review &amp; Import</div>
+    </div>
+    <div class="stepper-connector"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle">4</div>
+      <div class="stepper-label">Results</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Validation summary -->
+    <div class="stat-bar">
+      <div class="stat-item"><div class="stat-count">8</div> Total Records</div>
+      <div class="stat-item"><div class="stat-count text-success">6</div> Valid</div>
+      <div class="stat-item"><div class="stat-count text-warning">1</div> Warning</div>
+      <div class="stat-item"><div class="stat-count text-error">1</div> Error</div>
+    </div>
+
+    <div class="warning-box mb-3">
+      <span style="font-size: 16px; flex-shrink: 0;">⚠</span>
+      <div class="warning-text"><strong>1 record has errors</strong> and will be skipped during import. 1 record has warnings — it will be imported but may need manual review.</div>
+    </div>
+
+    <!-- Student cards -->
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Emma Whitfield</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 2</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">emma.w@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Sarah Whitfield</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">s.whitfield@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 111 222</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Liam Nakamura</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 3</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">liam.n@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Yuki Nakamura</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">y.nakamura@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 333 444</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Olivia Chen</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 4</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">olivia.c@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Wei Chen</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">w.chen@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 555 666</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-warning">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Noah Patel</div>
+          <span class="badge badge-warning">⚠ Warning</span>
+        </div>
+        <span class="text-sm text-muted">Row 5</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">noah.p@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Priya Patel</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value" style="color: var(--color-warning); font-weight: 500;">— missing —</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 777 888</div></div>
+          </div>
+        </div>
+        <div style="background: var(--color-warning-bg); border-radius: var(--radius); padding: var(--space-1) var(--space-2); margin-top: var(--space-1); font-size: 12px; color: var(--color-warning);">
+          ⚠ Parent email is missing. The record will be imported but parent portal access won't be available until an email is added.
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-error">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">??? ???</div>
+          <span class="badge badge-error">&#10060; Error</span>
+        </div>
+        <span class="text-sm text-muted">Row 6</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value" style="color: var(--color-error);">not-an-email</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value" style="color: var(--color-error);">— missing —</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value" style="color: var(--color-error);">— missing —</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value" style="color: var(--color-error);">— missing —</div></div>
+          </div>
+        </div>
+        <div style="background: var(--color-error-bg); border-radius: var(--radius); padding: var(--space-1) var(--space-2); margin-top: var(--space-1); font-size: 12px; color: var(--color-error);">
+          &#10060; Missing required fields: First Name, Last Name. Invalid email format. This record will be <strong>skipped</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Ava Johnson</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 7</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">ava.j@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Michael Johnson</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">m.johnson@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 999 000</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Ethan Kim</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 8</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">ethan.k@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Jisoo Kim</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">j.kim@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 112 334</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Sophia Martinez</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 9</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">sophia.m@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Carlos Martinez</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">c.martinez@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 556 778</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-card card-success">
+      <div class="student-card-header">
+        <div class="flex items-center gap-2">
+          <div class="student-name">Jack O'Brien</div>
+          <span class="badge badge-success">&#10003; Valid</span>
+        </div>
+        <span class="text-sm text-muted">Row 10</span>
+      </div>
+      <div class="student-card-body">
+        <div class="student-fields">
+          <div class="field-group"><div class="field-label">Email</div><div class="field-value">jack.ob@school.edu</div></div>
+          <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+        </div>
+        <div class="parent-section">
+          <div class="parent-section-title">Parent / Guardian</div>
+          <div class="student-fields">
+            <div class="field-group"><div class="field-label">Name</div><div class="field-value">Fiona O'Brien</div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value">f.obrien@email.com</div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 990 112</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  STEP 4 — RESULTS                                              ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div class="flow-step-label"><div class="step-num">4</div> Results — Import Complete</div>
+<div class="flow-step-desc">After the import finishes, the results page shows a sidebar summary panel with import statistics and student cards for each imported record with their status.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Admin</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item active">Students</div>
+        <div class="admin-nav-item">Teachers</div>
+        <div class="admin-nav-item">Scheduling</div>
+        <div class="admin-nav-item">Reports</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Alex Chen</div>
+      <div class="admin-avatar">AC</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Students</a> &rsaquo; <a href="#">Piano Prep — Grade 3</a> &rsaquo; Import Students</div>
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Import Results</div>
+        <div class="page-subtitle">Completed — 7 of 8 records imported successfully</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-outlined">Download Report</button>
+        <button class="btn btn-primary">Done — Go to Student List</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <div class="stepper-step">
+      <div class="stepper-circle completed">&#10003;</div>
+      <div class="stepper-label completed">Upload</div>
+    </div>
+    <div class="stepper-connector completed"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle completed">&#10003;</div>
+      <div class="stepper-label completed">Map Fields</div>
+    </div>
+    <div class="stepper-connector completed"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle completed">&#10003;</div>
+      <div class="stepper-label completed">Review &amp; Import</div>
+    </div>
+    <div class="stepper-connector completed"></div>
+    <div class="stepper-step">
+      <div class="stepper-circle active">4</div>
+      <div class="stepper-label active">Results</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="success-box mb-3">
+      <span style="font-size: 16px; flex-shrink: 0;">&#127881;</span>
+      <div class="success-text"><strong>Import complete!</strong> 7 student records (including parent information) have been added to Piano Prep — Grade 3. 1 record was skipped due to errors.</div>
+    </div>
+
+    <div class="results-layout">
+      <!-- Main: student result cards -->
+      <div class="results-main">
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Emma Whitfield</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">emma.w@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Sarah Whitfield</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">s.whitfield@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 111 222</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Liam Nakamura</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">liam.n@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Yuki Nakamura</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">y.nakamura@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 333 444</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Olivia Chen</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">olivia.c@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Wei Chen</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">w.chen@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 555 666</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-warning">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Noah Patel</div>
+              <span class="badge badge-warning">⚠ Imported with warnings</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">noah.p@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Priya Patel</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value" style="color: var(--color-warning);">— missing —</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 777 888</div></div>
+              </div>
+            </div>
+            <div style="background: var(--color-warning-bg); border-radius: var(--radius); padding: var(--space-1) var(--space-2); margin-top: var(--space-1); font-size: 12px; color: var(--color-warning);">⚠ Parent email missing — portal invite not sent</div>
+          </div>
+        </div>
+
+        <div class="student-card card-error">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Row 6 — Skipped</div>
+              <span class="badge badge-error">&#10060; Failed</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div style="background: var(--color-error-bg); border-radius: var(--radius); padding: var(--space-1) var(--space-2); font-size: 12px; color: var(--color-error);">
+              Missing required fields (first name, last name) and invalid email format. Record was not imported.
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Ava Johnson</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">ava.j@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Michael Johnson</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">m.johnson@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 999 000</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Ethan Kim</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">ethan.k@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Jisoo Kim</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">j.kim@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 112 334</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Sophia Martinez</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">sophia.m@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Carlos Martinez</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">c.martinez@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 556 778</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="student-card card-success">
+          <div class="student-card-header">
+            <div class="flex items-center gap-2">
+              <div class="student-name">Jack O'Brien</div>
+              <span class="badge badge-success">&#10003; Imported</span>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-fields">
+              <div class="field-group"><div class="field-label">Email</div><div class="field-value">jack.ob@school.edu</div></div>
+              <div class="field-group"><div class="field-label">Grade / Year</div><div class="field-value">3</div></div>
+            </div>
+            <div class="parent-section">
+              <div class="parent-section-title">Parent / Guardian</div>
+              <div class="student-fields">
+                <div class="field-group"><div class="field-label">Name</div><div class="field-value">Fiona O'Brien</div></div>
+                <div class="field-group"><div class="field-label">Email</div><div class="field-value">f.obrien@email.com</div></div>
+                <div class="field-group"><div class="field-label">Phone</div><div class="field-value">+61 400 990 112</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar: Import Statistics -->
+      <div class="results-sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">Import Summary</div>
+          <div class="sidebar-card-body">
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-label">Total Records</div>
+              <div class="sidebar-stat-value">8</div>
+            </div>
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-label">Imported</div>
+              <div class="sidebar-stat-value" style="color: var(--color-success);">7</div>
+            </div>
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-label">Warnings</div>
+              <div class="sidebar-stat-value" style="color: var(--color-warning);">1</div>
+            </div>
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-label">Failed / Skipped</div>
+              <div class="sidebar-stat-value" style="color: var(--color-error);">1</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">Details</div>
+          <div class="sidebar-card-body" style="font-size: 13px;">
+            <div style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-divider);">
+              <div class="text-muted text-xs" style="text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Source</div>
+              <div style="font-weight: 500; color: var(--color-dark-text);">students_grade3.csv</div>
+            </div>
+            <div style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-divider);">
+              <div class="text-muted text-xs" style="text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Target Course</div>
+              <div style="font-weight: 500; color: var(--color-dark-text);">Piano Prep — Grade 3</div>
+            </div>
+            <div style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-divider);">
+              <div class="text-muted text-xs" style="text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Imported By</div>
+              <div style="font-weight: 500; color: var(--color-dark-text);">Alex Chen</div>
+            </div>
+            <div style="padding: var(--space-1) 0;">
+              <div class="text-muted text-xs" style="text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em;">Timestamp</div>
+              <div style="font-weight: 500; color: var(--color-dark-text);">6 Apr 2026, 10:42 AM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">Parent Invites</div>
+          <div class="sidebar-card-body" style="font-size: 13px;">
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-label">Invites Sent</div>
+              <div class="sidebar-stat-value" style="color: var(--color-success); font-size: 16px;">6</div>
+            </div>
+            <div class="sidebar-stat">
+              <div class="sidebar-stat-label">Pending (no email)</div>
+              <div class="sidebar-stat-value" style="color: var(--color-warning); font-size: 16px;">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.flow -->
+</body>
+</html>
