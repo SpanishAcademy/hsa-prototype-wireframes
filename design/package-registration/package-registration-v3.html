@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Package Registration — V3 Centered Card Wizard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --font-family: 'Open Sans', sans-serif;
+      --color-primary: #1A7ABC;
+      --color-primary-dark: #135B8D;
+      --color-primary-lightest: #F2F9FD;
+      --color-text-primary: #424B52;
+      --color-text-secondary: #63717B;
+      --color-text-disabled: #8896A0;
+      --color-border: #B8C0C6;
+      --color-divider: #C9D0D4;
+      --color-hover-bg: #EDEFF1;
+      --color-page-bg: #F4F5F6;
+      --color-surface: #FFFFFF;
+      --color-dark-text: #323232;
+      --color-success: #2E7D32;
+      --color-success-bg: #E8F5E9;
+      --color-warning: #E65100;
+      --color-warning-bg: #FFF3E0;
+      --color-error: #C62828;
+      --color-error-bg: #FFEBEE;
+      --color-info: #1565C0;
+      --color-info-bg: #E3F2FD;
+      --color-purple: #6A1B9A;
+      --color-purple-bg: #F3E5F5;
+      --space-0-5: 4px; --space-1: 8px; --space-1-5: 12px; --space-2: 16px;
+      --space-3: 24px; --space-4: 32px; --space-5: 40px; --space-6: 48px; --space-8: 64px;
+      --radius: 4px; --radius-lg: 8px; --radius-xl: 16px;
+      --elevation-1: 0px 2px 1px -1px rgba(0,0,0,0.12), 0px 1px 1px 0px rgba(0,0,0,0.08), 0px 1px 3px 0px rgba(0,0,0,0.06);
+      --elevation-2: 0px 3px 5px -1px rgba(0,0,0,0.12), 0px 5px 8px 0px rgba(0,0,0,0.08), 0px 1px 14px 0px rgba(0,0,0,0.06);
+      --elevation-3: 0px 6px 16px -4px rgba(0,0,0,0.16), 0px 8px 24px 0px rgba(0,0,0,0.10);
+    }
+    body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color: var(--color-text-primary); background: #E8EAED; }
+
+    .flow { max-width: 1400px; margin: 0 auto; padding: var(--space-4); }
+    .wireframe-banner { background: var(--color-dark-text); color: white; padding: var(--space-1) var(--space-2); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .flow-step-label { background: var(--color-primary); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1-5); margin-top: var(--space-6); }
+    .flow-step-label:first-of-type { margin-top: var(--space-3); }
+    .flow-step-label .step-num { background: rgba(255,255,255,0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .flow-step-desc { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.2); border-top: none; padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-primary-dark); line-height: 1.5; }
+
+    .screen { background: var(--color-page-bg); border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; margin-bottom: var(--space-2); box-shadow: var(--elevation-2); }
+
+    /* ── Admin shell ── */
+    .admin-topbar { background: #263238; color: white; padding: var(--space-1-5) var(--space-3); display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .admin-topbar-left { display: flex; align-items: center; gap: var(--space-3); }
+    .admin-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+    .admin-nav { display: flex; gap: var(--space-2); }
+    .admin-nav-item { color: rgba(255,255,255,0.6); padding: var(--space-0-5) var(--space-1); border-radius: var(--radius); font-size: 13px; cursor: default; }
+    .admin-nav-item.active { color: white; background: rgba(255,255,255,0.12); font-weight: 500; }
+    .admin-topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+    .admin-avatar { width: 28px; height: 28px; border-radius: 50%; background: #546E7A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
+    .admin-user-name { font-size: 12px; color: rgba(255,255,255,0.8); }
+
+    /* ── V3 differentiator: centered wizard card ── */
+    .wizard-container { display: flex; justify-content: center; align-items: flex-start; padding: var(--space-5) var(--space-4); min-height: 600px; }
+    .wizard-card { background: var(--color-surface); border-radius: var(--radius-xl); box-shadow: var(--elevation-3); width: 100%; max-width: 780px; overflow: hidden; }
+    .wizard-card-wide { max-width: 920px; }
+    .wizard-card-header { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-divider); }
+    .wizard-card-header .page-title { font-size: 20px; }
+    .wizard-card-body { padding: var(--space-4); }
+    .wizard-card-footer { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--color-divider); display: flex; justify-content: space-between; align-items: center; background: #FAFAFA; }
+
+    .page-title { font-size: 22px; font-weight: 600; color: var(--color-dark-text); }
+    .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: var(--space-0-5); }
+
+    .btn { font-family: var(--font-family); font-weight: 500; font-size: 13px; line-height: 1.5; letter-spacing: 0.03em; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 6px 16px; border: none; white-space: nowrap; text-decoration: none; }
+    .btn-sm { padding: 4px 12px; font-size: 12px; }
+    .btn-lg { padding: 10px 24px; font-size: 15px; border-radius: var(--radius-lg); }
+    .btn-primary { background: var(--color-primary); color: white; }
+    .btn-outlined { background: transparent; color: var(--color-primary); border: 1px solid rgba(26,122,188,0.5); }
+    .btn-ghost { background: transparent; color: var(--color-text-secondary); border: 1px solid transparent; }
+    .btn-success { background: var(--color-success); color: white; }
+
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+    .badge-info { background: var(--color-info-bg); color: var(--color-info); }
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .badge-neutral { background: var(--color-hover-bg); color: var(--color-text-secondary); }
+    .badge-purple { background: var(--color-purple-bg); color: var(--color-purple); }
+
+    .action-link { color: var(--color-primary); font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .action-link:hover { text-decoration: underline; }
+
+    .form-group { margin-bottom: var(--space-3); }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
+    .form-input { width: 100%; font-family: var(--font-family); font-size: 14px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; color: var(--color-text-primary); }
+    .form-input.filled { border-color: var(--color-primary); background: var(--color-primary-lightest); }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2363717B' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+    .summary-list { list-style: none; padding: 0; }
+    .summary-list li { display: flex; justify-content: space-between; padding: var(--space-1-5) 0; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
+    .summary-list li:last-child { border-bottom: none; }
+    .summary-label { color: var(--color-text-secondary); }
+    .summary-value { font-weight: 500; color: var(--color-dark-text); text-align: right; }
+
+    .carousel-dots { display: flex; justify-content: center; gap: var(--space-1); margin-top: var(--space-3); }
+    .carousel-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-divider); }
+    .carousel-dot.active { background: var(--color-primary); }
+
+    /* ── Session chip (V3 uses compact chips) ── */
+    .session-chip { display: flex; align-items: center; justify-content: space-between; padding: var(--space-1-5) var(--space-2); background: white; border: 1px solid var(--color-divider); border-radius: var(--radius-lg); margin-bottom: var(--space-1); }
+    .session-chip:hover { border-color: var(--color-primary); background: var(--color-primary-lightest); }
+    .session-chip-left { display: flex; align-items: center; gap: var(--space-1-5); }
+    .session-chip-icon { width: 28px; height: 28px; border-radius: var(--radius); background: var(--color-hover-bg); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--color-text-secondary); }
+    .session-chip-name { font-size: 13px; font-weight: 500; color: var(--color-dark-text); }
+    .session-chip-meta { font-size: 11px; color: var(--color-text-secondary); }
+    .session-chip-right { display: flex; align-items: center; gap: var(--space-1-5); }
+
+    .thank-you-hero-centered { text-align: center; padding: var(--space-5) var(--space-4); }
+    .thank-you-hero-centered .check-circle { width: 72px; height: 72px; border-radius: 50%; background: var(--color-success-bg); border: 3px solid var(--color-success); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-3); }
+    .thank-you-hero-centered .check-circle span { font-size: 32px; }
+
+    .divider { border: none; border-top: 1px solid var(--color-divider); margin: var(--space-3) 0; }
+
+    .section-title { font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2); display: flex; align-items: center; justify-content: space-between; }
+
+    .scenario-label { background: #ECEFF1; border: 1px dashed var(--color-border); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2); display: inline-flex; align-items: center; gap: var(--space-1); }
+    .scenario-label strong { color: var(--color-dark-text); }
+
+    .flex { display: flex; } .gap-2 { gap: var(--space-2); } .mb-3 { margin-bottom: var(--space-3); }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe — Package Registration (Unassigned Student) — V3 Centered Card Wizard</div>
+<div style="height: 32px;"></div>
+
+<div class="flow">
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  SCENARIO A: Single Student — Individual Class                  ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<!-- ── STEP 1 — WELCOME ── -->
+<div class="flow-step-label"><div class="step-num">1</div> Logged In — Welcome Page</div>
+<div class="flow-step-desc">Centered card with welcome message. Clean, focused design draws attention to the important information about session permanence.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card">
+      <div class="wizard-card-body" style="text-align: center; padding: var(--space-6) var(--space-5);">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--color-warning-bg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-3);">
+          <span style="font-size: 26px;">⚠️</span>
+        </div>
+
+        <div style="font-size: 22px; font-weight: 700; color: var(--color-dark-text); margin-bottom: var(--space-3);">Before You Begin</div>
+
+        <div style="max-width: 520px; margin: 0 auto; text-align: left;">
+          <div style="font-size: 15px; color: var(--color-text-primary); line-height: 1.8;">
+            Before you begin, please note that once sessions are assigned, they cannot be easily changed. Assigning sessions is a crucial step in planning your student's learning, so take a moment to carefully review your choices.
+          </div>
+          <div style="font-size: 15px; color: var(--color-text-primary); line-height: 1.8; margin-top: var(--space-2);">
+            When you're ready, let's set up your sessions with confidence!
+          </div>
+        </div>
+
+        <div class="carousel-dots">
+          <div class="carousel-dot active"></div>
+          <div class="carousel-dot"></div>
+          <div class="carousel-dot"></div>
+          <div class="carousel-dot"></div>
+          <div class="carousel-dot"></div>
+        </div>
+
+        <div style="margin-top: var(--space-5);">
+          <button class="btn btn-primary btn-lg">Sure, let's continue →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP 2a — ASSIGN SESSIONS (UNASSIGNED STATE) ── -->
+<div class="flow-step-label"><div class="step-num">2a</div> Assign Sessions — Package Unassigned</div>
+<div class="flow-step-desc">The parent sees their package with no student yet assigned. A dashed border and orange "Unassigned" badge draw attention. The "Assign Student" button opens modal M1. "Save &amp; Continue" is disabled until a student is assigned. An inline progress bar shows assignment status.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-header">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="page-title" style="font-size:20px;">Assign Sessions</div>
+            <div class="page-subtitle">Review and assign your purchased sessions.</div>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <button class="btn btn-outlined btn-sm">+ Add New Student</button>
+            <button class="btn btn-outlined btn-sm">Create Account</button>
+          </div>
+        </div>
+        <!-- Inline progress -->
+        <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+          <div style="font-size: 12px; color: var(--color-warning);">0 of 1 packages assigned</div>
+          <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
+            <div style="width: 0%; height: 100%; background: var(--color-warning); border-radius: 3px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-body">
+        <!-- Contact Fields -->
+        <div class="section-title">
+          <span>Your Information</span>
+          <a class="action-link">Edit</a>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+            <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+            <input type="email" class="form-input filled" value="sarah.miller@email.com">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+            <input type="tel" class="form-input filled" value="(512) 555-0147">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package Info -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Booking Credits</span>
+            <span class="badge badge-warning">Unassigned</span>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <a class="action-link">+ Add New Student</a>
+            <a class="action-link">Create Account</a>
+          </div>
+        </div>
+
+        <!-- Package Card — UNASSIGNED -->
+        <div style="border: 2px dashed var(--color-warning); border-radius: var(--radius-lg); overflow: hidden;">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-primary-lightest); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 3 Individual 50 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Individual Class</div>
+              </div>
+            </div>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="padding: var(--space-2-5, 20px) var(--space-3); display: flex; align-items: center; background: var(--color-warning-bg); gap: var(--space-2);">
+            <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
+              <span style="font-size: 18px; color: var(--color-text-disabled);">?</span>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 14px; color: var(--color-text-secondary);">No student assigned</div>
+              <div style="font-size: 12px; color: var(--color-text-disabled);">Click "Assign Student" to select a student for this package</div>
+            </div>
+            <button class="btn btn-primary btn-sm">Assign Student</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-lg" style="background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed;">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP 2b — ASSIGN SESSIONS (ASSIGNED STATE) ── -->
+<div class="flow-step-label"><div class="step-num">2b</div> Assign Sessions — Student Assigned</div>
+<div class="flow-step-desc">After selecting Jack Powell from modal M1, the package card shows the assigned student with an avatar and "Reassign" / "Edit Info" links. The progress bar is now full and green. "Save &amp; Continue" is enabled.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-header">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="page-title" style="font-size:20px;">Assign Sessions</div>
+            <div class="page-subtitle">Review and assign your purchased sessions.</div>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <button class="btn btn-outlined btn-sm">+ Add New Student</button>
+            <button class="btn btn-outlined btn-sm">Create Account</button>
+          </div>
+        </div>
+        <!-- Inline progress -->
+        <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+          <div style="font-size: 12px; color: var(--color-success);">1 of 1 packages assigned ✓</div>
+          <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
+            <div style="width: 100%; height: 100%; background: var(--color-success); border-radius: 3px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-body">
+        <!-- Contact Fields -->
+        <div class="section-title">
+          <span>Your Information</span>
+          <a class="action-link">Edit</a>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+            <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+            <input type="email" class="form-input filled" value="sarah.miller@email.com">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+            <input type="tel" class="form-input filled" value="(512) 555-0147">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package Info -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Booking Credits</span>
+            <span class="badge badge-success">✓ Assigned</span>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <a class="action-link">+ Add New Student</a>
+            <a class="action-link">Create Account</a>
+          </div>
+        </div>
+
+        <!-- Package Card — ASSIGNED -->
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden;">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-primary-lightest); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 3 Individual 50 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Individual Class</div>
+              </div>
+            </div>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="padding: var(--space-2) var(--space-3); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">JP</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">Jack Powell</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Assigned Student</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: var(--space-1-5);">
+              <a class="action-link">Reassign</a>
+              <a class="action-link">Edit Info</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-success btn-lg">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP 3 — CONFIRMATION ── -->
+<div class="flow-step-label"><div class="step-num">3</div> Confirmation — All Sessions Registered</div>
+<div class="flow-step-desc">Centered success card with green check and summary.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card">
+      <div class="wizard-card-body">
+        <div class="thank-you-hero-centered">
+          <div class="check-circle"><span>✓</span></div>
+          <div style="font-size: 24px; font-weight: 700; color: var(--color-dark-text);">All Your Sessions Are Registered</div>
+          <div style="font-size: 14px; color: var(--color-text-secondary); margin-top: var(--space-1);">Your session assignments have been saved successfully.</div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-title"><span>Registration Summary</span><span class="badge badge-success">✓ Complete</span></div>
+        <ul class="summary-list">
+          <li><span class="summary-label">Student</span><span class="summary-value">Jack Powell</span></li>
+          <li><span class="summary-label">Package</span><span class="summary-value">1× package of 3 Individual 50 min. booking credits</span></li>
+          <li><span class="summary-label">Credits</span><span class="summary-value">3 booking credits</span></li>
+          <li><span class="summary-label">Class Type</span><span class="summary-value">Individual</span></li>
+        </ul>
+
+        <div style="margin-top: var(--space-3); font-size: 13px; color: var(--color-text-secondary); line-height: 1.6;">
+          Our team will assign a teacher and reach out to schedule your sessions. You'll receive a confirmation email shortly.
+        </div>
+      </div>
+
+      <div class="wizard-card-footer" style="justify-content: center;">
+        <div class="flex gap-2">
+          <button class="btn btn-primary btn-lg">Go to Dashboard</button>
+          <button class="btn btn-outlined btn-lg">View Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  SCENARIO B: 2 Students — Paired Class                         ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div style="margin-top: var(--space-8);"></div>
+<div class="scenario-label"><strong>Scenario:</strong> 2 Students &middot; Paired Class</div>
+
+<!-- ── STEP B1 — ASSIGN SESSIONS (PAIRED) ── -->
+<div class="flow-step-label"><div class="step-num">B1</div> Assign Sessions — Paired Class (2 Students)</div>
+<div class="flow-step-desc">Centered card shows both students paired together in each session chip. Both student names and paired badge appear on each row.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-header">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="page-title" style="font-size:20px;">Assign Sessions</div>
+            <div class="page-subtitle">Review and assign your purchased paired class sessions.</div>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <button class="btn btn-outlined btn-sm">+ Add New Student</button>
+            <button class="btn btn-outlined btn-sm">Create Account</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-body">
+        <!-- Contact -->
+        <div class="section-title"><span>Your Information</span><a class="action-link">Edit</a></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+            <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+            <input type="email" class="form-input filled" value="sarah.miller@email.com">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+            <input type="tel" class="form-input filled" value="(512) 555-0147">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package Info -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Booking Credits</span>
+            <span class="badge badge-purple">Paired Class</span>
+            <span class="badge badge-info">4 credits</span>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <a class="action-link">+ Add New Student</a>
+            <a class="action-link">Create Account</a>
+          </div>
+        </div>
+
+        <!-- Package Card -->
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden;">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-purple-bg); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 4 Paired 25 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Paired Class</div>
+              </div>
+            </div>
+            <span class="badge badge-purple">4 credits</span>
+          </div>
+          <div style="padding: var(--space-2) var(--space-3);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-1-5);">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">JP</div>
+                <div>
+                  <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">Jack Powell</div>
+                  <div style="font-size: 12px; color: var(--color-text-secondary);">Student 1</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: var(--space-1-5);">
+                <a class="action-link">Reassign</a>
+                <a class="action-link">Edit Info</a>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-purple); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">DP</div>
+                <div>
+                  <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">Diana Powell</div>
+                  <div style="font-size: 12px; color: var(--color-text-secondary);">Student 2</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: var(--space-1-5);">
+                <a class="action-link">Reassign</a>
+                <a class="action-link">Edit Info</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-success btn-lg">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP B2 — PAIRED CONFIRMATION ── -->
+<div class="flow-step-label"><div class="step-num">B2</div> Confirmation — All Sessions Registered (Paired)</div>
+<div class="flow-step-desc">Centered success card listing both students.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card">
+      <div class="wizard-card-body">
+        <div class="thank-you-hero-centered">
+          <div class="check-circle"><span>✓</span></div>
+          <div style="font-size: 24px; font-weight: 700; color: var(--color-dark-text);">All Your Sessions Are Registered</div>
+          <div style="font-size: 14px; color: var(--color-text-secondary); margin-top: var(--space-1);">Your session assignments have been saved successfully.</div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-title"><span>Registration Summary</span><span class="badge badge-success">✓ Complete</span></div>
+        <ul class="summary-list">
+          <li><span class="summary-label">Student 1</span><span class="summary-value">Jack Powell</span></li>
+          <li><span class="summary-label">Student 2</span><span class="summary-value">Diana Powell</span></li>
+          <li><span class="summary-label">Package</span><span class="summary-value">1× package of 4 Paired 25 min. booking credits</span></li>
+          <li><span class="summary-label">Credits</span><span class="summary-value">4 booking credits</span></li>
+          <li><span class="summary-label">Class Type</span><span class="summary-value">Paired</span></li>
+        </ul>
+
+        <div style="margin-top: var(--space-3); font-size: 13px; color: var(--color-text-secondary); line-height: 1.6;">
+          Our team will assign a teacher and reach out to schedule your sessions. You'll receive a confirmation email shortly.
+        </div>
+      </div>
+
+</div><!-- /.flow-step B2 screen -->
+
+</div>
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  SCENARIO C: Multiple Packages — Mixed Types (Individual+Paired)║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<div style="margin-top: var(--space-8);"></div>
+<div class="scenario-label"><strong>Scenario:</strong> Multiple Packages &middot; 1 Individual + 1 Paired</div>
+
+<!-- ── STEP C1 — BOTH PACKAGES UNASSIGNED ── -->
+<div class="flow-step-label"><div class="step-num">C1</div> Assign Sessions — Multiple Packages, All Unassigned</div>
+<div class="flow-step-desc">Parent purchased two packages. Both shown in the wider wizard card, each in an unassigned state with dashed borders. Progress bar shows "0 of 2 packages assigned". "Save &amp; Continue" disabled.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-header">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="page-title" style="font-size:20px;">Assign Sessions</div>
+            <div class="page-subtitle">Review and assign your purchased sessions. You have 2 packages to assign.</div>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <button class="btn btn-outlined btn-sm">+ Add New Student</button>
+            <button class="btn btn-outlined btn-sm">Create Account</button>
+          </div>
+        </div>
+        <!-- Inline progress -->
+        <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+          <div style="font-size: 12px; color: var(--color-warning);">0 of 2 packages assigned</div>
+          <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
+            <div style="width: 0%; height: 100%; background: var(--color-warning); border-radius: 3px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-body">
+        <!-- Contact Fields -->
+        <div class="section-title"><span>Your Information</span><a class="action-link">Edit</a></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+            <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+            <input type="email" class="form-input filled" value="sarah.miller@email.com">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+            <input type="tel" class="form-input filled" value="(512) 555-0147">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package 1: Individual — UNASSIGNED -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Package 1 — Individual</span>
+            <span class="badge badge-warning">Unassigned</span>
+          </div>
+        </div>
+        <div style="border: 2px dashed var(--color-warning); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-3);">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-primary-lightest); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 3 Individual 50 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Individual Class</div>
+              </div>
+            </div>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="padding: var(--space-2-5, 20px) var(--space-3); display: flex; align-items: center; background: var(--color-warning-bg); gap: var(--space-2);">
+            <div style="width: 36px; height: 36px; border-radius: 50%; border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
+              <span style="font-size: 16px; color: var(--color-text-disabled);">?</span>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: var(--color-text-secondary);">No student assigned</div>
+              <div style="font-size: 11px; color: var(--color-text-disabled);">1 student needed</div>
+            </div>
+            <button class="btn btn-primary btn-sm">Assign Student</button>
+          </div>
+        </div>
+
+        <!-- Package 2: Paired — UNASSIGNED -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Package 2 — Paired</span>
+            <span class="badge badge-purple">Paired</span>
+            <span class="badge badge-warning">Unassigned</span>
+          </div>
+        </div>
+        <div style="border: 2px dashed var(--color-warning); border-radius: var(--radius-lg); overflow: hidden;">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-purple-bg); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 4 Paired 25 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Paired Class</div>
+              </div>
+            </div>
+            <span class="badge badge-purple">4 credits</span>
+          </div>
+          <div style="padding: var(--space-2-5, 20px) var(--space-3); background: var(--color-warning-bg);">
+            <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1-5);">
+              <div style="width: 36px; height: 36px; border-radius: 50%; border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
+                <span style="font-size: 16px; color: var(--color-text-disabled);">?</span>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; color: var(--color-text-secondary);">Student 1 — not assigned</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="width: 36px; height: 36px; border-radius: 50%; border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
+                <span style="font-size: 16px; color: var(--color-text-disabled);">?</span>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; color: var(--color-text-secondary);">Student 2 — not assigned</div>
+              </div>
+              <button class="btn btn-primary btn-sm">Assign Students</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-lg" style="background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed;">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP C2 — PARTIALLY ASSIGNED (1 of 2 packages) ── -->
+<div class="flow-step-label"><div class="step-num">C2</div> Assign Sessions — Partially Assigned (1 of 2 Packages)</div>
+<div class="flow-step-desc">Individual package assigned to Jack Powell. Paired package still needs two students. Progress bar at 50%. "Save &amp; Continue" still disabled.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-header">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="page-title" style="font-size:20px;">Assign Sessions</div>
+            <div class="page-subtitle">Review and assign your purchased sessions. You have 2 packages to assign.</div>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <button class="btn btn-outlined btn-sm">+ Add New Student</button>
+            <button class="btn btn-outlined btn-sm">Create Account</button>
+          </div>
+        </div>
+        <!-- Inline progress -->
+        <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+          <div style="font-size: 12px; color: var(--color-warning);">1 of 2 packages assigned</div>
+          <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
+            <div style="width: 50%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-body">
+        <!-- Contact Fields -->
+        <div class="section-title"><span>Your Information</span><a class="action-link">Edit</a></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+            <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+            <input type="email" class="form-input filled" value="sarah.miller@email.com">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+            <input type="tel" class="form-input filled" value="(512) 555-0147">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package 1: Individual — ASSIGNED ✓ -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Package 1 — Individual</span>
+            <span class="badge badge-success">✓ Assigned</span>
+          </div>
+        </div>
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-3);">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-primary-lightest); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 3 Individual 50 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Individual Class</div>
+              </div>
+            </div>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="padding: var(--space-2) var(--space-3); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">JP</div>
+              <div>
+                <div style="font-size: 13px; font-weight: 500; color: var(--color-dark-text);">Jack Powell</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Assigned Student</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: var(--space-1-5);">
+              <a class="action-link">Reassign</a>
+              <a class="action-link">Edit Info</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Package 2: Paired — STILL UNASSIGNED -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Package 2 — Paired</span>
+            <span class="badge badge-purple">Paired</span>
+            <span class="badge badge-warning">Unassigned</span>
+          </div>
+        </div>
+        <div style="border: 2px dashed var(--color-warning); border-radius: var(--radius-lg); overflow: hidden;">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-purple-bg); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 4 Paired 25 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Paired Class</div>
+              </div>
+            </div>
+            <span class="badge badge-purple">4 credits</span>
+          </div>
+          <div style="padding: var(--space-2-5, 20px) var(--space-3); background: var(--color-warning-bg);">
+            <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1-5);">
+              <div style="width: 36px; height: 36px; border-radius: 50%; border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
+                <span style="font-size: 16px; color: var(--color-text-disabled);">?</span>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; color: var(--color-text-secondary);">Student 1 — not assigned</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="width: 36px; height: 36px; border-radius: 50%; border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
+                <span style="font-size: 16px; color: var(--color-text-disabled);">?</span>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; color: var(--color-text-secondary);">Student 2 — not assigned</div>
+              </div>
+              <button class="btn btn-primary btn-sm">Assign Students</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-lg" style="background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed;">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP C3 — ALL PACKAGES ASSIGNED ── -->
+<div class="flow-step-label"><div class="step-num">C3</div> Assign Sessions — All Packages Assigned (Ready to Continue)</div>
+<div class="flow-step-desc">Both packages fully assigned. Individual → Jack Powell. Paired → Jack &amp; Diana Powell. Progress bar full green. "Save &amp; Continue" enabled.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-header">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="page-title" style="font-size:20px;">Assign Sessions</div>
+            <div class="page-subtitle">Review and assign your purchased sessions. You have 2 packages to assign.</div>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <button class="btn btn-outlined btn-sm">+ Add New Student</button>
+            <button class="btn btn-outlined btn-sm">Create Account</button>
+          </div>
+        </div>
+        <!-- Inline progress -->
+        <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
+          <div style="font-size: 12px; color: var(--color-success);">2 of 2 packages assigned ✓</div>
+          <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
+            <div style="width: 100%; height: 100%; background: var(--color-success); border-radius: 3px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-body">
+        <!-- Contact Fields -->
+        <div class="section-title"><span>Your Information</span><a class="action-link">Edit</a></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+            <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+            <input type="email" class="form-input filled" value="sarah.miller@email.com">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+            <input type="tel" class="form-input filled" value="(512) 555-0147">
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package 1: Individual — ASSIGNED ✓ -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Package 1 — Individual</span>
+            <span class="badge badge-success">✓ Assigned</span>
+          </div>
+        </div>
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-3);">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-primary-lightest); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 3 Individual 50 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Individual Class</div>
+              </div>
+            </div>
+            <span class="badge badge-info">3 credits</span>
+          </div>
+          <div style="padding: var(--space-2) var(--space-3); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">JP</div>
+              <div>
+                <div style="font-size: 13px; font-weight: 500; color: var(--color-dark-text);">Jack Powell</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Assigned Student</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: var(--space-1-5);">
+              <a class="action-link">Reassign</a>
+              <a class="action-link">Edit Info</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Package 2: Paired — ASSIGNED ✓ -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>Package 2 — Paired</span>
+            <span class="badge badge-purple">Paired</span>
+            <span class="badge badge-success">✓ Assigned</span>
+          </div>
+        </div>
+        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden;">
+          <div style="padding: var(--space-2) var(--space-3); background: var(--color-purple-bg); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="font-size: 20px;">📦</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">1× package of 4 Paired 25 min. booking credits</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">Paired Class</div>
+              </div>
+            </div>
+            <span class="badge badge-purple">4 credits</span>
+          </div>
+          <div style="padding: var(--space-2) var(--space-3);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-1-5);">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">JP</div>
+                <div>
+                  <div style="font-size: 13px; font-weight: 500; color: var(--color-dark-text);">Jack Powell</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary);">Student 1</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: var(--space-1-5);">
+                <a class="action-link">Reassign</a>
+                <a class="action-link">Edit Info</a>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: var(--space-2);">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-purple); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">DP</div>
+                <div>
+                  <div style="font-size: 13px; font-weight: 500; color: var(--color-dark-text);">Diana Powell</div>
+                  <div style="font-size: 11px; color: var(--color-text-secondary);">Student 2</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: var(--space-1-5);">
+                <a class="action-link">Reassign</a>
+                <a class="action-link">Edit Info</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-success btn-lg">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP C4 — MULTI-PACKAGE CONFIRMATION ── -->
+<div class="flow-step-label"><div class="step-num">C4</div> Confirmation — All Packages Registered</div>
+<div class="flow-step-desc">Centered success card with summary for both packages and their assigned students.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="wizard-container">
+    <div class="wizard-card wizard-card-wide">
+      <div class="wizard-card-body">
+        <div class="thank-you-hero-centered">
+          <div class="check-circle"><span>✓</span></div>
+          <div style="font-size: 24px; font-weight: 700; color: var(--color-dark-text);">All Your Sessions Are Registered</div>
+          <div style="font-size: 14px; color: var(--color-text-secondary); margin-top: var(--space-1);">Both packages have been assigned and saved successfully.</div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Package 1 Summary -->
+        <div class="section-title"><span>Package 1 — Individual</span><span class="badge badge-success">✓ Complete</span></div>
+        <ul class="summary-list">
+          <li><span class="summary-label">Student</span><span class="summary-value">Jack Powell</span></li>
+          <li><span class="summary-label">Package</span><span class="summary-value">1× package of 3 Individual 50 min. booking credits</span></li>
+          <li><span class="summary-label">Credits</span><span class="summary-value">3 booking credits</span></li>
+        </ul>
+
+        <div style="margin: var(--space-3) 0;"><hr class="divider"></div>
+
+        <!-- Package 2 Summary -->
+        <div class="section-title"><span>Package 2 — Paired</span><span class="badge badge-success">✓ Complete</span></div>
+        <ul class="summary-list">
+          <li><span class="summary-label">Student 1</span><span class="summary-value">Jack Powell</span></li>
+          <li><span class="summary-label">Student 2</span><span class="summary-value">Diana Powell</span></li>
+          <li><span class="summary-label">Package</span><span class="summary-value">1× package of 4 Paired 25 min. booking credits</span></li>
+          <li><span class="summary-label">Credits</span><span class="summary-value">4 booking credits</span></li>
+        </ul>
+
+        <div style="margin-top: var(--space-3); font-size: 13px; color: var(--color-text-secondary); line-height: 1.6;">
+          Our team will assign teachers and reach out to schedule your sessions. You'll receive confirmation emails for each package shortly.
+        </div>
+
+        <div style="margin-top: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-success-bg); border-radius: var(--radius); border-left: 3px solid var(--color-success);">
+          <div style="font-size: 13px; color: var(--color-dark-text); font-weight: 600;">Total: 7 booking credits across 2 packages</div>
+          <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">Students: Jack Powell (Individual + Paired) &amp; Diana Powell (Paired)</div>
+        </div>
+      </div>
+
+      <div class="wizard-card-footer" style="justify-content: center;">
+        <div class="flex gap-2">
+          <button class="btn btn-primary btn-lg">Go to Dashboard</button>
+          <button class="btn btn-outlined btn-lg">View Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.flow -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  MODALS — Assign, Create & Edit Student                         ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<style>
+  /* ── Modal styles ── */
+  .modal-section { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-4) var(--space-4); }
+  .modal-backdrop { background: rgba(0,0,0,0.35); border-radius: var(--radius-xl); padding: var(--space-5); display: flex; justify-content: center; align-items: flex-start; min-height: 520px; margin-bottom: var(--space-2); }
+  .modal { background: var(--color-surface); border-radius: var(--radius-xl); box-shadow: 0 12px 40px rgba(0,0,0,0.25); width: 100%; max-width: 520px; position: relative; overflow: hidden; }
+  .modal-close { position: absolute; top: var(--space-2); right: var(--space-2); width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--color-text-secondary); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: var(--color-hover-bg); }
+  .modal-body { padding: var(--space-4); }
+  .modal-title { font-size: 20px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
+  .modal-subtitle { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-3); }
+  .modal-footer { padding: var(--space-2) var(--space-4) var(--space-4); display: flex; justify-content: flex-end; gap: var(--space-2); }
+  .modal-footer-3 { justify-content: flex-end; gap: var(--space-1-5); }
+
+  .assign-section-header { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.15); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); font-size: 14px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2); }
+  .radio-list { list-style: none; padding: 0; }
+  .radio-item { display: flex; align-items: center; gap: var(--space-1-5); padding: var(--space-1-5) var(--space-2); border-bottom: 1px solid var(--color-divider); cursor: pointer; font-size: 14px; color: var(--color-dark-text); }
+  .radio-item:last-child { border-bottom: none; }
+  .radio-item:hover { background: var(--color-primary-lightest); }
+  .radio-item.disabled { color: var(--color-text-disabled); cursor: default; }
+  .radio-item.disabled:hover { background: transparent; }
+  .radio-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--color-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .radio-circle.checked { border-color: var(--color-primary); }
+  .radio-circle.checked::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary); }
+  .radio-circle.disabled { border-color: var(--color-divider); }
+  .radio-label-sub { font-size: 12px; color: var(--color-text-secondary); margin-left: 2px; }
+
+  .add-student-toggle { display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1-5) var(--space-2); color: var(--color-primary); font-size: 14px; font-weight: 500; cursor: pointer; border-top: 1px solid var(--color-divider); background: var(--color-primary-lightest); border-radius: 0 0 var(--radius) var(--radius); }
+  .add-student-toggle .icon { font-size: 16px; font-weight: 700; }
+
+  .add-student-form { border-top: 1px solid var(--color-divider); background: var(--color-primary-lightest); padding: var(--space-2); border-radius: 0 0 var(--radius) var(--radius); }
+  .add-student-form .toggle-header { display: flex; align-items: center; gap: var(--space-1); color: var(--color-primary); font-size: 14px; font-weight: 500; margin-bottom: var(--space-2); cursor: pointer; }
+
+  .outlined-input { position: relative; margin-bottom: var(--space-2); }
+  .outlined-input label { position: absolute; top: -8px; left: 10px; background: var(--color-primary-lightest); padding: 0 4px; font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
+  .outlined-input input { width: 100%; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius); font-family: var(--font-family); font-size: 14px; color: var(--color-text-primary); background: white; }
+  .outlined-input input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(26,122,188,0.12); }
+  .outlined-input input::placeholder { color: var(--color-text-disabled); }
+  .outlined-input .required-star { color: var(--color-error); }
+
+  .outlined-input-white label { background: white; }
+
+  .warning-icon-inline { color: var(--color-warning); font-size: 20px; margin-right: var(--space-1); vertical-align: middle; }
+
+  .oauth-divider { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; color: var(--color-text-disabled); font-size: 12px; }
+  .oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-divider); }
+  .google-btn { display: flex; align-items: center; justify-content: center; gap: var(--space-1-5); width: 100%; padding: 10px 16px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; font-family: var(--font-family); font-size: 14px; font-weight: 500; color: var(--color-dark-text); cursor: pointer; }
+  .google-btn:hover { background: var(--color-hover-bg); border-color: var(--color-text-secondary); }
+  .google-icon { width: 18px; height: 18px; }
+
+  .student-name-display { display: flex; align-items: center; gap: var(--space-1); font-size: 14px; font-weight: 600; color: var(--color-dark-text); }
+
+  .note-bar { background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--radius); padding: var(--space-1) var(--space-2); font-size: 12px; color: #E65100; margin-top: var(--space-2); }
+
+  .edit-icon-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--color-divider); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); }
+  .edit-icon-btn:hover { background: var(--color-primary-lightest); border-color: var(--color-primary); color: var(--color-primary); }
+</style>
+
+<div class="modal-section">
+
+<div style="margin-top: var(--space-6);"></div>
+<div class="flow-step-label"><div class="step-num">M</div> Modals — Assign, Create &amp; Edit Student</div>
+<div class="flow-step-desc">These modals appear when the user clicks "Reassign" on a session chip, "+ Add New Student", or the edit icon (✎) on a student avatar card. They are overlaid on top of the centered wizard card.</div>
+
+
+<!-- ── M1: Assign Student (Student 1 — multiple options) ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M1 — Assign Student (Student 1)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "Reassign" on a session chip. Modal lists existing students in the account, plus option to add new.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student 1</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="radio-circle"></div> Jack Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M2: Assign Student — with Add New Student expanded ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M2 — Student Information (Add New Student Expanded)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "+ Add New Student". The form expands inline with Name, Username, and Password fields. An existing student is selected via radio while the new student form is visible.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student Information</div>
+      <div class="modal-subtitle">Assign an existing student or create a new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-1-5) var(--space-2); margin-bottom: var(--space-1);">
+        <div>
+          <div class="student-name-display">Jack Powell</div>
+          <div class="radio-label-sub">(Student 1)</div>
+        </div>
+        <div style="margin-left: auto;">
+          <ul class="radio-list" style="display:flex; flex-direction:column; gap: var(--space-1);">
+            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle checked"></div> Jack Powell</li>
+            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Diana Powell</li>
+            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="add-student-form">
+        <div class="toggle-header"><span style="font-size:16px; font-weight:700;">—</span> Add New Student</div>
+        <div class="outlined-input">
+          <label>Name<span class="required-star">*</span></label>
+          <input type="text" value="Student 1">
+        </div>
+        <div class="outlined-input">
+          <label>Username</label>
+          <input type="text" placeholder="Username">
+        </div>
+        <div class="outlined-input" style="margin-bottom:0;">
+          <label>Password</label>
+          <input type="password" placeholder="Password">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Assign and Continue</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M3: Assign Student — single option (only "Me") ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M3 — Assign Student (Single Option)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When only one eligible student exists in the account, the radio list shows just that option.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student 1</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Assign and Continue</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M4: Name Already Exists warning ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M4 — Name Already Exists (Warning)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent enters a duplicate student name, this warning modal appears explaining the system will add an identifier to distinguish them.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div style="display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-3);">
+        <span class="warning-icon-inline">⚠</span>
+        <div class="modal-title" style="margin-bottom:0;">Name Already Exists</div>
+      </div>
+
+      <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: var(--space-3);">
+        You already have a student named <strong>"Arturo Archila"</strong> in your account. To avoid confusion, we'll automatically add an identifier to distinguish between them.
+      </div>
+
+      <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: var(--space-0-5);">Here's how it might look:</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--color-dark-text); margin-bottom: var(--space-3);">Arturo Archila (1)</div>
+
+      <div style="font-size: 14px; color: var(--color-text-primary);">Would you like to continue or cancel to add a different name?</div>
+    </div>
+    <div class="modal-footer modal-footer-3">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-outlined" style="display: flex; align-items: center; gap: 4px; color: var(--color-success);">I Meant <span style="font-size:11px;">▼</span></button>
+      <button class="btn btn-success">Continue</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M5: Assign Student 2 (paired class — Student 1 already assigned) ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M5 — Assign Student 2 (Student 1 Already Assigned)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">For paired classes, after Student 1 is assigned, this modal shows Student 2 selection. The already-assigned student appears greyed out with "(assigned)" label.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student 2</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item disabled"><div class="radio-circle checked disabled" style="border-color:var(--color-divider);"></div> <span style="color:var(--color-text-disabled);">Jack Powell (assigned)</span></li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M6: Change Student / Reassign ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M6 — Change Student (Reassign)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks "Edit / Change Student" on an already-assigned session. Ineligible students are greyed out with a note at the bottom.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Change a student or create a new student account</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item disabled"><div class="radio-circle checked disabled" style="border-color:var(--color-divider);"></div> <span style="color:var(--color-text-disabled);">Jack Powell (assigned)</span></li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+
+      <div class="note-bar">
+        <strong>Note:</strong> Ineligible students will appear grayed out.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M7: Edit Student Information (Username/Password + OAuth) ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M7 — Edit Student Information</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks the edit (✎) icon next to a student name. Allows editing the student's username and password or linking a Google account via OAuth.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Edit Student Information</div>
+      <div class="modal-subtitle">Update your student's account credentials or connect with Google for easy sign-in.</div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.12); border-radius: var(--radius-lg); margin-bottom: var(--space-3);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">EM</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">Emma Miller</div>
+          <div style="font-size: 12px; color: var(--color-text-secondary);">Age 8 · Beginner</div>
+        </div>
+      </div>
+
+      <div class="outlined-input outlined-input-white">
+        <label>Name<span class="required-star">*</span></label>
+        <input type="text" value="Emma Miller">
+      </div>
+      <div class="outlined-input outlined-input-white">
+        <label>Username</label>
+        <input type="text" value="emma.miller">
+      </div>
+      <div class="outlined-input outlined-input-white">
+        <label>Password</label>
+        <input type="password" value="••••••••">
+      </div>
+
+      <div class="oauth-divider">or</div>
+
+      <button class="google-btn">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.modal-section -->
+</body>
+</html>

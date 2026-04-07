@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Package Registration — V1 Student-Centric Wizard</title>
+  <title>Package Registration — V4 Paired-Heavy Wizard</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -117,12 +117,9 @@
 
     .section-title { font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2); display: flex; align-items: center; justify-content: space-between; }
 
-    .scenario-label { background: #ECEFF1; border: 1px dashed var(--color-border); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2); display: inline-flex; align-items: center; gap: var(--space-1); }
-    .scenario-label strong { color: var(--color-dark-text); }
-
     .flex { display: flex; } .gap-2 { gap: var(--space-2); } .mb-3 { margin-bottom: var(--space-3); }
 
-    /* ── V1 differentiator: student-centric cards ── */
+    /* ── Student-centric cards ── */
     .student-card { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-3); }
     .student-card:last-child { margin-bottom: 0; }
     .student-card-header { padding: var(--space-2) var(--space-3); display: flex; align-items: center; justify-content: space-between; background: var(--color-surface); border-bottom: 1px solid var(--color-divider); }
@@ -131,7 +128,6 @@
     .student-avatar-primary { background: var(--color-primary); }
     .student-avatar-purple { background: var(--color-purple); }
     .student-avatar-teal { background: var(--color-teal); }
-    .student-avatar-empty { background: white; border: 2px dashed var(--color-border); color: var(--color-text-disabled); font-size: 18px; }
     .student-name { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
     .student-meta { font-size: 12px; color: var(--color-text-secondary); }
     .student-card-body { padding: var(--space-2) var(--space-3); background: #FAFBFC; }
@@ -155,23 +151,34 @@
 
     .empty-package-slot { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: white; border: 1px dashed var(--color-border); border-radius: var(--radius); }
     .empty-package-slot-text { font-size: 13px; color: var(--color-text-disabled); }
+
+    /* ── V4: Pairing visualization ── */
+    .pair-connector { display: flex; align-items: center; gap: var(--space-1); padding: var(--space-0-5) var(--space-1-5); background: var(--color-purple-bg); border: 1px solid rgba(106,27,154,0.15); border-radius: 12px; font-size: 11px; font-weight: 600; color: var(--color-purple); white-space: nowrap; }
+    .pair-connector .link-icon { font-size: 12px; }
+
+    .pairing-summary-card { border: 1px solid rgba(106,27,154,0.2); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-3); background: white; }
+    .pairing-summary-card:last-child { margin-bottom: 0; }
+    .pairing-summary-header { padding: var(--space-1-5) var(--space-3); background: var(--color-purple-bg); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(106,27,154,0.15); }
+    .pairing-summary-body { padding: var(--space-2) var(--space-3); }
+    .pairing-summary-students { display: flex; align-items: center; gap: var(--space-2); }
+    .pairing-summary-students .pair-link { font-size: 18px; color: var(--color-purple); }
   </style>
 </head>
 <body>
 
-<div class="wireframe-banner">Wireframe — Package Registration — V1 Student-Centric Wizard · 4 Packages · 3 Students</div>
+<div class="wireframe-banner">Wireframe — Package Registration — V4 Paired-Heavy · 4 Packages (3 Paired + 1 Individual) · 3 Students</div>
 <div style="height: 32px;"></div>
 
 <div class="flow">
 
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  DATA MODEL                                                             ║ -->
+<!-- ║  V4 DATA MODEL — PAIRED-HEAVY                                           ║ -->
 <!-- ║                                                                         ║ -->
 <!-- ║  Packages:                                                              ║ -->
-<!-- ║    P1: 1× package of 60 Individual 50-min booking credits               ║ -->
-<!-- ║    P2: 1× package of 30 Individual 25-min booking credits (first)       ║ -->
-<!-- ║    P3: 1× package of 30 Individual 25-min booking credits (second)      ║ -->
-<!-- ║    P4: 1× package of 90 Paired 25-min booking credits                   ║ -->
+<!-- ║    P1: 1× package of 90 Paired 25-min booking credits                   ║ -->
+<!-- ║    P2: 1× package of 90 Paired 25-min booking credits                   ║ -->
+<!-- ║    P3: 1× package of 60 Paired 50-min booking credits                   ║ -->
+<!-- ║    P4: 1× package of 30 Individual 25-min booking credits               ║ -->
 <!-- ║                                                                         ║ -->
 <!-- ║  Students:                                                              ║ -->
 <!-- ║    Jack Powell (JP)   — blue                                            ║ -->
@@ -179,15 +186,22 @@
 <!-- ║    Susan Powell (SP)  — teal                                            ║ -->
 <!-- ║                                                                         ║ -->
 <!-- ║  Intended Assignments:                                                  ║ -->
-<!-- ║    Jack Powell:  P1 (60 indiv 50min) + P2 (30 indiv 25min) + P4 (90p)  ║ -->
-<!-- ║    Susan Powell: P3 (30 indiv 25min)                                    ║ -->
-<!-- ║    Jack & Diana: P4 (90 paired 25min) — shared                          ║ -->
+<!-- ║    P1 (90 Paired 25min)  → Jack & Diana                                 ║ -->
+<!-- ║    P2 (90 Paired 25min)  → Jack & Susan                                 ║ -->
+<!-- ║    P3 (60 Paired 50min)  → Diana & Susan                                ║ -->
+<!-- ║    P4 (30 Indiv 25min)   → Jack                                         ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  Result: Every student is paired with every other student.               ║ -->
+<!-- ║    Jack:  P1+P2+P4 = 210 credits (2 paired + 1 indiv)                  ║ -->
+<!-- ║    Diana: P1+P3    = 150 credits (2 paired)                             ║ -->
+<!-- ║    Susan: P2+P3    = 150 credits (2 paired)                             ║ -->
+<!-- ║    Grand total: 270 credits across 4 packages                           ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 
 <!-- ── STEP 1 — WELCOME ── -->
 <div class="flow-step-label"><div class="step-num">1</div> Logged In — Welcome Page</div>
-<div class="flow-step-desc">Centered card with welcome message. Clean, focused design draws attention to the important information about session permanence.</div>
+<div class="flow-step-desc">Centered card with welcome message. Same as V1 — clean, focused design.</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -213,9 +227,7 @@
         <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--color-warning-bg); display: flex; align-items: center; justify-content: center; margin: 0 auto var(--space-3);">
           <span style="font-size: 26px;">⚠️</span>
         </div>
-
         <div style="font-size: 22px; font-weight: 700; color: var(--color-dark-text); margin-bottom: var(--space-3);">Before You Begin</div>
-
         <div style="max-width: 520px; margin: 0 auto; text-align: left;">
           <div style="font-size: 15px; color: var(--color-text-primary); line-height: 1.8;">
             Before you begin, please note that once sessions are assigned, they cannot be easily changed. Assigning sessions is a crucial step in planning your student's learning, so take a moment to carefully review your choices.
@@ -224,7 +236,6 @@
             When you're ready, let's set up your sessions with confidence!
           </div>
         </div>
-
         <div class="carousel-dots">
           <div class="carousel-dot active"></div>
           <div class="carousel-dot"></div>
@@ -232,7 +243,6 @@
           <div class="carousel-dot"></div>
           <div class="carousel-dot"></div>
         </div>
-
         <div style="margin-top: var(--space-5);">
           <button class="btn btn-primary btn-lg">Sure, let's continue →</button>
         </div>
@@ -243,8 +253,8 @@
 
 
 <!-- ── STEP 2a — ALL PACKAGES UNASSIGNED (0 of 4) ── -->
-<div class="flow-step-label"><div class="step-num">2a</div> Assign Sessions — All 4 Packages Unassigned</div>
-<div class="flow-step-desc"><strong>Student-centric view:</strong> All 4 purchased packages sit in the unassigned pool: 1× 60 Individual 50-min, 2× 30 Individual 25-min, and 1× 90 Paired 25-min. Three students (Jack, Diana, Susan Powell) each have empty cards. "Save &amp; Continue" is disabled. Progress: 0 of 4.</div>
+<div class="flow-step-label"><div class="step-num">2a</div> Assign Sessions — All 4 Packages Unassigned (0 of 4)</div>
+<div class="flow-step-desc"><strong>Paired-heavy scenario:</strong> Pool has 3 paired packages (2× 90 Paired 25‑min, 1× 60 Paired 50‑min) plus 1 individual (30 Individual 25‑min). Each paired package shows a purple "Paired" badge and "Requires 2 students" hint. All 3 student cards are empty. Save is disabled.</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -277,7 +287,6 @@
             <button class="btn btn-outlined btn-sm">Create Account</button>
           </div>
         </div>
-        <!-- Inline progress -->
         <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
           <div style="font-size: 12px; color: var(--color-warning);">0 of 4 packages assigned</div>
           <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
@@ -320,30 +329,13 @@
             <div class="unassigned-package-item">
               <div style="font-size: 16px; flex-shrink: 0;">📦</div>
               <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 60 Individual 50‑min booking credits</div>
-                <div style="font-size: 11px; color: var(--color-text-secondary);">Individual Class · 60 credits · 50 min</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 90 Paired 25‑min booking credits</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Paired Class · 90 credits · 25 min · Requires 2 students</div>
               </div>
-              <button class="btn btn-primary btn-sm">Assign to Student</button>
+              <span class="badge badge-purple">Paired</span>
+              <button class="btn btn-primary btn-sm" style="margin-left: var(--space-1);">Assign Students</button>
             </div>
             <!-- P2 -->
-            <div class="unassigned-package-item">
-              <div style="font-size: 16px; flex-shrink: 0;">📦</div>
-              <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 30 Individual 25‑min booking credits</div>
-                <div style="font-size: 11px; color: var(--color-text-secondary);">Individual Class · 30 credits · 25 min</div>
-              </div>
-              <button class="btn btn-primary btn-sm">Assign to Student</button>
-            </div>
-            <!-- P3 -->
-            <div class="unassigned-package-item">
-              <div style="font-size: 16px; flex-shrink: 0;">📦</div>
-              <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 30 Individual 25‑min booking credits</div>
-                <div style="font-size: 11px; color: var(--color-text-secondary);">Individual Class · 30 credits · 25 min</div>
-              </div>
-              <button class="btn btn-primary btn-sm">Assign to Student</button>
-            </div>
-            <!-- P4 -->
             <div class="unassigned-package-item">
               <div style="font-size: 16px; flex-shrink: 0;">📦</div>
               <div style="flex: 1;">
@@ -352,6 +344,25 @@
               </div>
               <span class="badge badge-purple">Paired</span>
               <button class="btn btn-primary btn-sm" style="margin-left: var(--space-1);">Assign Students</button>
+            </div>
+            <!-- P3 -->
+            <div class="unassigned-package-item">
+              <div style="font-size: 16px; flex-shrink: 0;">📦</div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 60 Paired 50‑min booking credits</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Paired Class · 60 credits · 50 min · Requires 2 students</div>
+              </div>
+              <span class="badge badge-purple">Paired</span>
+              <button class="btn btn-primary btn-sm" style="margin-left: var(--space-1);">Assign Students</button>
+            </div>
+            <!-- P4 -->
+            <div class="unassigned-package-item">
+              <div style="font-size: 16px; flex-shrink: 0;">📦</div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 30 Individual 25‑min booking credits</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Individual Class · 30 credits · 25 min</div>
+              </div>
+              <button class="btn btn-primary btn-sm">Assign to Student</button>
             </div>
           </div>
         </div>
@@ -385,7 +396,7 @@
               <div style="width: 32px; height: 32px; border-radius: var(--radius); border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
                 <span style="font-size: 14px; color: var(--color-text-disabled);">+</span>
               </div>
-              <div class="empty-package-slot-text">No packages assigned yet. Click "Assign to Student" above.</div>
+              <div class="empty-package-slot-text">No packages assigned yet. Click "Assign Students" above.</div>
             </div>
           </div>
         </div>
@@ -410,7 +421,7 @@
               <div style="width: 32px; height: 32px; border-radius: var(--radius); border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
                 <span style="font-size: 14px; color: var(--color-text-disabled);">+</span>
               </div>
-              <div class="empty-package-slot-text">No packages assigned yet. Click "Assign to Student" above.</div>
+              <div class="empty-package-slot-text">No packages assigned yet. Click "Assign Students" above.</div>
             </div>
           </div>
         </div>
@@ -435,7 +446,7 @@
               <div style="width: 32px; height: 32px; border-radius: var(--radius); border: 2px dashed var(--color-border); display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;">
                 <span style="font-size: 14px; color: var(--color-text-disabled);">+</span>
               </div>
-              <div class="empty-package-slot-text">No packages assigned yet. Click "Assign to Student" above.</div>
+              <div class="empty-package-slot-text">No packages assigned yet. Click "Assign Students" above.</div>
             </div>
           </div>
         </div>
@@ -450,9 +461,9 @@
 </div>
 
 
-<!-- ── STEP 2b — INDIVIDUAL PACKAGES ASSIGNED (3 of 4) ── -->
-<div class="flow-step-label"><div class="step-num">2b</div> Assign Sessions — Individual Packages Assigned (3 of 4)</div>
-<div class="flow-step-desc"><strong>Student-centric view:</strong> All 3 individual packages have been assigned. Jack now has 2 packages (60 indiv 50‑min + 30 indiv 25‑min = 90 credits). Susan has 1 package (30 indiv 25‑min = 30 credits). Diana still has no packages. Only the paired package (90 credits) remains in the unassigned pool. Progress: 3 of 4. "Save &amp; Continue" still disabled.</div>
+<!-- ── STEP 2b — FIRST PAIR ASSIGNED (1 of 4) ── -->
+<div class="flow-step-label"><div class="step-num">2b</div> Assign Sessions — First Pair Assigned (1 of 4)</div>
+<div class="flow-step-desc"><strong>P1 assigned to Jack &amp; Diana.</strong> Both student cards now show the same paired package with cross-references ("Paired with Diana Powell" / "Paired with Jack Powell"). Susan still empty. 3 packages remain in pool. This highlights how a single paired assignment appears in two student cards simultaneously.</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -486,15 +497,14 @@
           </div>
         </div>
         <div style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2);">
-          <div style="font-size: 12px; color: var(--color-warning);">3 of 4 packages assigned</div>
+          <div style="font-size: 12px; color: var(--color-warning);">1 of 4 packages assigned</div>
           <div style="flex: 1; height: 5px; background: var(--color-hover-bg); border-radius: 3px; overflow: hidden;">
-            <div style="width: 75%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
+            <div style="width: 25%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
           </div>
         </div>
       </div>
 
       <div class="wizard-card-body">
-        <!-- Contact Fields -->
         <div class="section-title"><span>Your Information</span><a class="action-link">Edit</a></div>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
           <div class="form-group" style="margin-bottom:0;">
@@ -513,17 +523,17 @@
 
         <hr class="divider">
 
-        <!-- ▼ UNASSIGNED PACKAGES POOL (1 remaining) ▼ -->
+        <!-- ▼ UNASSIGNED PACKAGES POOL (3 remaining) ▼ -->
         <div class="unassigned-pool">
           <div class="unassigned-pool-header">
             <div style="display: flex; align-items: center; gap: var(--space-1);">
               <span style="font-size: 16px;">📦</span>
-              <span style="font-size: 13px; font-weight: 600; color: var(--color-warning);">Unassigned Packages (1)</span>
+              <span style="font-size: 13px; font-weight: 600; color: var(--color-warning);">Unassigned Packages (3)</span>
             </div>
-            <span class="badge badge-warning">Needs 2 students</span>
+            <span class="badge badge-warning">3 packages need students</span>
           </div>
           <div class="unassigned-pool-body">
-            <!-- P4 -->
+            <!-- P2 -->
             <div class="unassigned-package-item">
               <div style="font-size: 16px; flex-shrink: 0;">📦</div>
               <div style="flex: 1;">
@@ -532,6 +542,25 @@
               </div>
               <span class="badge badge-purple">Paired</span>
               <button class="btn btn-primary btn-sm" style="margin-left: var(--space-1);">Assign Students</button>
+            </div>
+            <!-- P3 -->
+            <div class="unassigned-package-item">
+              <div style="font-size: 16px; flex-shrink: 0;">📦</div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 60 Paired 50‑min booking credits</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Paired Class · 60 credits · 50 min · Requires 2 students</div>
+              </div>
+              <span class="badge badge-purple">Paired</span>
+              <button class="btn btn-primary btn-sm" style="margin-left: var(--space-1);">Assign Students</button>
+            </div>
+            <!-- P4 -->
+            <div class="unassigned-package-item">
+              <div style="font-size: 16px; flex-shrink: 0;">📦</div>
+              <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text);">1× package of 30 Individual 25‑min booking credits</div>
+                <div style="font-size: 11px; color: var(--color-text-secondary);">Individual Class · 30 credits · 25 min</div>
+              </div>
+              <button class="btn btn-primary btn-sm">Assign to Student</button>
             </div>
           </div>
         </div>
@@ -545,14 +574,14 @@
           <a class="action-link">+ Add New Student</a>
         </div>
 
-        <!-- Jack Powell — 2 individual packages ✓ -->
+        <!-- Jack Powell — 1 paired package (P1 with Diana) -->
         <div class="student-card">
           <div class="student-card-header">
             <div class="student-card-header-left">
               <div class="student-avatar student-avatar-primary">JP</div>
               <div>
                 <div class="student-name">Jack Powell</div>
-                <div class="student-meta">2 packages · 90 booking credits</div>
+                <div class="student-meta">1 package · 90 booking credits</div>
               </div>
             </div>
             <div style="display: flex; gap: var(--space-1-5); align-items: center;">
@@ -564,35 +593,54 @@
             <div class="package-row">
               <div class="package-row-icon">📦</div>
               <div class="package-row-info">
-                <div class="package-row-title">1× package of 60 Individual 50‑min booking credits</div>
-                <div class="package-row-meta">Individual Class · 60 credits · 50 min</div>
+                <div class="package-row-title">1× package of 90 Paired 25‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 90 credits · 25 min · <strong style="color: var(--color-purple);">Paired with Diana Powell</strong></div>
               </div>
               <div class="package-row-actions">
-                <span class="badge badge-info">60 credits</span>
-                <a class="action-link">Reassign</a>
-              </div>
-            </div>
-            <div class="package-row">
-              <div class="package-row-icon">📦</div>
-              <div class="package-row-info">
-                <div class="package-row-title">1× package of 30 Individual 25‑min booking credits</div>
-                <div class="package-row-meta">Individual Class · 30 credits · 25 min</div>
-              </div>
-              <div class="package-row-actions">
-                <span class="badge badge-info">30 credits</span>
+                <span class="badge badge-purple">Paired</span>
                 <a class="action-link">Reassign</a>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Diana Powell — still empty -->
-        <div class="student-card student-card-unassigned">
+        <!-- Diana Powell — 1 paired package (P1 with Jack) -->
+        <div class="student-card">
           <div class="student-card-header">
             <div class="student-card-header-left">
               <div class="student-avatar student-avatar-purple">DP</div>
               <div>
                 <div class="student-name">Diana Powell</div>
+                <div class="student-meta">1 package · 90 booking credits</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: var(--space-1-5); align-items: center;">
+              <span class="badge badge-success">✓ Assigned</span>
+              <a class="action-link">Edit Info</a>
+            </div>
+          </div>
+          <div class="student-card-body">
+            <div class="package-row">
+              <div class="package-row-icon">📦</div>
+              <div class="package-row-info">
+                <div class="package-row-title">1× package of 90 Paired 25‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 90 credits · 25 min · <strong style="color: var(--color-purple);">Paired with Jack Powell</strong></div>
+              </div>
+              <div class="package-row-actions">
+                <span class="badge badge-purple">Paired</span>
+                <a class="action-link">Reassign</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Susan Powell — still empty -->
+        <div class="student-card student-card-unassigned">
+          <div class="student-card-header">
+            <div class="student-card-header-left">
+              <div class="student-avatar student-avatar-teal">SP</div>
+              <div>
+                <div class="student-name">Susan Powell</div>
                 <div class="student-meta">No packages assigned</div>
               </div>
             </div>
@@ -610,36 +658,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Susan Powell — 1 individual package ✓ -->
-        <div class="student-card">
-          <div class="student-card-header">
-            <div class="student-card-header-left">
-              <div class="student-avatar student-avatar-teal">SP</div>
-              <div>
-                <div class="student-name">Susan Powell</div>
-                <div class="student-meta">1 package · 30 booking credits</div>
-              </div>
-            </div>
-            <div style="display: flex; gap: var(--space-1-5); align-items: center;">
-              <span class="badge badge-success">✓ Assigned</span>
-              <a class="action-link">Edit Info</a>
-            </div>
-          </div>
-          <div class="student-card-body">
-            <div class="package-row">
-              <div class="package-row-icon">📦</div>
-              <div class="package-row-info">
-                <div class="package-row-title">1× package of 30 Individual 25‑min booking credits</div>
-                <div class="package-row-meta">Individual Class · 30 credits · 25 min</div>
-              </div>
-              <div class="package-row-actions">
-                <span class="badge badge-info">30 credits</span>
-                <a class="action-link">Reassign</a>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="wizard-card-footer">
@@ -651,9 +669,9 @@
 </div>
 
 
-<!-- ── STEP 2c — ALL PACKAGES ASSIGNED (4 of 4) ── -->
-<div class="flow-step-label"><div class="step-num">2c</div> Assign Sessions — All 4 Packages Assigned</div>
-<div class="flow-step-desc"><strong>Student-centric view:</strong> The paired package has been assigned to Jack &amp; Diana. Jack now has 3 packages (60+30+90 = 180 credits). Diana has 1 package (90 paired credits). Susan has 1 package (30 credits). The unassigned pool is gone, replaced by a green success banner. Note the paired package appears in both Jack's and Diana's cards. Progress: 4 of 4. "Save &amp; Continue" is enabled.</div>
+<!-- ── STEP 2c — ALL 4 PACKAGES ASSIGNED ── -->
+<div class="flow-step-label"><div class="step-num">2c</div> Assign Sessions — All 4 Packages Assigned (4 of 4)</div>
+<div class="flow-step-desc"><strong>All pairs assigned.</strong> Every student is now paired with every other student. Jack has 3 packages (2 paired + 1 individual = 210 credits), Diana has 2 paired packages (150 credits), Susan has 2 paired packages (150 credits). Each student card shows multiple paired cross-references. The pairing web is now complete. Save enabled.</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -695,7 +713,6 @@
       </div>
 
       <div class="wizard-card-body">
-        <!-- Contact Fields -->
         <div class="section-title"><span>Your Information</span><a class="action-link">Edit</a></div>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
           <div class="form-group" style="margin-bottom:0;">
@@ -714,10 +731,66 @@
 
         <hr class="divider">
 
-        <!-- ▼ ALL PACKAGES ASSIGNED BANNER ▼ -->
+        <!-- ▼ ALL ASSIGNED BANNER ▼ -->
         <div style="display: flex; align-items: center; gap: var(--space-1-5); padding: var(--space-1-5) var(--space-2); background: var(--color-success-bg); border: 1px solid rgba(46,125,50,0.2); border-radius: var(--radius); margin-bottom: var(--space-3);">
           <span style="font-size: 16px;">✅</span>
           <span style="font-size: 13px; font-weight: 500; color: var(--color-success);">All 4 packages have been assigned to students</span>
+        </div>
+
+        <!-- ▼ Pairing Overview (V4-specific) ▼ -->
+        <div class="section-title">
+          <div style="display:flex; align-items:center; gap: var(--space-1-5);">
+            <span>🔗 Active Pairings</span>
+            <span class="badge badge-purple">3 pairs</span>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); margin-bottom: var(--space-3);">
+          <!-- Pair 1: Jack & Diana -->
+          <div class="pairing-summary-card">
+            <div class="pairing-summary-header">
+              <span style="font-size: 12px; font-weight: 600; color: var(--color-purple);">Pair 1 · 25‑min</span>
+              <span class="badge badge-purple">90 credits</span>
+            </div>
+            <div class="pairing-summary-body">
+              <div class="pairing-summary-students">
+                <div class="student-avatar student-avatar-primary" style="width:28px; height:28px; font-size:11px;">JP</div>
+                <span class="pair-link" style="font-size:14px; color: var(--color-purple);">⟷</span>
+                <div class="student-avatar student-avatar-purple" style="width:28px; height:28px; font-size:11px;">DP</div>
+              </div>
+              <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: var(--space-0-5);">Jack &amp; Diana</div>
+            </div>
+          </div>
+          <!-- Pair 2: Jack & Susan -->
+          <div class="pairing-summary-card">
+            <div class="pairing-summary-header">
+              <span style="font-size: 12px; font-weight: 600; color: var(--color-purple);">Pair 2 · 25‑min</span>
+              <span class="badge badge-purple">90 credits</span>
+            </div>
+            <div class="pairing-summary-body">
+              <div class="pairing-summary-students">
+                <div class="student-avatar student-avatar-primary" style="width:28px; height:28px; font-size:11px;">JP</div>
+                <span class="pair-link" style="font-size:14px; color: var(--color-purple);">⟷</span>
+                <div class="student-avatar student-avatar-teal" style="width:28px; height:28px; font-size:11px;">SP</div>
+              </div>
+              <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: var(--space-0-5);">Jack &amp; Susan</div>
+            </div>
+          </div>
+          <!-- Pair 3: Diana & Susan -->
+          <div class="pairing-summary-card">
+            <div class="pairing-summary-header">
+              <span style="font-size: 12px; font-weight: 600; color: var(--color-purple);">Pair 3 · 50‑min</span>
+              <span class="badge badge-purple">60 credits</span>
+            </div>
+            <div class="pairing-summary-body">
+              <div class="pairing-summary-students">
+                <div class="student-avatar student-avatar-purple" style="width:28px; height:28px; font-size:11px;">DP</div>
+                <span class="pair-link" style="font-size:14px; color: var(--color-purple);">⟷</span>
+                <div class="student-avatar student-avatar-teal" style="width:28px; height:28px; font-size:11px;">SP</div>
+              </div>
+              <div style="font-size: 11px; color: var(--color-text-secondary); margin-top: var(--space-0-5);">Diana &amp; Susan</div>
+            </div>
+          </div>
         </div>
 
         <!-- ▼ STUDENTS ▼ -->
@@ -729,14 +802,14 @@
           <a class="action-link">+ Add New Student</a>
         </div>
 
-        <!-- Jack Powell — 3 packages (2 individual + 1 paired) = 180 credits -->
+        <!-- Jack Powell — 3 packages: P1 (paired Diana) + P2 (paired Susan) + P4 (individual) = 210 credits -->
         <div class="student-card">
           <div class="student-card-header">
             <div class="student-card-header-left">
               <div class="student-avatar student-avatar-primary">JP</div>
               <div>
                 <div class="student-name">Jack Powell</div>
-                <div class="student-meta">3 packages · 180 booking credits</div>
+                <div class="student-meta">3 packages · 210 booking credits</div>
               </div>
             </div>
             <div style="display: flex; gap: var(--space-1-5); align-items: center;">
@@ -748,11 +821,22 @@
             <div class="package-row">
               <div class="package-row-icon">📦</div>
               <div class="package-row-info">
-                <div class="package-row-title">1× package of 60 Individual 50‑min booking credits</div>
-                <div class="package-row-meta">Individual Class · 60 credits · 50 min</div>
+                <div class="package-row-title">1× package of 90 Paired 25‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 90 credits · 25 min · <strong style="color: var(--color-purple);">Paired with Diana Powell</strong></div>
               </div>
               <div class="package-row-actions">
-                <span class="badge badge-info">60 credits</span>
+                <span class="badge badge-purple">Paired</span>
+                <a class="action-link">Reassign</a>
+              </div>
+            </div>
+            <div class="package-row">
+              <div class="package-row-icon">📦</div>
+              <div class="package-row-info">
+                <div class="package-row-title">1× package of 90 Paired 25‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 90 credits · 25 min · <strong style="color: var(--color-purple);">Paired with Susan Powell</strong></div>
+              </div>
+              <div class="package-row-actions">
+                <span class="badge badge-purple">Paired</span>
                 <a class="action-link">Reassign</a>
               </div>
             </div>
@@ -767,28 +851,17 @@
                 <a class="action-link">Reassign</a>
               </div>
             </div>
-            <div class="package-row">
-              <div class="package-row-icon">📦</div>
-              <div class="package-row-info">
-                <div class="package-row-title">1× package of 90 Paired 25‑min booking credits</div>
-                <div class="package-row-meta">Paired Class · 90 credits · 25 min · <strong style="color: var(--color-purple);">Paired with Diana Powell</strong></div>
-              </div>
-              <div class="package-row-actions">
-                <span class="badge badge-purple">Paired</span>
-                <a class="action-link">Reassign</a>
-              </div>
-            </div>
           </div>
         </div>
 
-        <!-- Diana Powell — 1 package (paired) = 90 credits -->
+        <!-- Diana Powell — 2 packages: P1 (paired Jack) + P3 (paired Susan) = 150 credits -->
         <div class="student-card">
           <div class="student-card-header">
             <div class="student-card-header-left">
               <div class="student-avatar student-avatar-purple">DP</div>
               <div>
                 <div class="student-name">Diana Powell</div>
-                <div class="student-meta">1 package · 90 booking credits</div>
+                <div class="student-meta">2 packages · 150 booking credits</div>
               </div>
             </div>
             <div style="display: flex; gap: var(--space-1-5); align-items: center;">
@@ -808,17 +881,28 @@
                 <a class="action-link">Reassign</a>
               </div>
             </div>
+            <div class="package-row">
+              <div class="package-row-icon">📦</div>
+              <div class="package-row-info">
+                <div class="package-row-title">1× package of 60 Paired 50‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 60 credits · 50 min · <strong style="color: var(--color-purple);">Paired with Susan Powell</strong></div>
+              </div>
+              <div class="package-row-actions">
+                <span class="badge badge-purple">Paired</span>
+                <a class="action-link">Reassign</a>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Susan Powell — 1 package (individual) = 30 credits -->
+        <!-- Susan Powell — 2 packages: P2 (paired Jack) + P3 (paired Diana) = 150 credits -->
         <div class="student-card">
           <div class="student-card-header">
             <div class="student-card-header-left">
               <div class="student-avatar student-avatar-teal">SP</div>
               <div>
                 <div class="student-name">Susan Powell</div>
-                <div class="student-meta">1 package · 30 booking credits</div>
+                <div class="student-meta">2 packages · 150 booking credits</div>
               </div>
             </div>
             <div style="display: flex; gap: var(--space-1-5); align-items: center;">
@@ -830,11 +914,22 @@
             <div class="package-row">
               <div class="package-row-icon">📦</div>
               <div class="package-row-info">
-                <div class="package-row-title">1× package of 30 Individual 25‑min booking credits</div>
-                <div class="package-row-meta">Individual Class · 30 credits · 25 min</div>
+                <div class="package-row-title">1× package of 90 Paired 25‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 90 credits · 25 min · <strong style="color: var(--color-purple);">Paired with Jack Powell</strong></div>
               </div>
               <div class="package-row-actions">
-                <span class="badge badge-info">30 credits</span>
+                <span class="badge badge-purple">Paired</span>
+                <a class="action-link">Reassign</a>
+              </div>
+            </div>
+            <div class="package-row">
+              <div class="package-row-icon">📦</div>
+              <div class="package-row-info">
+                <div class="package-row-title">1× package of 60 Paired 50‑min booking credits</div>
+                <div class="package-row-meta">Paired Class · 60 credits · 50 min · <strong style="color: var(--color-purple);">Paired with Diana Powell</strong></div>
+              </div>
+              <div class="package-row-actions">
+                <span class="badge badge-purple">Paired</span>
                 <a class="action-link">Reassign</a>
               </div>
             </div>
@@ -853,7 +948,7 @@
 
 <!-- ── STEP 3 — CONFIRMATION ── -->
 <div class="flow-step-label"><div class="step-num">3</div> Confirmation — All Sessions Registered</div>
-<div class="flow-step-desc"><strong>Student-centric confirmation:</strong> Summary organized per student. Jack has 3 packages totaling 180 credits. Diana has 1 paired package (90 credits). Susan has 1 individual package (30 credits). Grand total: 210 booking credits across 4 packages.</div>
+<div class="flow-step-desc"><strong>Paired-heavy confirmation.</strong> Per-student summaries show the pairing web: Jack paired with Diana AND Susan. Diana paired with Jack AND Susan. Susan paired with Jack AND Diana. Grand total: 270 booking credits across 4 packages (3 paired + 1 individual).</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -887,11 +982,11 @@
         <!-- Jack Powell summary -->
         <div class="section-title"><span>👤 Jack Powell</span><span class="badge badge-success">✓ Registered</span></div>
         <ul class="summary-list">
-          <li><span class="summary-label">Package 1</span><span class="summary-value">1× Individual 50‑min (60 credits)</span></li>
-          <li><span class="summary-label">Package 2</span><span class="summary-value">1× Individual 25‑min (30 credits)</span></li>
-          <li><span class="summary-label">Package 3</span><span class="summary-value">1× Paired 25‑min (90 credits)</span></li>
-          <li><span class="summary-label">Total Credits</span><span class="summary-value"><strong>180 booking credits</strong></span></li>
-          <li><span class="summary-label">Paired with</span><span class="summary-value">Diana Powell</span></li>
+          <li><span class="summary-label">Package 1</span><span class="summary-value">1× Paired 25‑min (90 credits) — with Diana</span></li>
+          <li><span class="summary-label">Package 2</span><span class="summary-value">1× Paired 25‑min (90 credits) — with Susan</span></li>
+          <li><span class="summary-label">Package 3</span><span class="summary-value">1× Individual 25‑min (30 credits)</span></li>
+          <li><span class="summary-label">Total Credits</span><span class="summary-value"><strong>210 booking credits</strong></span></li>
+          <li><span class="summary-label">Paired with</span><span class="summary-value">Diana Powell, Susan Powell</span></li>
         </ul>
 
         <div style="margin: var(--space-3) 0;"><hr class="divider"></div>
@@ -899,9 +994,10 @@
         <!-- Diana Powell summary -->
         <div class="section-title"><span>👤 Diana Powell</span><span class="badge badge-success">✓ Registered</span></div>
         <ul class="summary-list">
-          <li><span class="summary-label">Package</span><span class="summary-value">1× Paired 25‑min (90 credits)</span></li>
-          <li><span class="summary-label">Total Credits</span><span class="summary-value"><strong>90 booking credits</strong></span></li>
-          <li><span class="summary-label">Paired with</span><span class="summary-value">Jack Powell</span></li>
+          <li><span class="summary-label">Package 1</span><span class="summary-value">1× Paired 25‑min (90 credits) — with Jack</span></li>
+          <li><span class="summary-label">Package 2</span><span class="summary-value">1× Paired 50‑min (60 credits) — with Susan</span></li>
+          <li><span class="summary-label">Total Credits</span><span class="summary-value"><strong>150 booking credits</strong></span></li>
+          <li><span class="summary-label">Paired with</span><span class="summary-value">Jack Powell, Susan Powell</span></li>
         </ul>
 
         <div style="margin: var(--space-3) 0;"><hr class="divider"></div>
@@ -909,14 +1005,24 @@
         <!-- Susan Powell summary -->
         <div class="section-title"><span>👤 Susan Powell</span><span class="badge badge-success">✓ Registered</span></div>
         <ul class="summary-list">
-          <li><span class="summary-label">Package</span><span class="summary-value">1× Individual 25‑min (30 credits)</span></li>
-          <li><span class="summary-label">Total Credits</span><span class="summary-value"><strong>30 booking credits</strong></span></li>
+          <li><span class="summary-label">Package 1</span><span class="summary-value">1× Paired 25‑min (90 credits) — with Jack</span></li>
+          <li><span class="summary-label">Package 2</span><span class="summary-value">1× Paired 50‑min (60 credits) — with Diana</span></li>
+          <li><span class="summary-label">Total Credits</span><span class="summary-value"><strong>150 booking credits</strong></span></li>
+          <li><span class="summary-label">Paired with</span><span class="summary-value">Jack Powell, Diana Powell</span></li>
         </ul>
 
         <div style="margin-top: var(--space-4); padding: var(--space-2) var(--space-3); background: var(--color-success-bg); border-radius: var(--radius); border-left: 3px solid var(--color-success);">
-          <div style="font-size: 13px; color: var(--color-dark-text); font-weight: 600;">Total: 210 booking credits across 4 packages</div>
+          <div style="font-size: 13px; color: var(--color-dark-text); font-weight: 600;">Total: 270 booking credits across 4 packages (3 paired + 1 individual)</div>
           <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">
-            Jack Powell (Individual 50‑min + Individual 25‑min + Paired 25‑min) · Diana Powell (Paired 25‑min) · Susan Powell (Individual 25‑min)
+            Jack (Paired 25‑min×2 + Individual 25‑min) · Diana (Paired 25‑min + Paired 50‑min) · Susan (Paired 25‑min + Paired 50‑min)
+          </div>
+        </div>
+
+        <!-- Pairing network summary -->
+        <div style="margin-top: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-purple-bg); border-radius: var(--radius); border-left: 3px solid var(--color-purple);">
+          <div style="font-size: 13px; color: var(--color-purple); font-weight: 600;">🔗 Pairing Network</div>
+          <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; line-height: 1.6;">
+            Jack ⟷ Diana (90 credits · 25‑min) · Jack ⟷ Susan (90 credits · 25‑min) · Diana ⟷ Susan (60 credits · 50‑min)
           </div>
         </div>
 
@@ -939,11 +1045,10 @@
 
 
 <!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  MODALS — Assign, Create & Edit Student                         ║ -->
+<!-- ║  MODALS — Paired-Focused Assign Flows                           ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════╝ -->
 
 <style>
-  /* ── Modal styles ── */
   .modal-section { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-4) var(--space-4); }
   .modal-backdrop { background: rgba(0,0,0,0.35); border-radius: var(--radius-xl); padding: var(--space-5); display: flex; justify-content: center; align-items: flex-start; min-height: 520px; margin-bottom: var(--space-2); }
   .modal { background: var(--color-surface); border-radius: var(--radius-xl); box-shadow: 0 12px 40px rgba(0,0,0,0.25); width: 100%; max-width: 520px; position: relative; overflow: hidden; }
@@ -953,7 +1058,6 @@
   .modal-title { font-size: 20px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
   .modal-subtitle { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-3); }
   .modal-footer { padding: var(--space-2) var(--space-4) var(--space-4); display: flex; justify-content: flex-end; gap: var(--space-2); }
-  .modal-footer-3 { justify-content: flex-end; gap: var(--space-1-5); }
 
   .assign-section-header { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.15); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); font-size: 14px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2); }
   .radio-list { list-style: none; padding: 0; }
@@ -966,137 +1070,24 @@
   .radio-circle.checked { border-color: var(--color-primary); }
   .radio-circle.checked::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary); }
   .radio-circle.disabled { border-color: var(--color-divider); }
-  .radio-label-sub { font-size: 12px; color: var(--color-text-secondary); margin-left: 2px; }
 
   .add-student-toggle { display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1-5) var(--space-2); color: var(--color-primary); font-size: 14px; font-weight: 500; cursor: pointer; border-top: 1px solid var(--color-divider); background: var(--color-primary-lightest); border-radius: 0 0 var(--radius) var(--radius); }
   .add-student-toggle .icon { font-size: 16px; font-weight: 700; }
 
-  .add-student-form { border-top: 1px solid var(--color-divider); background: var(--color-primary-lightest); padding: var(--space-2); border-radius: 0 0 var(--radius) var(--radius); }
-  .add-student-form .toggle-header { display: flex; align-items: center; gap: var(--space-1); color: var(--color-primary); font-size: 14px; font-weight: 500; margin-bottom: var(--space-2); cursor: pointer; }
-
-  .outlined-input { position: relative; margin-bottom: var(--space-2); }
-  .outlined-input label { position: absolute; top: -8px; left: 10px; background: var(--color-primary-lightest); padding: 0 4px; font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
-  .outlined-input input { width: 100%; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius); font-family: var(--font-family); font-size: 14px; color: var(--color-text-primary); background: white; }
-  .outlined-input input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(26,122,188,0.12); }
-  .outlined-input input::placeholder { color: var(--color-text-disabled); }
-  .outlined-input .required-star { color: var(--color-error); }
-
-  .outlined-input-white label { background: white; }
-
-  .warning-icon-inline { color: var(--color-warning); font-size: 20px; margin-right: var(--space-1); vertical-align: middle; }
-
-  .oauth-divider { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; color: var(--color-text-disabled); font-size: 12px; }
-  .oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-divider); }
-  .google-btn { display: flex; align-items: center; justify-content: center; gap: var(--space-1-5); width: 100%; padding: 10px 16px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; font-family: var(--font-family); font-size: 14px; font-weight: 500; color: var(--color-dark-text); cursor: pointer; }
-  .google-btn:hover { background: var(--color-hover-bg); border-color: var(--color-text-secondary); }
-  .google-icon { width: 18px; height: 18px; }
-
-  .student-name-display { display: flex; align-items: center; gap: var(--space-1); font-size: 14px; font-weight: 600; color: var(--color-dark-text); }
-
   .note-bar { background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--radius); padding: var(--space-1) var(--space-2); font-size: 12px; color: #E65100; margin-top: var(--space-2); }
-
-  .edit-icon-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--color-divider); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); }
-  .edit-icon-btn:hover { background: var(--color-primary-lightest); border-color: var(--color-primary); color: var(--color-primary); }
 </style>
 
 <div class="modal-section">
 
 <div style="margin-top: var(--space-6);"></div>
-<div class="flow-step-label"><div class="step-num">M</div> Modals — Assign, Create &amp; Edit Student</div>
-<div class="flow-step-desc">These modals appear when the user clicks "Assign to Student" on a package in the unassigned pool, "+ Add New Student", or the edit icon on a student card. They are overlaid on top of the centered wizard card.</div>
+<div class="flow-step-label"><div class="step-num">M</div> Modals — Paired Assignment Flow</div>
+<div class="flow-step-desc">These modals focus on the paired package assignment experience, which is the primary interaction in this V4 scenario. The 2-step Student 1 → Student 2 flow is shown for paired packages.</div>
 
 
-<!-- ── M1: Assign Student (Individual Package — multiple options) ── -->
+<!-- ── M1: Paired Package — Select Student 1 ── -->
 <div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M1 — Assign Student (Individual Package)</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "Assign to Student" on an individual package. Modal lists all 3 existing students in the account, plus the parent (self) option and the ability to add new.</div>
-</div>
-
-<div class="modal-backdrop">
-  <div class="modal">
-    <button class="modal-close">×</button>
-    <div class="modal-body">
-      <div class="modal-title">Assign Package</div>
-      <div class="modal-subtitle">Choose which student should receive this package:<br><strong>1× package of 60 Individual 50‑min booking credits</strong></div>
-
-      <div class="assign-section-header">Assign Student</div>
-      <ul class="radio-list">
-        <li class="radio-item"><div class="radio-circle"></div> Jack Powell</li>
-        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
-        <li class="radio-item"><div class="radio-circle"></div> Susan Powell</li>
-        <li class="radio-item"><div class="radio-circle"></div> Me (Sarah Miller)</li>
-      </ul>
-
-      <div class="add-student-toggle">
-        <span class="icon">+</span> Add New Student
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outlined">Cancel</button>
-      <button class="btn btn-success">Save</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ── M2: Assign Student — with Add New Student expanded ── -->
-<div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M2 — Student Information (Add New Student Expanded)</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "+ Add New Student". The form expands inline with Name, Username, and Password fields.</div>
-</div>
-
-<div class="modal-backdrop">
-  <div class="modal">
-    <button class="modal-close">×</button>
-    <div class="modal-body">
-      <div class="modal-title">Student Information</div>
-      <div class="modal-subtitle">Assign an existing student or create a new student.</div>
-
-      <div class="assign-section-header">Assign Student</div>
-
-      <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-1-5) var(--space-2); margin-bottom: var(--space-1);">
-        <div>
-          <div class="student-name-display">Jack Powell</div>
-          <div class="radio-label-sub">(Selected)</div>
-        </div>
-        <div style="margin-left: auto;">
-          <ul class="radio-list" style="display:flex; flex-direction:column; gap: var(--space-1);">
-            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle checked"></div> Jack Powell</li>
-            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Diana Powell</li>
-            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Susan Powell</li>
-            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Me (Sarah Miller)</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="add-student-form">
-        <div class="toggle-header"><span style="font-size:16px; font-weight:700;">—</span> Add New Student</div>
-        <div class="outlined-input">
-          <label>Name<span class="required-star">*</span></label>
-          <input type="text" value="Student 1">
-        </div>
-        <div class="outlined-input">
-          <label>Username</label>
-          <input type="text" placeholder="Username">
-        </div>
-        <div class="outlined-input" style="margin-bottom:0;">
-          <label>Password</label>
-          <input type="password" placeholder="Password">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outlined">Cancel</button>
-      <button class="btn btn-success">Assign and Continue</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ── M3: Assign Students (Paired Package — Student 1) ── -->
-<div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M3 — Assign Student 1 for Paired Package</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "Assign Students" on the paired package. First step: select Student 1. All students + parent are available.</div>
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M1 — Paired Package: Select Student 1</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "Assign Students" on a 90 Paired 25‑min package. Step 1 of 2: choose the first student.</div>
 </div>
 
 <div class="modal-backdrop">
@@ -1105,6 +1096,10 @@
     <div class="modal-body">
       <div class="modal-title">Paired Class — Student 1</div>
       <div class="modal-subtitle">Select the first student for this paired package:<br><strong>1× package of 90 Paired 25‑min booking credits</strong></div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1) var(--space-2); background: var(--color-purple-bg); border-radius: var(--radius); margin-bottom: var(--space-2); font-size: 12px; color: var(--color-purple); font-weight: 500;">
+        <span>🔗</span> Step 1 of 2 — Paired classes require exactly 2 students
+      </div>
 
       <div class="assign-section-header">Assign Student 1</div>
       <ul class="radio-list">
@@ -1126,10 +1121,10 @@
 </div>
 
 
-<!-- ── M4: Assign Students (Paired Package — Student 2, Student 1 greyed out) ── -->
+<!-- ── M2: Paired Package — Select Student 2 (Student 1 = Jack) ── -->
 <div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M4 — Assign Student 2 for Paired Package (Student 1 = Jack)</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">After selecting Jack as Student 1, this modal shows Student 2 selection. Jack appears greyed out (already assigned). Diana is being selected.</div>
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M2 — Paired Package: Select Student 2 (Student 1 = Jack)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Step 2 of 2: pick the second student. Jack is greyed out since he was already selected as Student 1. Diana is being selected.</div>
 </div>
 
 <div class="modal-backdrop">
@@ -1138,6 +1133,10 @@
     <div class="modal-body">
       <div class="modal-title">Paired Class — Student 2</div>
       <div class="modal-subtitle">Select the second student for this paired package:<br><strong>1× package of 90 Paired 25‑min booking credits</strong><br>Student 1: <strong>Jack Powell</strong></div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1) var(--space-2); background: var(--color-purple-bg); border-radius: var(--radius); margin-bottom: var(--space-2); font-size: 12px; color: var(--color-purple); font-weight: 500;">
+        <span>🔗</span> Step 2 of 2 — Choose who will pair with Jack Powell
+      </div>
 
       <div class="assign-section-header">Assign Student 2</div>
       <ul class="radio-list">
@@ -1162,56 +1161,83 @@
 </div>
 
 
-<!-- ── M5: Name Already Exists warning ── -->
+<!-- ── M3: Second Paired Package — Student already paired elsewhere ── -->
 <div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M5 — Name Already Exists (Warning)</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent enters a duplicate student name, this warning modal appears.</div>
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M3 — Second Paired Package: Student 2 (Student 1 = Jack, Diana already paired with Jack elsewhere)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When selecting Student 2 for the second paired package, Diana is shown with a note that she's already paired with Jack in another package. This is informational (not blocking) — the same student can appear in multiple pairings.</div>
 </div>
 
 <div class="modal-backdrop">
   <div class="modal">
     <button class="modal-close">×</button>
     <div class="modal-body">
-      <div style="display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-3);">
-        <span class="warning-icon-inline">⚠</span>
-        <div class="modal-title" style="margin-bottom:0;">Name Already Exists</div>
+      <div class="modal-title">Paired Class — Student 2</div>
+      <div class="modal-subtitle">Select the second student for this paired package:<br><strong>1× package of 90 Paired 25‑min booking credits</strong><br>Student 1: <strong>Jack Powell</strong></div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1) var(--space-2); background: var(--color-purple-bg); border-radius: var(--radius); margin-bottom: var(--space-2); font-size: 12px; color: var(--color-purple); font-weight: 500;">
+        <span>🔗</span> Step 2 of 2 — Choose who will pair with Jack Powell
       </div>
 
-      <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: var(--space-3);">
-        You already have a student named <strong>"Susan Powell"</strong> in your account. To avoid confusion, we'll automatically add an identifier to distinguish between them.
+      <div class="assign-section-header">Assign Student 2</div>
+      <ul class="radio-list">
+        <li class="radio-item disabled"><div class="radio-circle checked disabled" style="border-color:var(--color-divider);"></div> <span style="color:var(--color-text-disabled);">Jack Powell (Student 1)</span></li>
+        <li class="radio-item">
+          <div class="radio-circle"></div>
+          <div>
+            Diana Powell
+            <div style="font-size: 11px; color: var(--color-purple); font-weight: 500;">Already paired with Jack in another package</div>
+          </div>
+        </li>
+        <li class="radio-item"><div class="radio-circle checked"></div> Susan Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Sarah Miller)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
       </div>
 
-      <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: var(--space-0-5);">Here's how it might look:</div>
-      <div style="font-size: 16px; font-weight: 700; color: var(--color-dark-text); margin-bottom: var(--space-3);">Susan Powell (1)</div>
-
-      <div style="font-size: 14px; color: var(--color-text-primary);">Would you like to continue or cancel to add a different name?</div>
+      <div class="note-bar">
+        <strong>Note:</strong> Students can be paired with different partners across separate packages.
+      </div>
     </div>
-    <div class="modal-footer modal-footer-3">
-      <button class="btn btn-outlined">Cancel</button>
-      <button class="btn btn-outlined" style="display: flex; align-items: center; gap: 4px; color: var(--color-success);">I Meant <span style="font-size:11px;">▼</span></button>
-      <button class="btn btn-success">Continue</button>
+    <div class="modal-footer">
+      <button class="btn btn-ghost">← Back</button>
+      <div style="display: flex; gap: var(--space-2);">
+        <button class="btn btn-outlined">Cancel</button>
+        <button class="btn btn-success">Assign Pair</button>
+      </div>
     </div>
   </div>
 </div>
 
 
-<!-- ── M6: Change Student / Reassign ── -->
+<!-- ── M4: Reassign Paired Package ── -->
 <div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M6 — Change Student (Reassign)</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks "Reassign" on a package row inside a student card. The currently-assigned student is greyed out.</div>
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M4 — Reassign Paired Package</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks "Reassign" on a paired package inside a student card. They choose which student to replace. The partner display shows who would be affected.</div>
 </div>
 
 <div class="modal-backdrop">
   <div class="modal">
     <button class="modal-close">×</button>
     <div class="modal-body">
-      <div class="modal-title">Reassign Package</div>
-      <div class="modal-subtitle">Move this package to a different student:<br><strong>1× package of 30 Individual 25‑min booking credits</strong><br>Currently assigned to: <strong>Jack Powell</strong></div>
+      <div class="modal-title">Reassign Paired Package</div>
+      <div class="modal-subtitle">Replace one student in this paired package:<br><strong>1× package of 90 Paired 25‑min booking credits</strong><br>Currently: <strong>Jack Powell</strong> ⟷ <strong>Diana Powell</strong></div>
 
-      <div class="assign-section-header">Assign Student</div>
+      <div style="display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1) var(--space-2); background: var(--color-warning-bg); border-radius: var(--radius); margin-bottom: var(--space-2); font-size: 12px; color: var(--color-warning); font-weight: 500;">
+        <span>⚠️</span> Reassigning will affect both students in this pair
+      </div>
+
+      <div class="assign-section-header">Which student do you want to replace?</div>
       <ul class="radio-list">
-        <li class="radio-item disabled"><div class="radio-circle checked disabled" style="border-color:var(--color-divider);"></div> <span style="color:var(--color-text-disabled);">Jack Powell (current)</span></li>
-        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle checked"></div> Replace Diana Powell (keep Jack)</li>
+        <li class="radio-item"><div class="radio-circle"></div> Replace Jack Powell (keep Diana)</li>
+      </ul>
+
+      <hr style="border: none; border-top: 1px solid var(--color-divider); margin: var(--space-2) 0;">
+
+      <div class="assign-section-header">New student</div>
+      <ul class="radio-list">
         <li class="radio-item"><div class="radio-circle"></div> Susan Powell</li>
         <li class="radio-item"><div class="radio-circle"></div> Me (Sarah Miller)</li>
       </ul>
@@ -1221,66 +1247,45 @@
       </div>
 
       <div class="note-bar">
-        <strong>Note:</strong> Reassigning will remove this package from the current student.
+        <strong>Note:</strong> This will remove the paired package from the replaced student's card.
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outlined">Cancel</button>
-      <button class="btn btn-success">Reassign</button>
+      <button class="btn btn-success">Reassign Pair</button>
     </div>
   </div>
 </div>
 
 
-<!-- ── M7: Edit Student Information (Username/Password + OAuth) ── -->
+<!-- ── M5: Individual Package Assign (standard) ── -->
 <div style="margin-top: var(--space-4);">
-  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M7 — Edit Student Information</div>
-  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks the edit icon next to a student name. Allows editing credentials or linking Google.</div>
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M5 — Assign Individual Package (standard)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">For the single individual package (P4), the standard single-student modal is used. Same as V1 M1.</div>
 </div>
 
 <div class="modal-backdrop">
   <div class="modal">
     <button class="modal-close">×</button>
     <div class="modal-body">
-      <div class="modal-title">Edit Student Information</div>
-      <div class="modal-subtitle">Update your student's account credentials or connect with Google for easy sign-in.</div>
+      <div class="modal-title">Assign Package</div>
+      <div class="modal-subtitle">Choose which student should receive this package:<br><strong>1× package of 30 Individual 25‑min booking credits</strong></div>
 
-      <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.12); border-radius: var(--radius-lg); margin-bottom: var(--space-3);">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">JP</div>
-        <div>
-          <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">Jack Powell</div>
-          <div style="font-size: 12px; color: var(--color-text-secondary);">Student</div>
-        </div>
-      </div>
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="radio-circle checked"></div> Jack Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Susan Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Sarah Miller)</li>
+      </ul>
 
-      <div class="outlined-input outlined-input-white">
-        <label>Name<span class="required-star">*</span></label>
-        <input type="text" value="Jack Powell">
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
       </div>
-      <div class="outlined-input outlined-input-white">
-        <label>Username</label>
-        <input type="text" value="jack.powell">
-      </div>
-      <div class="outlined-input outlined-input-white">
-        <label>Password</label>
-        <input type="password" value="••••••••">
-      </div>
-
-      <div class="oauth-divider">or</div>
-
-      <button class="google-btn">
-        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
-        Sign in with Google
-      </button>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outlined">Cancel</button>
-      <button class="btn btn-primary">Save Changes</button>
+      <button class="btn btn-success">Save</button>
     </div>
   </div>
 </div>
