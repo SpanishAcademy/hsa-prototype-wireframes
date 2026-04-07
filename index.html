@@ -171,6 +171,140 @@
             font-size: 0.8rem;
             color: #a0a7b5;
         }
+
+        /* Readme toggle button */
+        .readme-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 8px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #4f5ef7;
+            background: #eff1ff;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .readme-toggle:hover {
+            background: #e2e5ff;
+            border-color: #c7cbff;
+        }
+
+        .readme-toggle svg {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .readme-toggle.open svg {
+            transform: rotate(180deg);
+        }
+
+        /* Readme panel */
+        .readme-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            background: #fafbfc;
+            border-bottom: 1px solid #e2e5ec;
+        }
+
+        .readme-panel.open {
+            max-height: 2000px;
+        }
+
+        .readme-content {
+            padding: 24px;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #2d3142;
+        }
+
+        .readme-content h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #1a1d23;
+        }
+
+        .readme-content h4 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 6px;
+            color: #1a1d23;
+        }
+
+        .readme-content p {
+            margin-bottom: 12px;
+        }
+
+        .readme-content ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .readme-content ul li {
+            margin-bottom: 4px;
+        }
+
+        .readme-content .verdict {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #edfbf0;
+            border-left: 3px solid #22c55e;
+            border-radius: 6px;
+            font-weight: 500;
+            color: #166534;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 16px;
+            font-size: 0.82rem;
+        }
+
+        .mapping-table th,
+        .mapping-table td {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e5ec;
+        }
+
+        .mapping-table th {
+            background: #f0f1f5;
+            font-weight: 600;
+            color: #1a1d23;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .mapping-table td:first-child {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.78rem;
+            color: #6c3ec4;
+            white-space: nowrap;
+        }
+
+        .mapping-table td:last-child {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.78rem;
+            color: #1a6b3c;
+        }
+
+        .mapping-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .mapping-table tr:hover td {
+            background: #f7f8ff;
+        }
     </style>
 </head>
 <body>
@@ -275,8 +409,113 @@
                 </li>
             </ul>
         </div>
+
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18C2.504 7.5 2 8.004 2 8.625v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                    </svg>
+                </div>
+                <span class="section-title">Package Registration</span>
+                <button class="readme-toggle" id="readmeToggle" onclick="toggleReadme()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    README
+                </button>
+                <span class="section-count">3 designs</span>
+            </div>
+
+            <div class="readme-panel" id="readmePanel">
+                <div class="readme-content">
+                    <h3>Conversion to MUI v7 &mdash; Feasibility</h3>
+                    <p>Yes, this converts very cleanly to MUI v7. The wireframe&rsquo;s design vocabulary maps almost 1:1 to MUI components:</p>
+
+                    <table class="mapping-table">
+                        <thead>
+                            <tr><th>Wireframe element</th><th>MUI v7 component</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>.card / .card-header / .card-body</td><td>Card, CardHeader, CardContent</td></tr>
+                            <tr><td>.btn / .btn-primary / .btn-outlined</td><td>Button variant=&quot;contained&quot; / &quot;outlined&quot;</td></tr>
+                            <tr><td>.badge-*</td><td>Chip with color and size=&quot;small&quot;</td></tr>
+                            <tr><td>.form-field / .form-group</td><td>TextField, FormControl</td></tr>
+                            <tr><td>.form-select</td><td>Select or TextField select</td></tr>
+                            <tr><td>.chip / .chip.selected</td><td>MUI Chip with clickable / variant toggle</td></tr>
+                            <tr><td>.package-grid (3-col)</td><td>Grid or CSS Grid via Box</td></tr>
+                            <tr><td>.form-row (2/3-col grid)</td><td>Grid layout</td></tr>
+                            <tr><td>.breadcrumb</td><td>Breadcrumbs + Link</td></tr>
+                            <tr><td>.admin-topbar</td><td>AppBar + Toolbar</td></tr>
+                            <tr><td>.info-box / .success-box</td><td>Alert severity=&quot;info&quot; / &quot;success&quot;</td></tr>
+                            <tr><td>.divider</td><td>Divider</td></tr>
+                            <tr><td>.action-bar</td><td>AppBar position=&quot;fixed&quot; bottom or styled Box</td></tr>
+                            <tr><td>.summary-row</td><td>Stack direction=&quot;row&quot; + justifyContent</td></tr>
+                            <tr><td>.student-slot</td><td>Nested Card or Paper</td></tr>
+                            <tr><td>.package-card / .package-card.selected</td><td>Custom Card or ToggleButton with selected styling</td></tr>
+                        </tbody>
+                    </table>
+
+                    <p>Your project already uses MUI v7.1.1 with Emotion, and has a centralized design system in <code>@hsacademy/design</code>. The wireframe&rsquo;s design tokens (colors, spacing scale, elevation) align well with MUI&rsquo;s theming model &mdash; most custom properties would map to <code>theme.palette</code>, <code>theme.spacing()</code>, and <code>theme.shadows</code>.</p>
+
+                    <h4>Key considerations</h4>
+                    <ul>
+                        <li>Almost everything has a direct MUI equivalent &mdash; no exotic patterns that would require heavy custom work</li>
+                        <li>The <code>package-card</code> selection grid is the most custom element &mdash; you&rsquo;d build it as a set of clickable Cards or use ToggleButtonGroup with custom styling</li>
+                        <li>The chip-grid for schedule preferences maps directly to MUI Chip components with onClick toggle</li>
+                        <li>Inline styles should be converted to either <code>sx</code> prop or styled components per your existing patterns</li>
+                        <li>The 4-screen flow (Welcome &rarr; Form &rarr; Review &rarr; Confirmation) fits naturally into the existing <code>purchase/*</code> component structure in your design package</li>
+                    </ul>
+
+                    <div class="verdict">Verdict: Very easy conversion. The wireframe was clearly designed with a component library like MUI in mind &mdash; the naming, structure, and patterns are all standard Material Design concepts.</div>
+                </div>
+            </div>
+
+            <ul class="link-list">
+                <li>
+                    <a href="design/package-registration/package-registration-v1.html">
+                        <span class="link-label">
+                            <span class="version-badge">V1</span>
+                            Package Registration
+                        </span>
+                        <svg class="arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="design/package-registration/package-registration-v2.html">
+                        <span class="link-label">
+                            <span class="version-badge">V2</span>
+                            Package Registration
+                        </span>
+                        <svg class="arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a href="design/package-registration/package-registration-v3.html">
+                        <span class="link-label">
+                            <span class="version-badge">V3</span>
+                            Package Registration
+                        </span>
+                        <svg class="arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </main>
 
     <footer>HSA Prototype Wireframes &mdash; Internal Use Only</footer>
+
+    <script>
+        function toggleReadme() {
+            var panel = document.getElementById('readmePanel');
+            var btn = document.getElementById('readmeToggle');
+            panel.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
