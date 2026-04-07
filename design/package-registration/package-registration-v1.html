@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1440">
-  <title>Package Registration — V1 — Stacked Cards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Package Registration — V2 Split Panel with Sidebar Context</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,7 +39,6 @@
     }
     body { font-family: var(--font-family); font-size: 14px; line-height: 1.5; color: var(--color-text-primary); background: #E8EAED; }
 
-    /* ── Flow wrapper ── */
     .flow { max-width: 1400px; margin: 0 auto; padding: var(--space-4); }
     .wireframe-banner { background: var(--color-dark-text); color: white; padding: var(--space-1) var(--space-2); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
     .flow-step-label { background: var(--color-primary); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1-5); margin-top: var(--space-6); }
@@ -47,7 +46,6 @@
     .flow-step-label .step-num { background: rgba(255,255,255,0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
     .flow-step-desc { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.2); border-top: none; padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-primary-dark); line-height: 1.5; }
 
-    /* ── Screen frame ── */
     .screen { background: var(--color-page-bg); border: 1px solid var(--color-border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden; margin-bottom: var(--space-2); box-shadow: var(--elevation-2); }
 
     /* ── Admin shell ── */
@@ -61,192 +59,420 @@
     .admin-avatar { width: 28px; height: 28px; border-radius: 50%; background: #546E7A; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; }
     .admin-user-name { font-size: 12px; color: rgba(255,255,255,0.8); }
 
-    /* ── Page header ── */
     .page-header { background: var(--color-surface); border-bottom: 1px solid var(--color-divider); padding: var(--space-3) var(--space-4); }
-    .page-header-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
     .page-title { font-size: 22px; font-weight: 600; color: var(--color-dark-text); }
     .page-subtitle { font-size: 13px; color: var(--color-text-secondary); margin-top: var(--space-0-5); }
     .breadcrumb { font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1); }
     .breadcrumb a { color: var(--color-primary); text-decoration: none; }
 
-    /* ── Cards ── */
+    .content { padding: var(--space-3) var(--space-4); }
+
     .card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); box-shadow: var(--elevation-1); }
-    .card + .card { margin-top: var(--space-3); }
     .card-header { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between; }
     .card-title { font-size: 15px; font-weight: 600; color: var(--color-dark-text); }
     .card-body { padding: var(--space-3); }
 
-    /* ── Content area ── */
-    .content { padding: var(--space-3) var(--space-4); padding-bottom: 80px; }
-
-    /* ── Buttons ── */
-    .btn { font-family: var(--font-family); font-weight: 500; font-size: 13px; line-height: 1.5; letter-spacing: 0.03em; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 6px 16px; transition: background 0.15s; text-decoration: none; border: none; white-space: nowrap; }
+    .btn { font-family: var(--font-family); font-weight: 500; font-size: 13px; line-height: 1.5; letter-spacing: 0.03em; border-radius: var(--radius); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); padding: 6px 16px; border: none; white-space: nowrap; text-decoration: none; }
     .btn-sm { padding: 4px 12px; font-size: 12px; }
-    .btn-lg { padding: 8px 22px; font-size: 14px; }
+    .btn-lg { padding: 10px 24px; font-size: 15px; }
     .btn-primary { background: var(--color-primary); color: white; }
-    .btn-primary:hover { background: var(--color-primary-dark); }
     .btn-outlined { background: transparent; color: var(--color-primary); border: 1px solid rgba(26,122,188,0.5); }
-    .btn-outlined:hover { background: var(--color-primary-lightest); }
     .btn-ghost { background: transparent; color: var(--color-text-secondary); border: 1px solid transparent; }
-    .btn-ghost:hover { background: var(--color-hover-bg); }
     .btn-success { background: var(--color-success); color: white; }
-    .btn-error { background: var(--color-error); color: white; }
-    .btn-disabled { background: var(--color-hover-bg); color: var(--color-text-disabled); cursor: not-allowed; border: 1px solid var(--color-divider); }
-    .btn-group { display: flex; gap: var(--space-1); }
 
-    /* ── Badges / Tags ── */
     .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
-    .badge-error { background: var(--color-error-bg); color: var(--color-error); }
-    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
-    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
     .badge-info { background: var(--color-info-bg); color: var(--color-info); }
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
     .badge-neutral { background: var(--color-hover-bg); color: var(--color-text-secondary); }
     .badge-purple { background: var(--color-purple-bg); color: var(--color-purple); }
 
-    /* ── Info / Warning boxes ── */
-    .info-box { background: var(--color-info-bg); border: 1px solid rgba(21,101,192,0.2); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
-    .info-text { font-size: 13px; color: var(--color-info); line-height: 1.5; }
-    .success-box { background: var(--color-success-bg); border: 1px solid rgba(46,125,50,0.2); border-radius: var(--radius); padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: flex-start; gap: var(--space-1-5); }
-    .success-text { font-size: 13px; color: var(--color-success); line-height: 1.5; }
+    .action-link { color: var(--color-primary); font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .action-link:hover { text-decoration: underline; }
 
-    /* ── Forms ── */
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-2); }
-    .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .form-row.full { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); }
-    .form-field { height: 40px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); padding: 0 12px; display: flex; align-items: center; font-size: 14px; color: var(--color-text-disabled); }
-    .form-field.filled { color: var(--color-dark-text); }
-    .form-field.error { border-color: var(--color-error); }
-    .form-helper { font-size: 11px; color: var(--color-text-secondary); }
-    .form-helper.error { color: var(--color-error); }
-    .form-select { font-family: var(--font-family); height: 40px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); padding: 0 12px; font-size: 14px; color: var(--color-text-primary); width: 100%; }
+    .form-group { margin-bottom: var(--space-3); }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
+    .form-input { width: 100%; font-family: var(--font-family); font-size: 14px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; color: var(--color-text-primary); }
+    .form-input.filled { border-color: var(--color-primary); background: var(--color-primary-lightest); }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2363717B' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 
-    /* ── Student slot cards ── */
-    .student-slot { border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: var(--space-3); }
-    .student-slot-header { padding: var(--space-1-5) var(--space-3); background: #FAFAFA; border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between; }
-    .student-slot-title { font-size: 14px; font-weight: 600; color: var(--color-dark-text); display: flex; align-items: center; gap: var(--space-1); }
-    .student-slot-body { padding: var(--space-3); }
-
-    /* ── Package option cards ── */
-    .package-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); }
-    .package-card { border: 2px solid var(--color-divider); border-radius: var(--radius-lg); padding: var(--space-3); text-align: center; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
-    .package-card:hover { border-color: var(--color-primary); box-shadow: var(--elevation-2); }
-    .package-card.selected { border-color: var(--color-primary); background: var(--color-primary-lightest); }
-    .package-name { font-size: 15px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
-    .package-sessions { font-size: 22px; font-weight: 700; color: var(--color-primary); margin-bottom: var(--space-0-5); }
-    .package-price { font-size: 13px; color: var(--color-text-secondary); }
-    .package-perclass { font-size: 12px; color: var(--color-text-disabled); margin-top: 2px; }
-    .package-badge { margin-top: var(--space-1); }
-
-    /* ── Schedule preference chips ── */
-    .chip-grid { display: flex; flex-wrap: wrap; gap: var(--space-1); }
-    .chip { display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; border: 1px solid var(--color-border); background: white; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
-    .chip:hover { border-color: var(--color-primary); color: var(--color-primary); }
-    .chip.selected { background: var(--color-primary-lightest); border-color: var(--color-primary); color: var(--color-primary); font-weight: 600; }
-
-    /* ── Summary row ── */
-    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
+    .summary-list { list-style: none; padding: 0; }
+    .summary-list li { display: flex; justify-content: space-between; padding: var(--space-1-5) 0; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
+    .summary-list li:last-child { border-bottom: none; }
     .summary-label { color: var(--color-text-secondary); }
-    .summary-value { font-weight: 500; color: var(--color-dark-text); }
-    .summary-total { font-size: 18px; font-weight: 700; color: var(--color-dark-text); border-top: 2px solid var(--color-divider); padding-top: var(--space-1-5); margin-top: var(--space-1); }
-    .summary-total .summary-value { font-size: 18px; color: var(--color-primary); }
+    .summary-value { font-weight: 500; color: var(--color-dark-text); text-align: right; }
 
-    /* ── Thank you ── */
-    .thank-you-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--color-success-bg); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto var(--space-3); }
-    .thank-you-title { font-size: 24px; font-weight: 700; color: var(--color-dark-text); text-align: center; margin-bottom: var(--space-1); }
-    .thank-you-subtitle { font-size: 14px; color: var(--color-text-secondary); text-align: center; margin-bottom: var(--space-4); }
+    .carousel-dots { display: flex; justify-content: center; gap: var(--space-1); margin-top: var(--space-3); }
+    .carousel-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-divider); }
+    .carousel-dot.active { background: var(--color-primary); }
 
-    /* ── Pairing indicator ── */
-    .pair-link { display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1-5) var(--space-2); background: var(--color-purple-bg); border: 1px solid rgba(106,27,154,0.2); border-radius: var(--radius); font-size: 12px; color: var(--color-purple); }
+    /* ── SPLIT PANEL LAYOUT (V2 differentiator) ── */
+    .split-layout { display: grid; grid-template-columns: 1fr 340px; gap: 0; min-height: 600px; }
+    .split-main { padding: var(--space-3) var(--space-4); }
+    .split-sidebar { background: #F8F9FA; border-left: 1px solid var(--color-divider); padding: var(--space-3); }
+    .sidebar-section { margin-bottom: var(--space-3); }
+    .sidebar-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--color-text-secondary); margin-bottom: var(--space-1-5); }
+    .sidebar-card { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius); padding: var(--space-2); margin-bottom: var(--space-1-5); }
+    .sidebar-card-title { font-size: 13px; font-weight: 600; color: var(--color-dark-text); }
+    .sidebar-card-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
 
-    /* ── Misc utility ── */
-    .text-muted { color: var(--color-text-secondary); }
-    .text-bold { font-weight: 600; }
-    .text-sm { font-size: 12px; }
-    .text-xs { font-size: 11px; }
-    .flex { display: flex; }
-    .flex-col { display: flex; flex-direction: column; }
-    .items-center { align-items: center; }
-    .justify-between { justify-content: space-between; }
-    .gap-1 { gap: var(--space-1); }
-    .gap-2 { gap: var(--space-2); }
-    .gap-3 { gap: var(--space-3); }
-    .mt-1 { margin-top: var(--space-1); }
-    .mt-2 { margin-top: var(--space-2); }
-    .mt-3 { margin-top: var(--space-3); }
-    .mb-2 { margin-bottom: var(--space-2); }
-    .mb-3 { margin-bottom: var(--space-3); }
+    /* ── Session row (V2 uses rows not table) ── */
+    .session-row { display: flex; align-items: center; padding: var(--space-1-5) var(--space-2); border: 1px solid var(--color-divider); border-radius: var(--radius); margin-bottom: var(--space-1); background: white; }
+    .session-row:hover { background: var(--color-primary-lightest); }
+    .session-row-num { width: 32px; height: 32px; border-radius: 50%; background: var(--color-hover-bg); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--color-text-secondary); margin-right: var(--space-2); flex-shrink: 0; }
+    .session-row-info { flex: 1; }
+    .session-row-name { font-size: 13px; font-weight: 500; color: var(--color-dark-text); }
+    .session-row-meta { font-size: 11px; color: var(--color-text-secondary); }
+    .session-row-actions { display: flex; align-items: center; gap: var(--space-1-5); }
 
-    /* ── Action bar (bottom) ── */
-    .action-bar { background: var(--color-surface); border-top: 1px solid var(--color-divider); padding: var(--space-2) var(--space-4); display: flex; align-items: center; justify-content: space-between; }
-    .action-bar-right { display: flex; gap: var(--space-1); }
+    .thank-you-hero { background: linear-gradient(135deg, var(--color-success), #43A047); color: white; padding: var(--space-6) var(--space-4); text-align: center; }
+    .thank-you-icon { font-size: 48px; margin-bottom: var(--space-2); }
+    .thank-you-title { font-size: 26px; font-weight: 700; }
+    .thank-you-subtitle { font-size: 15px; margin-top: var(--space-1); opacity: 0.9; }
 
-    /* ── Divider ── */
-    .divider { height: 1px; background: var(--color-divider); margin: var(--space-3) 0; }
+    .scenario-label { background: #ECEFF1; border: 1px dashed var(--color-border); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2); display: inline-flex; align-items: center; gap: var(--space-1); }
+    .scenario-label strong { color: var(--color-dark-text); }
 
-    /* ── Scenario label ── */
-    .scenario-label { background: var(--color-purple); color: white; padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg) var(--radius-lg) 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--space-1-5); margin-top: var(--space-8); }
-    .scenario-desc { background: var(--color-purple-bg); border: 1px solid rgba(106,27,154,0.2); border-top: none; padding: var(--space-1-5) var(--space-3); font-size: 13px; color: var(--color-purple); line-height: 1.5; }
+    .flex { display: flex; } .gap-2 { gap: var(--space-2); } .mb-3 { margin-bottom: var(--space-3); }
   </style>
 </head>
 <body>
 
-<div class="wireframe-banner">Wireframe — Package Registration — V1 — Stacked Cards (Desktop Only)</div>
+<div class="wireframe-banner">Wireframe — Package Registration (Unassigned Student) — V2 Split Panel with Sidebar</div>
 <div style="height: 32px;"></div>
 
 <div class="flow">
 
 <!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  SCREEN 1 — WELCOME / LOGGED IN                                ║ -->
+<!-- ║  SCENARIO A: Single Student — Individual Class                  ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════╝ -->
 
-<div class="flow-step-label"><div class="step-num">1</div> Welcome — Logged In (Unassigned Student)</div>
-<div class="flow-step-desc">The parent is logged in and has an unassigned student (no sessions registered yet). They see a prompt to register sessions for their student.</div>
+<!-- ── STEP 1 — WELCOME ── -->
+<div class="flow-step-label"><div class="step-num">1</div> Logged In — Welcome Page</div>
+<div class="flow-step-desc">Welcome page with persistent sidebar showing package context. The sidebar previews what was purchased; the main panel presents the welcome message.</div>
 
 <div class="screen">
   <div class="admin-topbar">
     <div class="admin-topbar-left">
       <div class="admin-logo">HSA Portal</div>
       <div class="admin-nav">
-        <div class="admin-nav-item active">Dashboard</div>
-        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item">Dashboard</div>
         <div class="admin-nav-item">Students</div>
-        <div class="admin-nav-item">Billing</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
         <div class="admin-nav-item">Account</div>
       </div>
     </div>
     <div class="admin-topbar-right">
-      <div class="admin-user-name">Maria Garcia</div>
-      <div class="admin-avatar">MG</div>
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
     </div>
   </div>
 
-  <div class="content">
-    <div class="card" style="max-width: 800px; margin: 0 auto;">
-      <div class="card-body" style="padding: var(--space-4);">
-        <div style="text-align: center; margin-bottom: var(--space-4);">
-          <div style="font-size: 36px; margin-bottom: var(--space-2);">🎓</div>
-          <div style="font-size: 20px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1);">Welcome to Homeschool Spanish Academy</div>
-          <div style="font-size: 14px; color: var(--color-text-secondary);">Get started by registering your student for Spanish sessions</div>
-        </div>
+  <div class="page-header">
+    <div class="page-title">Register Sessions</div>
+    <div class="page-subtitle">Assign your purchased sessions to your student(s).</div>
+  </div>
 
-        <div class="info-box">
-          <span>ℹ️</span>
-          <div class="info-text">You have <strong>1 unassigned student</strong> who hasn't been registered for sessions yet. Complete the registration below to get started.</div>
-        </div>
-
-        <div style="border: 1px solid var(--color-divider); border-radius: var(--radius-lg); padding: var(--space-3); display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3);">
-          <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary-lightest); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--color-primary); flex-shrink: 0;">S</div>
-          <div style="flex: 1;">
-            <div style="font-size: 15px; font-weight: 600; color: var(--color-dark-text);">Sofia Garcia</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary);">Age 8 · No sessions registered</div>
+  <div class="split-layout">
+    <!-- Main -->
+    <div class="split-main">
+      <div class="card">
+        <div class="card-body" style="padding: var(--space-4);">
+          <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-warning-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <span style="font-size: 22px;">⚠️</span>
+            </div>
+            <div>
+              <div style="font-size: 17px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2);">Before You Begin</div>
+              <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7;">
+                Before you begin, please note that once sessions are assigned, they cannot be easily changed. Assigning sessions is a crucial step in planning your student's learning, so take a moment to carefully review your choices.
+              </div>
+              <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-top: var(--space-2);">
+                When you're ready, let's set up your sessions with confidence!
+              </div>
+            </div>
           </div>
-          <span class="badge badge-warning">⚠ Unassigned</span>
-        </div>
 
-        <div style="text-align: center;">
-          <button class="btn btn-primary btn-lg">Register Sessions →</button>
+          <div class="carousel-dots">
+            <div class="carousel-dot active"></div>
+            <div class="carousel-dot"></div>
+            <div class="carousel-dot"></div>
+            <div class="carousel-dot"></div>
+            <div class="carousel-dot"></div>
+          </div>
+
+          <div style="margin-top: var(--space-4); text-align: center;">
+            <button class="btn btn-primary btn-lg">Sure, let's continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="split-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Your Package</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Individual Sessions</div>
+          <div class="sidebar-card-meta">8 sessions · Individual Class</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-info">2 per week</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Student</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Emma Miller</div>
+          <div class="sidebar-card-meta">Age 8 · Beginner</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-warning">Unassigned</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Progress</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">0 of 8 sessions assigned</div>
+        <div style="height: 6px; background: var(--color-hover-bg); border-radius: 3px; margin-top: var(--space-1); overflow: hidden;">
+          <div style="width: 0%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP 2 — ASSIGN SESSIONS ── -->
+<div class="flow-step-label"><div class="step-num">2</div> Assign Sessions — Your Info &amp; Session List</div>
+<div class="flow-step-desc">Left panel shows contact form and session list. Right sidebar persists with package summary and available actions (reassign, add student, create account, edit).</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="#">Register Sessions</a> &rsaquo; Assign Sessions</div>
+    <div class="page-title">Assign Sessions</div>
+    <div class="page-subtitle">Review and assign your purchased sessions.</div>
+  </div>
+
+  <div class="split-layout">
+    <!-- Main -->
+    <div class="split-main">
+      <!-- Contact Info -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="card-title">Your Information</div>
+          <a class="action-link">Edit</a>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+              <select class="form-input form-select filled">
+                <option selected>America/Chicago (CST)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+              <input type="email" class="form-input filled" value="sarah.miller@email.com">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+              <input type="tel" class="form-input filled" value="(512) 555-0147">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sessions (as rows) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Sessions (8)</div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <a class="action-link">+ Add New Student</a>
+            <a class="action-link">Create Account</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="session-row">
+            <div class="session-row-num">1</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 1</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">2</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 2</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">3</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 3</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">4</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 4</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">5</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 5</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">6</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 6</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">7</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 7</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">8</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller</div><div class="session-row-meta">Individual · Session 8</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-3);">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-success btn-lg">Save &amp; Continue</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="split-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Package Summary</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Individual Sessions</div>
+          <div class="sidebar-card-meta">8 sessions · Individual</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-info">2 per week</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Student</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Emma Miller</div>
+          <div class="sidebar-card-meta">Age 8 · Beginner</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-warning">Unassigned</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Progress</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">0 of 8 sessions assigned</div>
+        <div style="height: 6px; background: var(--color-hover-bg); border-radius: 3px; margin-top: var(--space-1); overflow: hidden;">
+          <div style="width: 0%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Quick Actions</div>
+        <div style="display:flex; flex-direction:column; gap: var(--space-1);">
+          <a class="action-link">+ Add New Student</a>
+          <a class="action-link">Create Account</a>
+          <a class="action-link">Edit Information</a>
+          <a class="action-link">Reassign All Sessions</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── STEP 3 — CONFIRMATION ── -->
+<div class="flow-step-label"><div class="step-num">3</div> Confirmation — All Sessions Registered</div>
+<div class="flow-step-desc">Split panel confirmation with summary on the left and updated sidebar showing complete status.</div>
+
+<div class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-left">
+      <div class="admin-logo">HSA Portal</div>
+      <div class="admin-nav">
+        <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
+        <div class="admin-nav-item">Schedule</div>
+        <div class="admin-nav-item active">Register Sessions</div>
+        <div class="admin-nav-item">Account</div>
+      </div>
+    </div>
+    <div class="admin-topbar-right">
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
+    </div>
+  </div>
+
+  <div class="thank-you-hero">
+    <div class="thank-you-icon">🎉</div>
+    <div class="thank-you-title">All Your Sessions Are Registered</div>
+    <div class="thank-you-subtitle">Your session assignments have been saved successfully.</div>
+  </div>
+
+  <div class="split-layout" style="min-height: 400px;">
+    <!-- Main -->
+    <div class="split-main">
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="card-title">Registration Summary</div>
+          <span class="badge badge-success">✓ Complete</span>
+        </div>
+        <div class="card-body">
+          <ul class="summary-list">
+            <li><span class="summary-label">Student</span><span class="summary-value">Emma Miller</span></li>
+            <li><span class="summary-label">Package</span><span class="summary-value">Individual Sessions</span></li>
+            <li><span class="summary-label">Sessions</span><span class="summary-value">8 sessions</span></li>
+            <li><span class="summary-label">Class Type</span><span class="summary-value">Individual</span></li>
+            <li><span class="summary-label">Frequency</span><span class="summary-value">2 sessions per week</span></li>
+          </ul>
+          <div style="margin-top: var(--space-3); font-size: 13px; color: var(--color-text-secondary); line-height: 1.6;">
+            Our team will assign a teacher and reach out to schedule your sessions. You'll receive a confirmation email shortly.
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button class="btn btn-primary">Go to Dashboard</button>
+        <button class="btn btn-outlined">View Schedule</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="split-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Package Summary</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Individual Sessions</div>
+          <div class="sidebar-card-meta">8 sessions · Individual</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-success">✓ Registered</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Student</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Emma Miller</div>
+          <div class="sidebar-card-meta">Age 8 · Beginner</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-success">Registered</span></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Progress</div>
+        <div style="font-size: 12px; color: var(--color-success);">8 of 8 sessions assigned ✓</div>
+        <div style="height: 6px; background: var(--color-hover-bg); border-radius: 3px; margin-top: var(--space-1); overflow: hidden;">
+          <div style="width: 100%; height: 100%; background: var(--color-success); border-radius: 3px;"></div>
         </div>
       </div>
     </div>
@@ -255,11 +481,15 @@
 
 
 <!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  SCREEN 2 — ABOUT YOU / REGISTRATION FORM                      ║ -->
+<!-- ║  SCENARIO B: 2 Students — Paired Class                         ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════╝ -->
 
-<div class="flow-step-label"><div class="step-num">2</div> About You — Registration Form</div>
-<div class="flow-step-desc">Parent confirms or updates their contact information and student details before selecting a package.</div>
+<div style="margin-top: var(--space-8);"></div>
+<div class="scenario-label"><strong>Scenario:</strong> 2 Students &middot; Paired Class</div>
+
+<!-- ── STEP B1 — ASSIGN SESSIONS (PAIRED) ── -->
+<div class="flow-step-label"><div class="step-num">B1</div> Assign Sessions — Paired Class (2 Students)</div>
+<div class="flow-step-desc">Sidebar shows both students; main panel shows paired session rows with both names. Parent can reassign sessions or add/edit students.</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -267,211 +497,158 @@
       <div class="admin-logo">HSA Portal</div>
       <div class="admin-nav">
         <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
         <div class="admin-nav-item">Schedule</div>
-        <div class="admin-nav-item active">Students</div>
-        <div class="admin-nav-item">Billing</div>
+        <div class="admin-nav-item active">Register Sessions</div>
         <div class="admin-nav-item">Account</div>
       </div>
     </div>
     <div class="admin-topbar-right">
-      <div class="admin-user-name">Maria Garcia</div>
-      <div class="admin-avatar">MG</div>
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
     </div>
   </div>
 
   <div class="page-header">
-    <div class="breadcrumb"><a href="#">Dashboard</a> › <a href="#">Students</a> › Register Sessions</div>
-    <div class="page-header-row">
-      <div>
-        <div class="page-title">Register Sessions</div>
-        <div class="page-subtitle">Complete the information below to register your student for Spanish sessions</div>
-      </div>
-    </div>
+    <div class="breadcrumb"><a href="#">Register Sessions</a> &rsaquo; Assign Sessions</div>
+    <div class="page-title">Assign Sessions</div>
+    <div class="page-subtitle">Review and assign your purchased paired class sessions.</div>
   </div>
 
-  <div class="content" style="max-width: 800px; margin: 0 auto;">
-    <!-- About You (Parent) -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">About You (Parent / Guardian)</div>
-        <span class="badge badge-success">✓ Verified</span>
-      </div>
-      <div class="card-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label>First Name</label>
-            <div class="form-field filled">Maria</div>
-          </div>
-          <div class="form-group">
-            <label>Last Name</label>
-            <div class="form-field filled">Garcia</div>
-          </div>
+  <div class="split-layout">
+    <!-- Main -->
+    <div class="split-main">
+      <!-- Contact info -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="card-title">Your Information</div>
+          <a class="action-link">Edit</a>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Email</label>
-            <div class="form-field filled">maria.garcia@email.com</div>
-          </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <div class="form-field filled">+1 (555) 234-5678</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Student Info -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Student Information</div>
-      </div>
-      <div class="card-body">
-        <div class="student-slot">
-          <div class="student-slot-header">
-            <div class="student-slot-title">
-              <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">1</div>
-              Student 1
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Timezone <span style="color:var(--color-error);">*</span></label>
+              <select class="form-input form-select filled"><option selected>America/Chicago (CST)</option></select>
             </div>
-            <span class="badge badge-warning">Unassigned</span>
-          </div>
-          <div class="student-slot-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label>First Name *</label>
-                <div class="form-field filled">Sofia</div>
-              </div>
-              <div class="form-group">
-                <label>Last Name *</label>
-                <div class="form-field filled">Garcia</div>
-              </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Email <span style="color:var(--color-error);">*</span></label>
+              <input type="email" class="form-input filled" value="sarah.miller@email.com">
             </div>
-            <div class="form-row cols-3">
-              <div class="form-group">
-                <label>Age *</label>
-                <div class="form-field filled">8</div>
-              </div>
-              <div class="form-group">
-                <label>Grade Level</label>
-                <select class="form-select">
-                  <option>3rd Grade</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Spanish Level</label>
-                <select class="form-select">
-                  <option>Beginner</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row full">
-              <div class="form-group">
-                <label>Notes (optional)</label>
-                <div class="form-field" style="height: 60px; align-items: flex-start; padding-top: 8px;">Any special considerations for the teacher...</div>
-              </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Phone Number <span style="color:var(--color-error);">*</span></label>
+              <input type="tel" class="form-input filled" value="(512) 555-0147">
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Paired Sessions -->
+      <div class="card">
+        <div class="card-header">
+          <div style="display:flex; align-items:center; gap: var(--space-2);">
+            <div class="card-title">Sessions (8)</div>
+            <span class="badge badge-purple">Paired Class</span>
+          </div>
+          <div style="display:flex; gap: var(--space-1-5);">
+            <a class="action-link">+ Add New Student</a>
+            <a class="action-link">Create Account</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="session-row">
+            <div class="session-row-num">1</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 1</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">2</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 2</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">3</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 3</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">4</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 4</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">5</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 5</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">6</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 6</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">7</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 7</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+          <div class="session-row">
+            <div class="session-row-num">8</div>
+            <div class="session-row-info"><div class="session-row-name">Emma Miller &amp; Lucas Miller</div><div class="session-row-meta">Paired · Session 8</div></div>
+            <div class="session-row-actions"><span class="badge badge-warning">Unassigned</span><a class="action-link">Reassign</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-3);">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-success btn-lg">Save &amp; Continue</button>
+      </div>
     </div>
 
-    <!-- Package Selection -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Select a Package</div>
-        <div class="text-sm text-muted">Choose the session package that works best for your family</div>
-      </div>
-      <div class="card-body">
-        <div class="package-grid">
-          <div class="package-card">
-            <div class="package-name">Starter</div>
-            <div class="package-sessions">12</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1);">sessions</div>
-            <div class="package-price">$239</div>
-            <div class="package-perclass">$19.92 / session</div>
-          </div>
-          <div class="package-card selected">
-            <div class="package-name">Standard</div>
-            <div class="package-sessions">25</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1);">sessions</div>
-            <div class="package-price">$449</div>
-            <div class="package-perclass">$17.96 / session</div>
-            <div class="package-badge"><span class="badge badge-success">Most Popular</span></div>
-          </div>
-          <div class="package-card">
-            <div class="package-name">Premium</div>
-            <div class="package-sessions">50</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1);">sessions</div>
-            <div class="package-price">$799</div>
-            <div class="package-perclass">$15.98 / session</div>
-            <div class="package-badge"><span class="badge badge-info">Best Value</span></div>
-          </div>
+    <!-- Sidebar -->
+    <div class="split-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Package Summary</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Paired Sessions</div>
+          <div class="sidebar-card-meta">8 sessions · Paired Class</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-purple">2 students</span></div>
         </div>
       </div>
-    </div>
-
-    <!-- Schedule Preferences -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Schedule Preferences</div>
-      </div>
-      <div class="card-body">
-        <div class="form-group mb-3">
-          <label style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1);">Preferred Days</label>
-          <div class="chip-grid">
-            <div class="chip selected">Mon</div>
-            <div class="chip">Tue</div>
-            <div class="chip selected">Wed</div>
-            <div class="chip">Thu</div>
-            <div class="chip selected">Fri</div>
-            <div class="chip">Sat</div>
-            <div class="chip">Sun</div>
-          </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Students</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Emma Miller</div>
+          <div class="sidebar-card-meta">Age 8 · Beginner</div>
         </div>
-        <div class="form-group mb-3">
-          <label style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1);">Preferred Time Slots</label>
-          <div class="chip-grid">
-            <div class="chip">8:00 AM – 9:00 AM</div>
-            <div class="chip selected">9:00 AM – 10:00 AM</div>
-            <div class="chip selected">10:00 AM – 11:00 AM</div>
-            <div class="chip">11:00 AM – 12:00 PM</div>
-            <div class="chip">1:00 PM – 2:00 PM</div>
-            <div class="chip">2:00 PM – 3:00 PM</div>
-            <div class="chip">3:00 PM – 4:00 PM</div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Session Type</label>
-            <select class="form-select">
-              <option>Private (1-on-1)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Preferred Start Date</label>
-            <div class="form-field filled">April 14, 2026</div>
-          </div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Lucas Miller</div>
+          <div class="sidebar-card-meta">Age 10 · Beginner</div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Action bar -->
-  <div class="action-bar">
-    <button class="btn btn-ghost">← Back to Dashboard</button>
-    <div class="action-bar-right">
-      <button class="btn btn-outlined">Save Draft</button>
-      <button class="btn btn-primary">Continue to Review →</button>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Progress</div>
+        <div style="font-size: 12px; color: var(--color-text-secondary);">0 of 8 sessions assigned</div>
+        <div style="height: 6px; background: var(--color-hover-bg); border-radius: 3px; margin-top: var(--space-1); overflow: hidden;">
+          <div style="width: 0%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Quick Actions</div>
+        <div style="display:flex; flex-direction:column; gap: var(--space-1);">
+          <a class="action-link">+ Add New Student</a>
+          <a class="action-link">Create Account</a>
+          <a class="action-link">Edit Information</a>
+          <a class="action-link">Reassign All Sessions</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 
-<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  SCREEN 3 — REVIEW & CONFIRM                                    ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
-
-<div class="flow-step-label"><div class="step-num">3</div> Review &amp; Confirm</div>
-<div class="flow-step-desc">Parent reviews all details before confirming the registration. The summary shows student, package, schedule, and pricing.</div>
+<!-- ── STEP B2 — PAIRED CONFIRMATION ── -->
+<div class="flow-step-label"><div class="step-num">B2</div> Confirmation — All Sessions Registered (Paired)</div>
+<div class="flow-step-desc">Split panel confirmation showing both students paired.</div>
 
 <div class="screen">
   <div class="admin-topbar">
@@ -479,467 +656,431 @@
       <div class="admin-logo">HSA Portal</div>
       <div class="admin-nav">
         <div class="admin-nav-item">Dashboard</div>
+        <div class="admin-nav-item">Students</div>
         <div class="admin-nav-item">Schedule</div>
-        <div class="admin-nav-item active">Students</div>
-        <div class="admin-nav-item">Billing</div>
+        <div class="admin-nav-item active">Register Sessions</div>
         <div class="admin-nav-item">Account</div>
       </div>
     </div>
     <div class="admin-topbar-right">
-      <div class="admin-user-name">Maria Garcia</div>
-      <div class="admin-avatar">MG</div>
+      <div class="admin-user-name">Sarah Miller</div>
+      <div class="admin-avatar">SM</div>
     </div>
   </div>
 
-  <div class="page-header">
-    <div class="breadcrumb"><a href="#">Dashboard</a> › <a href="#">Students</a> › <a href="#">Register Sessions</a> › Review</div>
-    <div class="page-header-row">
-      <div>
-        <div class="page-title">Review Registration</div>
-        <div class="page-subtitle">Please review the details below before confirming</div>
-      </div>
-    </div>
+  <div class="thank-you-hero">
+    <div class="thank-you-icon">🎉</div>
+    <div class="thank-you-title">All Your Sessions Are Registered</div>
+    <div class="thank-you-subtitle">Your session assignments have been saved successfully.</div>
   </div>
 
-  <div class="content" style="max-width: 800px; margin: 0 auto;">
-    <!-- Student Summary Card -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Student</div>
-        <button class="btn btn-sm btn-ghost">✎ Edit</button>
-      </div>
-      <div class="card-body">
-        <div style="display: flex; align-items: center; gap: var(--space-3);">
-          <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary-lightest); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--color-primary); flex-shrink: 0;">SG</div>
-          <div>
-            <div style="font-size: 16px; font-weight: 600; color: var(--color-dark-text);">Sofia Garcia</div>
-            <div class="text-sm text-muted">Age 8 · 3rd Grade · Beginner Level</div>
+  <div class="split-layout" style="min-height: 400px;">
+    <!-- Main -->
+    <div class="split-main">
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="card-title">Registration Summary</div>
+          <span class="badge badge-success">✓ Complete</span>
+        </div>
+        <div class="card-body">
+          <ul class="summary-list">
+            <li><span class="summary-label">Student 1</span><span class="summary-value">Emma Miller (Age 8)</span></li>
+            <li><span class="summary-label">Student 2</span><span class="summary-value">Lucas Miller (Age 10)</span></li>
+            <li><span class="summary-label">Package</span><span class="summary-value">Paired Sessions</span></li>
+            <li><span class="summary-label">Sessions</span><span class="summary-value">8 sessions</span></li>
+            <li><span class="summary-label">Class Type</span><span class="summary-value">Paired</span></li>
+          </ul>
+          <div style="margin-top: var(--space-3); font-size: 13px; color: var(--color-text-secondary); line-height: 1.6;">
+            Our team will assign a teacher and reach out to schedule your sessions. You'll receive a confirmation email shortly.
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Package Summary -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Package &amp; Schedule</div>
-        <button class="btn btn-sm btn-ghost">✎ Edit</button>
-      </div>
-      <div class="card-body">
-        <div class="summary-row">
-          <span class="summary-label">Package</span>
-          <span class="summary-value">Standard — 25 Sessions</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Session Type</span>
-          <span class="summary-value">Private (1-on-1)</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Preferred Days</span>
-          <span class="summary-value">Mon, Wed, Fri</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Preferred Times</span>
-          <span class="summary-value">9:00 – 11:00 AM</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Start Date</span>
-          <span class="summary-value">April 14, 2026</span>
-        </div>
-        <div class="divider"></div>
-        <div class="summary-row">
-          <span class="summary-label">Subtotal (25 sessions × $17.96)</span>
-          <span class="summary-value">$449.00</span>
-        </div>
-        <div class="summary-row summary-total">
-          <span class="summary-label" style="font-weight: 700;">Total Due</span>
-          <span class="summary-value">$449.00</span>
-        </div>
+      <div class="flex gap-2">
+        <button class="btn btn-primary">Go to Dashboard</button>
+        <button class="btn btn-outlined">View Schedule</button>
       </div>
     </div>
 
-    <!-- Parent Contact -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Parent / Guardian</div>
-        <button class="btn btn-sm btn-ghost">✎ Edit</button>
+    <!-- Sidebar -->
+    <div class="split-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Package Summary</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Paired Sessions</div>
+          <div class="sidebar-card-meta">8 sessions · Paired</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-success">✓ Registered</span></div>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="summary-row">
-          <span class="summary-label">Name</span>
-          <span class="summary-value">Maria Garcia</span>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Students</div>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Emma Miller</div>
+          <div class="sidebar-card-meta">Age 8 · Beginner</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-success">Registered</span></div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Email</span>
-          <span class="summary-value">maria.garcia@email.com</span>
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">Lucas Miller</div>
+          <div class="sidebar-card-meta">Age 10 · Beginner</div>
+          <div style="margin-top: var(--space-1);"><span class="badge badge-success">Registered</span></div>
         </div>
-        <div class="summary-row">
-          <span class="summary-label">Phone</span>
-          <span class="summary-value">+1 (555) 234-5678</span>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Progress</div>
+        <div style="font-size: 12px; color: var(--color-success);">8 of 8 sessions assigned ✓</div>
+        <div style="height: 6px; background: var(--color-hover-bg); border-radius: 3px; margin-top: var(--space-1); overflow: hidden;">
+          <div style="width: 100%; height: 100%; background: var(--color-success); border-radius: 3px;"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="action-bar">
-    <button class="btn btn-ghost">← Back to Form</button>
-    <div class="action-bar-right">
+</div><!-- /.flow -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  MODALS — Assign / Create / Edit Student                        ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<style>
+  /* ── Modal styles ── */
+  .modal-section { max-width: 1400px; margin: 0 auto; padding: 0 var(--space-4) var(--space-4); }
+  .modal-backdrop { background: rgba(0,0,0,0.35); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; justify-content: center; align-items: flex-start; min-height: 520px; margin-bottom: var(--space-2); }
+  .modal { background: var(--color-surface); border-radius: var(--radius-xl, 16px); box-shadow: 0 12px 40px rgba(0,0,0,0.25); width: 100%; max-width: 520px; position: relative; overflow: hidden; }
+  .modal-close { position: absolute; top: var(--space-2); right: var(--space-2); width: 28px; height: 28px; border-radius: 50%; border: none; background: transparent; color: var(--color-text-secondary); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: var(--color-hover-bg); }
+  .modal-body { padding: var(--space-4); }
+  .modal-title { font-size: 20px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-0-5); }
+  .modal-subtitle { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: var(--space-3); }
+  .modal-footer { padding: var(--space-2) var(--space-4) var(--space-4); display: flex; justify-content: flex-end; gap: var(--space-2); }
+  .modal-footer-3 { justify-content: flex-end; gap: var(--space-1-5); }
+
+  /* Assign student section */
+  .assign-section-header { background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.15); border-radius: var(--radius); padding: var(--space-1-5) var(--space-2); font-size: 14px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2); }
+  .radio-list { list-style: none; padding: 0; }
+  .radio-item { display: flex; align-items: center; gap: var(--space-1-5); padding: var(--space-1-5) var(--space-2); border-bottom: 1px solid var(--color-divider); cursor: pointer; font-size: 14px; color: var(--color-dark-text); }
+  .radio-item:last-child { border-bottom: none; }
+  .radio-item:hover { background: var(--color-primary-lightest); }
+  .radio-item.disabled { color: var(--color-text-disabled); cursor: default; }
+  .radio-item.disabled:hover { background: transparent; }
+  .radio-circle { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--color-border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .radio-circle.checked { border-color: var(--color-primary); }
+  .radio-circle.checked::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary); }
+  .radio-circle.disabled { border-color: var(--color-divider); }
+  .radio-label-sub { font-size: 12px; color: var(--color-text-secondary); margin-left: 2px; }
+
+  .add-student-toggle { display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1-5) var(--space-2); color: var(--color-primary); font-size: 14px; font-weight: 500; cursor: pointer; border-top: 1px solid var(--color-divider); background: var(--color-primary-lightest); border-radius: 0 0 var(--radius) var(--radius); }
+  .add-student-toggle .icon { font-size: 16px; font-weight: 700; }
+
+  .add-student-form { border-top: 1px solid var(--color-divider); background: var(--color-primary-lightest); padding: var(--space-2); border-radius: 0 0 var(--radius) var(--radius); }
+  .add-student-form .toggle-header { display: flex; align-items: center; gap: var(--space-1); color: var(--color-primary); font-size: 14px; font-weight: 500; margin-bottom: var(--space-2); cursor: pointer; }
+
+  /* Outlined input (MUI style) */
+  .outlined-input { position: relative; margin-bottom: var(--space-2); }
+  .outlined-input label { position: absolute; top: -8px; left: 10px; background: var(--color-primary-lightest); padding: 0 4px; font-size: 11px; color: var(--color-text-secondary); font-weight: 500; }
+  .outlined-input input { width: 100%; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius); font-family: var(--font-family); font-size: 14px; color: var(--color-text-primary); background: white; }
+  .outlined-input input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(26,122,188,0.12); }
+  .outlined-input input::placeholder { color: var(--color-text-disabled); }
+  .outlined-input .required-star { color: var(--color-error); }
+
+  /* Warning modal */
+  .warning-icon-inline { color: var(--color-warning); font-size: 20px; margin-right: var(--space-1); vertical-align: middle; }
+
+  /* Edit student */
+  .oauth-divider { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) 0; color: var(--color-text-disabled); font-size: 12px; }
+  .oauth-divider::before, .oauth-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-divider); }
+  .google-btn { display: flex; align-items: center; justify-content: center; gap: var(--space-1-5); width: 100%; padding: 10px 16px; border: 1px solid var(--color-border); border-radius: var(--radius); background: white; font-family: var(--font-family); font-size: 14px; font-weight: 500; color: var(--color-dark-text); cursor: pointer; }
+  .google-btn:hover { background: var(--color-hover-bg); border-color: var(--color-text-secondary); }
+  .google-icon { width: 18px; height: 18px; }
+
+  .student-name-display { display: flex; align-items: center; gap: var(--space-1); font-size: 14px; font-weight: 600; color: var(--color-dark-text); }
+
+  /* Note bar */
+  .note-bar { background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--radius); padding: var(--space-1) var(--space-2); font-size: 12px; color: #E65100; margin-top: var(--space-2); }
+
+  /* Edit icon for student */
+  .edit-icon-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--color-divider); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); }
+  .edit-icon-btn:hover { background: var(--color-primary-lightest); border-color: var(--color-primary); color: var(--color-primary); }
+</style>
+
+<div class="modal-section">
+
+<!-- ── MODAL LABEL ── -->
+<div style="margin-top: var(--space-6);"></div>
+<div class="flow-step-label"><div class="step-num">M</div> Modals — Assign, Create &amp; Edit Student</div>
+<div class="flow-step-desc">These modals appear when the user clicks "Reassign" on a session, "+ Add New Student", or the edit icon on a student card. They are overlaid on top of the Assign Sessions screen.</div>
+
+
+<!-- ── M1: Assign Student (Student 1 — multiple options) ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M1 — Assign Student (Student 1)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "Reassign" on a session. Modal lists existing students in the account, plus option to add new.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student 1</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="radio-circle"></div> Jack Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+    </div>
+    <div class="modal-footer">
       <button class="btn btn-outlined">Cancel</button>
-      <button class="btn btn-success btn-lg">Confirm &amp; Proceed to Payment →</button>
+      <button class="btn btn-success">Save</button>
     </div>
   </div>
 </div>
 
 
-<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  SCREEN 4 — THANK YOU / CONFIRMATION                            ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+<!-- ── M2: Assign Student — with Add New Student expanded ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M2 — Student Information (Add New Student Expanded)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">Parent clicks "+ Add New Student". The form expands inline with Name, Username, and Password fields. An existing student is selected via radio while the new student form is visible.</div>
+</div>
 
-<div class="flow-step-label"><div class="step-num">4</div> Thank You — Confirmation</div>
-<div class="flow-step-desc">Registration is complete. The parent sees a confirmation summary with next steps.</div>
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student Information</div>
+      <div class="modal-subtitle">Assign an existing student or create a new student.</div>
 
-<div class="screen">
-  <div class="admin-topbar">
-    <div class="admin-topbar-left">
-      <div class="admin-logo">HSA Portal</div>
-      <div class="admin-nav">
-        <div class="admin-nav-item">Dashboard</div>
-        <div class="admin-nav-item">Schedule</div>
-        <div class="admin-nav-item active">Students</div>
-        <div class="admin-nav-item">Billing</div>
-        <div class="admin-nav-item">Account</div>
+      <div class="assign-section-header">Assign Student</div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-1-5) var(--space-2); margin-bottom: var(--space-1);">
+        <div>
+          <div class="student-name-display">Jack Powell</div>
+          <div class="radio-label-sub">(Student 1)</div>
+        </div>
+        <div style="margin-left: auto;">
+          <ul class="radio-list" style="display:flex; flex-direction:column; gap: var(--space-1);">
+            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle checked"></div> Jack Powell</li>
+            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Diana Powell</li>
+            <li class="radio-item" style="border:none; padding: var(--space-0-5) 0;"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="admin-topbar-right">
-      <div class="admin-user-name">Maria Garcia</div>
-      <div class="admin-avatar">MG</div>
-    </div>
-  </div>
 
-  <div class="content" style="max-width: 680px; margin: 0 auto; padding-top: var(--space-8);">
-    <div class="card">
-      <div class="card-body" style="padding: var(--space-5); text-align: center;">
-        <div class="thank-you-icon">✓</div>
-        <div class="thank-you-title">Registration Complete!</div>
-        <div class="thank-you-subtitle">Sofia has been successfully registered for Spanish sessions</div>
-
-        <div class="success-box" style="text-align: left;">
-          <span>✉️</span>
-          <div class="success-text">A confirmation email has been sent to <strong>maria.garcia@email.com</strong> with your registration details.</div>
+      <div class="add-student-form">
+        <div class="toggle-header"><span style="font-size:16px; font-weight:700;">—</span> Add New Student</div>
+        <div class="outlined-input">
+          <label>Name<span class="required-star">*</span></label>
+          <input type="text" value="Student 1">
         </div>
-
-        <div style="text-align: left; margin-top: var(--space-3);">
-          <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-2);">What's Next?</div>
-          <div style="display: flex; flex-direction: column; gap: var(--space-2);">
-            <div style="display: flex; align-items: flex-start; gap: var(--space-1-5); font-size: 13px;">
-              <span style="color: var(--color-primary); font-weight: 700;">1.</span>
-              <span>Our scheduling team will match Sofia with a teacher based on your preferences within <strong>24–48 hours</strong>.</span>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: var(--space-1-5); font-size: 13px;">
-              <span style="color: var(--color-primary); font-weight: 700;">2.</span>
-              <span>You'll receive an email with your <strong>personalized schedule</strong> once sessions are assigned.</span>
-            </div>
-            <div style="display: flex; align-items: flex-start; gap: var(--space-1-5); font-size: 13px;">
-              <span style="color: var(--color-primary); font-weight: 700;">3.</span>
-              <span>You can view and manage sessions from your <strong>Dashboard</strong> at any time.</span>
-            </div>
-          </div>
+        <div class="outlined-input">
+          <label>Username</label>
+          <input type="text" placeholder="Username">
         </div>
-
-        <div style="margin-top: var(--space-4); display: flex; justify-content: center; gap: var(--space-2);">
-          <button class="btn btn-primary">Go to Dashboard</button>
-          <button class="btn btn-outlined">View Schedule</button>
+        <div class="outlined-input" style="margin-bottom:0;">
+          <label>Password</label>
+          <input type="password" placeholder="Password">
         </div>
       </div>
     </div>
-
-    <!-- Registration Summary -->
-    <div class="card" style="margin-top: var(--space-3);">
-      <div class="card-header">
-        <div class="card-title">Registration Summary</div>
-        <span class="text-sm text-muted">Order #HSA-2026-04081</span>
-      </div>
-      <div class="card-body">
-        <div class="summary-row">
-          <span class="summary-label">Student</span>
-          <span class="summary-value">Sofia Garcia</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Package</span>
-          <span class="summary-value">Standard — 25 Sessions</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Session Type</span>
-          <span class="summary-value">Private (1-on-1)</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Schedule</span>
-          <span class="summary-value">Mon / Wed / Fri, 9–11 AM</span>
-        </div>
-        <div class="summary-row summary-total">
-          <span class="summary-label" style="font-weight: 700;">Total Paid</span>
-          <span class="summary-value">$449.00</span>
-        </div>
-      </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Assign and Continue</button>
     </div>
   </div>
 </div>
 
 
-<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  SCENARIO — 2 STUDENTS, PAIRED CLASS                            ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+<!-- ── M3: Assign Student — single option (only "Me") ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M3 — Assign Student (Single Option)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When only one eligible student exists in the account, the radio list shows just that option.</div>
+</div>
 
-<div class="scenario-label">⬥ Scenario — 2 Students, Paired Class</div>
-<div class="scenario-desc">Parent registers two students for a paired (duet) session. Both students share the same class time with one teacher. The package is discounted for paired enrollment.</div>
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student 1</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
 
-<!-- Paired Registration Form -->
-<div class="flow-step-label" style="margin-top: var(--space-3);"><div class="step-num">A</div> Paired Registration — Student Details</div>
-<div class="flow-step-desc">The form expands to show two student slots with a pairing indicator between them.</div>
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
 
-<div class="screen">
-  <div class="admin-topbar">
-    <div class="admin-topbar-left">
-      <div class="admin-logo">HSA Portal</div>
-      <div class="admin-nav">
-        <div class="admin-nav-item">Dashboard</div>
-        <div class="admin-nav-item">Schedule</div>
-        <div class="admin-nav-item active">Students</div>
-        <div class="admin-nav-item">Billing</div>
-        <div class="admin-nav-item">Account</div>
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
       </div>
     </div>
-    <div class="admin-topbar-right">
-      <div class="admin-user-name">Maria Garcia</div>
-      <div class="admin-avatar">MG</div>
-    </div>
-  </div>
-
-  <div class="page-header">
-    <div class="breadcrumb"><a href="#">Dashboard</a> › <a href="#">Students</a> › Register Sessions</div>
-    <div class="page-header-row">
-      <div>
-        <div class="page-title">Register Sessions</div>
-        <div class="page-subtitle">Register 2 students for paired Spanish sessions</div>
-      </div>
-      <span class="badge badge-purple">🔗 Paired Class</span>
-    </div>
-  </div>
-
-  <div class="content" style="max-width: 800px; margin: 0 auto;">
-    <!-- Student Info -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Students</div>
-        <button class="btn btn-sm btn-outlined">+ Add Student</button>
-      </div>
-      <div class="card-body">
-        <!-- Student 1 -->
-        <div class="student-slot">
-          <div class="student-slot-header">
-            <div class="student-slot-title">
-              <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">1</div>
-              Student 1
-            </div>
-            <span class="badge badge-info">Primary</span>
-          </div>
-          <div class="student-slot-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label>First Name *</label>
-                <div class="form-field filled">Sofia</div>
-              </div>
-              <div class="form-group">
-                <label>Last Name *</label>
-                <div class="form-field filled">Garcia</div>
-              </div>
-            </div>
-            <div class="form-row cols-3">
-              <div class="form-group">
-                <label>Age *</label>
-                <div class="form-field filled">8</div>
-              </div>
-              <div class="form-group">
-                <label>Grade Level</label>
-                <select class="form-select"><option>3rd Grade</option></select>
-              </div>
-              <div class="form-group">
-                <label>Spanish Level</label>
-                <select class="form-select"><option>Beginner</option></select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pairing indicator -->
-        <div class="pair-link" style="margin-bottom: var(--space-3);">
-          🔗 <strong>Paired together</strong> — Both students will attend the same session with one teacher
-        </div>
-
-        <!-- Student 2 -->
-        <div class="student-slot">
-          <div class="student-slot-header">
-            <div class="student-slot-title">
-              <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-purple); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">2</div>
-              Student 2
-            </div>
-            <div class="flex gap-1 items-center">
-              <span class="badge badge-purple">Paired</span>
-              <button class="btn btn-sm btn-ghost" style="color: var(--color-error); font-size: 11px;">✕ Remove</button>
-            </div>
-          </div>
-          <div class="student-slot-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label>First Name *</label>
-                <div class="form-field filled">Lucas</div>
-              </div>
-              <div class="form-group">
-                <label>Last Name *</label>
-                <div class="form-field filled">Garcia</div>
-              </div>
-            </div>
-            <div class="form-row cols-3">
-              <div class="form-group">
-                <label>Age *</label>
-                <div class="form-field filled">10</div>
-              </div>
-              <div class="form-group">
-                <label>Grade Level</label>
-                <select class="form-select"><option>5th Grade</option></select>
-              </div>
-              <div class="form-group">
-                <label>Spanish Level</label>
-                <select class="form-select"><option>Beginner</option></select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Package for Paired -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">Select a Paired Package</div>
-        <span class="badge badge-success">Paired Discount Applied</span>
-      </div>
-      <div class="card-body">
-        <div class="package-grid">
-          <div class="package-card">
-            <div class="package-name">Starter Paired</div>
-            <div class="package-sessions">12</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1);">sessions</div>
-            <div class="package-price"><span style="text-decoration: line-through; color: var(--color-text-disabled);">$478</span> $399</div>
-            <div class="package-perclass">$16.63 / session per student</div>
-          </div>
-          <div class="package-card selected">
-            <div class="package-name">Standard Paired</div>
-            <div class="package-sessions">25</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1);">sessions</div>
-            <div class="package-price"><span style="text-decoration: line-through; color: var(--color-text-disabled);">$898</span> $699</div>
-            <div class="package-perclass">$13.98 / session per student</div>
-            <div class="package-badge"><span class="badge badge-success">Most Popular</span></div>
-          </div>
-          <div class="package-card">
-            <div class="package-name">Premium Paired</div>
-            <div class="package-sessions">50</div>
-            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-1);">sessions</div>
-            <div class="package-price"><span style="text-decoration: line-through; color: var(--color-text-disabled);">$1,598</span> $1,199</div>
-            <div class="package-perclass">$11.99 / session per student</div>
-            <div class="package-badge"><span class="badge badge-info">Best Value</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="action-bar">
-    <button class="btn btn-ghost">← Back to Dashboard</button>
-    <div class="action-bar-right">
-      <button class="btn btn-outlined">Save Draft</button>
-      <button class="btn btn-primary">Continue to Review →</button>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Assign and Continue</button>
     </div>
   </div>
 </div>
 
 
-<!-- Paired Thank You -->
-<div class="flow-step-label"><div class="step-num">B</div> Paired Registration — Thank You</div>
-<div class="flow-step-desc">Confirmation shows both students registered together with paired pricing.</div>
+<!-- ── M4: Name Already Exists warning ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M4 — Name Already Exists (Warning)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent enters a duplicate student name, this warning modal appears explaining the system will add an identifier to distinguish them.</div>
+</div>
 
-<div class="screen">
-  <div class="admin-topbar">
-    <div class="admin-topbar-left">
-      <div class="admin-logo">HSA Portal</div>
-      <div class="admin-nav">
-        <div class="admin-nav-item">Dashboard</div>
-        <div class="admin-nav-item">Schedule</div>
-        <div class="admin-nav-item active">Students</div>
-        <div class="admin-nav-item">Billing</div>
-        <div class="admin-nav-item">Account</div>
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div style="display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-3);">
+        <span class="warning-icon-inline">⚠</span>
+        <div class="modal-title" style="margin-bottom:0;">Name Already Exists</div>
       </div>
-    </div>
-    <div class="admin-topbar-right">
-      <div class="admin-user-name">Maria Garcia</div>
-      <div class="admin-avatar">MG</div>
-    </div>
-  </div>
 
-  <div class="content" style="max-width: 680px; margin: 0 auto; padding-top: var(--space-8);">
-    <div class="card">
-      <div class="card-body" style="padding: var(--space-5); text-align: center;">
-        <div class="thank-you-icon">✓</div>
-        <div class="thank-you-title">Paired Registration Complete!</div>
-        <div class="thank-you-subtitle">Sofia &amp; Lucas are registered for paired Spanish sessions</div>
-
-        <div class="success-box" style="text-align: left;">
-          <span>✉️</span>
-          <div class="success-text">A confirmation email has been sent to <strong>maria.garcia@email.com</strong>.</div>
-        </div>
+      <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: var(--space-3);">
+        You already have a student named <strong>"Arturo Archila"</strong> in your account. To avoid confusion, we'll automatically add an identifier to distinguish between them.
       </div>
-    </div>
 
-    <div class="card" style="margin-top: var(--space-3);">
-      <div class="card-header">
-        <div class="card-title">Registration Summary</div>
-        <span class="badge badge-purple">🔗 Paired Class</span>
-      </div>
-      <div class="card-body">
-        <div class="summary-row">
-          <span class="summary-label">Students</span>
-          <span class="summary-value">Sofia Garcia &amp; Lucas Garcia</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Package</span>
-          <span class="summary-value">Standard Paired — 25 Sessions</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Session Type</span>
-          <span class="summary-value">Paired (2 students, 1 teacher)</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Schedule</span>
-          <span class="summary-value">Mon / Wed / Fri, 9–11 AM</span>
-        </div>
-        <div class="summary-row">
-          <span class="summary-label">Paired Discount</span>
-          <span class="summary-value" style="color: var(--color-success);">-$199.00</span>
-        </div>
-        <div class="summary-row summary-total">
-          <span class="summary-label" style="font-weight: 700;">Total Paid</span>
-          <span class="summary-value">$699.00</span>
-        </div>
-      </div>
-    </div>
+      <div style="font-size: 14px; color: var(--color-text-primary); line-height: 1.7; margin-bottom: var(--space-0-5);">Here's how it might look:</div>
+      <div style="font-size: 16px; font-weight: 700; color: var(--color-dark-text); margin-bottom: var(--space-3);">Arturo Archila (1)</div>
 
-    <div style="text-align: center; margin-top: var(--space-4);">
-      <button class="btn btn-primary">Go to Dashboard</button>
-      <button class="btn btn-outlined" style="margin-left: var(--space-1);">View Schedule</button>
+      <div style="font-size: 14px; color: var(--color-text-primary);">Would you like to continue or cancel to add a different name?</div>
+    </div>
+    <div class="modal-footer modal-footer-3">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-outlined" style="display: flex; align-items: center; gap: 4px; color: var(--color-success);">I Meant <span style="font-size:11px;">▼</span></button>
+      <button class="btn btn-success">Continue</button>
     </div>
   </div>
 </div>
 
-</div><!-- /flow -->
+
+<!-- ── M5: Assign Student 2 (paired class — Student 1 already assigned) ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M5 — Assign Student 2 (Student 1 Already Assigned)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">For paired classes, after Student 1 is assigned, this modal shows Student 2 selection. The already-assigned student appears greyed out with "(assigned)" label.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Student 2</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item disabled"><div class="radio-circle checked disabled" style="border-color:var(--color-divider);"></div> <span style="color:var(--color-text-disabled);">Jack Powell (assigned)</span></li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M6: Change Student / Reassign ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M6 — Change Student (Reassign)</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks "Edit / Change Student" on an already-assigned session. Ineligible students are greyed out with a note at the bottom.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Change a student or create a new student account</div>
+      <div class="modal-subtitle">Assign an existing student or create an account for your new student.</div>
+
+      <div class="assign-section-header">Assign Student</div>
+      <ul class="radio-list">
+        <li class="radio-item disabled"><div class="radio-circle checked disabled" style="border-color:var(--color-divider);"></div> <span style="color:var(--color-text-disabled);">Jack Powell (assigned)</span></li>
+        <li class="radio-item"><div class="radio-circle"></div> Diana Powell</li>
+        <li class="radio-item"><div class="radio-circle"></div> Me (Ryan Powell)</li>
+      </ul>
+
+      <div class="add-student-toggle">
+        <span class="icon">+</span> Add New Student
+      </div>
+
+      <div class="note-bar">
+        <strong>Note:</strong> Ineligible students will appear grayed out.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-success">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── M7: Edit Student Information (Username/Password + OAuth) ── -->
+<div style="margin-top: var(--space-4);">
+  <div style="font-size: 13px; font-weight: 600; color: var(--color-dark-text); margin-bottom: var(--space-1); text-transform: uppercase; letter-spacing: 0.06em;">M7 — Edit Student Information</div>
+  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: var(--space-2);">When the parent clicks the edit (✎) icon next to a student name. Allows editing the student's username and password or linking a Google account via OAuth.</div>
+</div>
+
+<div class="modal-backdrop">
+  <div class="modal">
+    <button class="modal-close">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Edit Student Information</div>
+      <div class="modal-subtitle">Update your student's account credentials or connect with Google for easy sign-in.</div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-primary-lightest); border: 1px solid rgba(26,122,188,0.12); border-radius: var(--radius-lg); margin-bottom: var(--space-3);">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">EM</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--color-dark-text);">Emma Miller</div>
+          <div style="font-size: 12px; color: var(--color-text-secondary);">Age 8 · Beginner</div>
+        </div>
+      </div>
+
+      <div class="outlined-input">
+        <label>Name<span class="required-star">*</span></label>
+        <input type="text" value="Emma Miller">
+      </div>
+      <div class="outlined-input">
+        <label>Username</label>
+        <input type="text" value="emma.miller">
+      </div>
+      <div class="outlined-input">
+        <label>Password</label>
+        <input type="password" value="••••••••">
+      </div>
+
+      <div class="oauth-divider">or</div>
+
+      <button class="google-btn">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outlined">Cancel</button>
+      <button class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.modal-section -->
 </body>
 </html>
