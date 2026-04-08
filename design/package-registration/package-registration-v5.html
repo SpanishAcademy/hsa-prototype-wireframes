@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Package Registration — V5 Party→Package Wizard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --pri: #1976D2;
+      --pri-dark: #1565C0;
+      --pri-light: #42A5F5;
+      --pri-bg: #E3F2FD;
+      --text-1: rgba(0,0,0,0.87);
+      --text-2: rgba(0,0,0,0.6);
+      --text-3: rgba(0,0,0,0.38);
+      --border: rgba(0,0,0,0.12);
+      --divider: rgba(0,0,0,0.12);
+      --hover: rgba(0,0,0,0.04);
+      --page-bg: #F5F5F5;
+      --surface: #FFFFFF;
+      --success: #2E7D32;
+      --success-bg: #E8F5E9;
+      --warning: #ED6C02;
+      --warning-bg: #FFF3E0;
+      --error: #D32F2F;
+      --error-bg: #FFEBEE;
+      --info: #0288D1;
+      --info-bg: #E1F5FE;
+      --purple: #7B1FA2;
+      --purple-bg: #F3E5F5;
+      --teal: #00796B;
+      --teal-bg: #E0F2F1;
+      --s0: 4px; --s1: 8px; --s2: 12px; --s3: 16px; --s4: 24px; --s5: 32px; --s6: 40px; --s7: 48px; --s8: 64px;
+      --r1: 4px; --r2: 8px; --r3: 12px; --r4: 16px;
+      --elev1: 0 2px 1px -1px rgba(0,0,0,.08), 0 1px 1px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.04);
+      --elev2: 0 3px 3px -2px rgba(0,0,0,.08), 0 3px 4px rgba(0,0,0,.06), 0 1px 8px rgba(0,0,0,.04);
+      --elev3: 0 3px 5px -1px rgba(0,0,0,.10), 0 6px 10px rgba(0,0,0,.06), 0 1px 18px rgba(0,0,0,.04);
+      --elev4: 0 5px 5px -3px rgba(0,0,0,.10), 0 8px 10px 1px rgba(0,0,0,.06), 0 3px 14px 2px rgba(0,0,0,.04);
+    }
+    body { font-family: var(--font); font-size: 14px; line-height: 1.5; color: var(--text-1); background: #EEE; -webkit-font-smoothing: antialiased; }
+
+    /* ── Wireframe chrome ── */
+    .flow { max-width: 1400px; margin: 0 auto; padding: var(--s5); }
+    .wf-banner { background: #212121; color: #fff; padding: var(--s1) var(--s3); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .step-label { background: var(--pri); color: #fff; padding: var(--s3) var(--s4); border-radius: var(--r3) var(--r3) 0 0; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--s2); margin-top: var(--s7); }
+    .step-label:first-of-type { margin-top: var(--s4); }
+    .step-num { background: rgba(255,255,255,.2); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+    .step-desc { background: var(--pri-bg); border: 1px solid rgba(25,118,210,.15); border-top: none; padding: var(--s2) var(--s4); font-size: 13px; color: var(--pri-dark); line-height: 1.6; }
+    .screen { background: var(--page-bg); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--r3) var(--r3); overflow: hidden; margin-bottom: var(--s1); box-shadow: var(--elev2); }
+
+    /* ── App Bar (MUI v7) ── */
+    .appbar { background: #1E293B; color: #fff; padding: 0 var(--s4); display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .appbar-left { display: flex; align-items: center; gap: var(--s5); }
+    .appbar-logo { font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
+    .appbar-nav { display: flex; gap: 0; }
+    .nav-item { color: rgba(255,255,255,.7); padding: var(--s1) var(--s2); border-radius: var(--r2); font-size: 14px; font-weight: 500; cursor: default; }
+    .nav-item:hover { background: rgba(255,255,255,.08); }
+    .nav-item.active { color: #fff; background: rgba(255,255,255,.12); }
+    .appbar-right { display: flex; align-items: center; gap: var(--s2); }
+    .appbar-user { font-size: 13px; color: rgba(255,255,255,.85); }
+
+    /* ── Avatars ── */
+    .av { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff; flex-shrink: 0; }
+    .av-24 { width: 24px; height: 24px; font-size: 10px; }
+    .av-28 { width: 28px; height: 28px; font-size: 11px; }
+    .av-32 { width: 32px; height: 32px; font-size: 13px; }
+    .av-40 { width: 40px; height: 40px; font-size: 15px; }
+    .av-48 { width: 48px; height: 48px; font-size: 18px; }
+    .av-blue { background: var(--pri); }
+    .av-purple { background: var(--purple); }
+    .av-teal { background: var(--teal); }
+    .av-grey { background: #546E7A; }
+
+    /* ── Wizard card ── */
+    .wiz-wrap { display: flex; justify-content: center; align-items: flex-start; padding: var(--s6) var(--s5); min-height: 600px; }
+    .wiz { background: var(--surface); border-radius: var(--r4); box-shadow: var(--elev4); width: 100%; max-width: 780px; overflow: hidden; }
+    .wiz-wide { max-width: 960px; }
+    .wiz-head { padding: var(--s4) var(--s5); border-bottom: 1px solid var(--divider); }
+    .wiz-body { padding: var(--s5); }
+    .wiz-foot { padding: var(--s3) var(--s5); border-top: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center; background: #FAFAFA; }
+
+    .title { font-size: 22px; font-weight: 600; color: var(--text-1); letter-spacing: -.01em; }
+    .subtitle { font-size: 14px; color: var(--text-2); margin-top: var(--s0); }
+
+    /* ── Buttons (MUI v7) ── */
+    .btn { font-family: var(--font); font-weight: 500; font-size: 14px; line-height: 1.75; letter-spacing: .02em; border-radius: var(--r2); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--s1); padding: 6px 16px; border: none; white-space: nowrap; text-decoration: none; transition: background .15s, box-shadow .15s; }
+    .btn-sm { padding: 4px 10px; font-size: 13px; border-radius: 6px; }
+    .btn-lg { padding: 8px 22px; font-size: 15px; }
+    .btn-pri { background: var(--pri); color: #fff; box-shadow: var(--elev1); }
+    .btn-pri:hover { background: var(--pri-dark); box-shadow: var(--elev2); }
+    .btn-out { background: transparent; color: var(--pri); border: 1px solid rgba(25,118,210,.5); }
+    .btn-out:hover { background: rgba(25,118,210,.04); border-color: var(--pri); }
+    .btn-text { background: transparent; color: var(--pri); border: none; padding: 6px 8px; }
+    .btn-ghost { background: transparent; color: var(--text-2); border: none; }
+    .btn-ghost:hover { background: var(--hover); }
+    .btn-ok { background: var(--success); color: #fff; box-shadow: var(--elev1); }
+    .btn-dis { background: rgba(0,0,0,.12); color: var(--text-3); cursor: not-allowed; box-shadow: none; }
+
+    /* ── Chips (MUI v7) ── */
+    .chip { display: inline-flex; align-items: center; gap: 4px; padding: 0 12px; height: 24px; border-radius: 12px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .chip-sm { height: 20px; padding: 0 8px; font-size: 11px; }
+    .chip-info { background: var(--info-bg); color: var(--info); }
+    .chip-ok { background: var(--success-bg); color: var(--success); }
+    .chip-warn { background: var(--warning-bg); color: var(--warning); }
+    .chip-mute { background: rgba(0,0,0,.08); color: var(--text-2); }
+    .chip-purple { background: var(--purple-bg); color: var(--purple); }
+    .chip-teal { background: var(--teal-bg); color: var(--teal); }
+
+    .link { color: var(--pri); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .link:hover { text-decoration: underline; }
+
+    /* ── Forms ── */
+    .fg { margin-bottom: var(--s4); }
+    .fl { display: block; font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; letter-spacing: .01em; }
+    .fi { width: 100%; font-family: var(--font); font-size: 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r2); background: #fff; color: var(--text-1); transition: border-color .15s; }
+    .fi:focus { border-color: var(--pri); outline: none; box-shadow: 0 0 0 2px rgba(25,118,210,.12); }
+    .fi.filled { border-color: rgba(25,118,210,.5); }
+    .fi-sel { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+    .divider { border: none; border-top: 1px solid var(--divider); margin: var(--s4) 0; }
+    .sec-title { font-size: 14px; font-weight: 600; color: var(--text-1); margin-bottom: var(--s3); display: flex; align-items: center; justify-content: space-between; }
+    .progress-track { flex: 1; height: 6px; background: rgba(0,0,0,.08); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; transition: width .3s ease; }
+
+    .carousel-dots { display: flex; justify-content: center; gap: var(--s1); margin-top: var(--s4); }
+    .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,.2); }
+    .carousel-dot.active { background: var(--pri); width: 24px; border-radius: 4px; }
+
+    .summary-list { list-style: none; padding: 0; }
+    .summary-list li { display: flex; justify-content: space-between; padding: var(--s2) 0; border-bottom: 1px solid var(--divider); font-size: 13px; }
+    .summary-list li:last-child { border-bottom: none; }
+    .slbl { color: var(--text-2); }
+    .sval { font-weight: 500; color: var(--text-1); text-align: right; }
+
+    /* ── Alert ── */
+    .alert { display: flex; align-items: flex-start; gap: var(--s2); padding: var(--s3); border-radius: var(--r2); font-size: 13px; line-height: 1.5; }
+    .alert-ok { background: var(--success-bg); color: var(--success); }
+    .alert-warn { background: var(--warning-bg); color: var(--warning); }
+    .alert-info { background: var(--info-bg); color: var(--info); }
+    .alert-purple { background: var(--purple-bg); color: var(--purple); }
+    .alert-icon { font-size: 18px; flex-shrink: 0; line-height: 1; }
+    .alert-text { flex: 1; }
+    .alert-text strong { font-weight: 600; }
+
+    /* ── Unassigned pool ── */
+    .pool { border: 1px solid var(--warning); border-radius: var(--r3); overflow: hidden; margin-bottom: var(--s4); }
+    .pool-head { padding: var(--s2) var(--s4); background: var(--warning-bg); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(237,108,2,.15); }
+    .pool-body { padding: var(--s3) var(--s4); background: #FFFAF5; }
+    .pool-item { display: flex; align-items: center; gap: var(--s3); padding: var(--s2) 0; border-bottom: 1px solid var(--divider); }
+    .pool-item:last-child { border-bottom: none; }
+
+    /* ── Empty slot ── */
+    .empty-slot { display: flex; align-items: center; gap: var(--s3); padding: var(--s4); border: 2px dashed rgba(0,0,0,.12); border-radius: var(--r2); }
+    .empty-slot-icon { width: 32px; height: 32px; border-radius: var(--r2); border: 2px dashed rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .empty-slot-text { font-size: 13px; color: var(--text-3); }
+
+    /* ── Student card (unassigned state) ── */
+    .stu-card { border: 1px solid var(--divider); border-radius: var(--r3); overflow: hidden; margin-bottom: var(--s3); }
+    .stu-card:last-child { margin-bottom: 0; }
+    .stu-card-head { padding: var(--s2) var(--s4); display: flex; align-items: center; justify-content: space-between; background: var(--surface); border-bottom: 1px solid var(--divider); }
+    .stu-card-head-l { display: flex; align-items: center; gap: var(--s2); }
+    .stu-name { font-size: 15px; font-weight: 600; color: var(--text-1); }
+    .stu-meta { font-size: 12px; color: var(--text-2); }
+    .stu-card-body { padding: var(--s3) var(--s4); background: #FAFBFC; }
+    .stu-card.warn { border-color: var(--warning); }
+    .stu-card.warn .stu-card-head { background: var(--warning-bg); }
+
+    /* ╔══════════════════════════════════════════════════════════════╗ */
+    /* ║  V5: PARTY → PACKAGE CARDS                                  ║ */
+    /* ║  Each card = one unique student combo (party).               ║ */
+    /* ║  Packages listed inside. Each pkg appears exactly once.      ║ */
+    /* ╚══════════════════════════════════════════════════════════════╝ */
+
+    .party-card { border: 1px solid var(--divider); border-radius: var(--r3); overflow: hidden; margin-bottom: var(--s3); background: var(--surface); transition: box-shadow .15s; }
+    .party-card:last-child { margin-bottom: 0; }
+    .party-card:hover { box-shadow: var(--elev2); }
+
+    /* Accent stripe */
+    .party-card--solo { border-left: 4px solid var(--pri); }
+    .party-card--pair { border-left: 4px solid var(--purple); }
+
+    .party-head { padding: var(--s2) var(--s4); display: flex; align-items: center; justify-content: space-between; background: #FAFAFA; border-bottom: 1px solid var(--divider); min-height: 52px; }
+    .party-head-left { display: flex; align-items: center; gap: var(--s2); flex: 1; min-width: 0; }
+    .party-head-right { display: flex; align-items: center; gap: var(--s1); flex-shrink: 0; }
+
+    /* Pair connector (for paired party headers) */
+    .pair-avatars { display: flex; align-items: center; gap: var(--s2); }
+    .pair-link { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--purple-bg); border: 1px solid rgba(123,31,162,.12); color: var(--purple); font-size: 13px; font-weight: 700; flex-shrink: 0; }
+
+    .party-body { padding: var(--s3) var(--s4); }
+
+    /* Package row inside a party card */
+    .pkg-row { display: flex; align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); background: #FAFAFA; border: 1px solid var(--divider); border-radius: var(--r2); margin-bottom: var(--s1); }
+    .pkg-row:last-child { margin-bottom: 0; }
+    .pkg-icon { font-size: 16px; flex-shrink: 0; }
+    .pkg-info { flex: 1; min-width: 0; }
+    .pkg-title { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .pkg-meta { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+    .pkg-actions { display: flex; gap: var(--s2); align-items: center; flex-shrink: 0; }
+
+    /* Per-student summary table */
+    .sum-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .sum-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); padding: var(--s1) var(--s2); border-bottom: 2px solid var(--divider); }
+    .sum-table td { padding: var(--s2); border-bottom: 1px solid var(--divider); vertical-align: middle; }
+    .sum-table tr:last-child td { border-bottom: none; }
+    .sum-table .sum-stu { display: flex; align-items: center; gap: var(--s1); }
+    .sum-table .total-row td { font-weight: 600; color: var(--text-1); border-top: 2px solid var(--divider); border-bottom: none; }
+
+    /* ── Modal ── */
+    .modal-section { max-width: 1400px; margin: 0 auto; padding: 0 var(--s5) var(--s5); }
+    .modal-bg { background: rgba(0,0,0,.5); border-radius: var(--r4); padding: var(--s6); display: flex; justify-content: center; align-items: flex-start; min-height: 520px; margin-bottom: var(--s1); }
+    .modal { background: var(--surface); border-radius: var(--r4); box-shadow: var(--elev4); width: 100%; max-width: 520px; position: relative; overflow: hidden; }
+    .modal-x { position: absolute; top: var(--s2); right: var(--s2); width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; color: var(--text-2); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-x:hover { background: var(--hover); }
+    .modal-body { padding: var(--s4) var(--s5); }
+    .modal-title { font-size: 20px; font-weight: 600; color: var(--text-1); margin-bottom: var(--s0); letter-spacing: -.01em; }
+    .modal-sub { font-size: 14px; color: var(--text-2); line-height: 1.5; margin-bottom: var(--s4); }
+    .modal-foot { padding: var(--s3) var(--s5); display: flex; justify-content: flex-end; gap: var(--s2); }
+    .modal-pkg { display: flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3); background: #FAFAFA; border: 1px solid var(--divider); border-radius: var(--r2); margin-bottom: var(--s4); }
+    .modal-pkg-icon { font-size: 18px; flex-shrink: 0; }
+    .modal-pkg-title { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .modal-pkg-meta { font-size: 11px; color: var(--text-2); }
+
+    .sec-head { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-2); padding: var(--s1) var(--s3); background: rgba(0,0,0,.03); border-radius: var(--r2); margin-bottom: var(--s2); }
+
+    .radio-list { list-style: none; padding: 0; }
+    .radio-item { display: flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r2); cursor: pointer; font-size: 14px; color: var(--text-1); transition: background .1s; }
+    .radio-item:hover { background: var(--hover); }
+    .radio-item.off { color: var(--text-3); cursor: default; }
+    .radio-item.off:hover { background: transparent; }
+    .rc { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(0,0,0,.38); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .rc.on { border-color: var(--pri); }
+    .rc.on::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--pri); }
+    .rc.dis { border-color: rgba(0,0,0,.12); }
+
+    .add-stu-btn { display: flex; align-items: center; gap: var(--s1); padding: var(--s2) var(--s3); color: var(--pri); font-size: 14px; font-weight: 500; cursor: pointer; border-top: 1px solid var(--divider); margin-top: var(--s1); }
+    .add-stu-btn:hover { background: rgba(25,118,210,.04); }
+
+    .note { display: flex; align-items: flex-start; gap: var(--s1); background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--r2); padding: var(--s1) var(--s3); font-size: 12px; color: #E65100; margin-top: var(--s3); }
+  </style>
+</head>
+<body>
+
+<div class="wf-banner">Wireframe — Package Registration — V5 Party→Package · Desktop Only · 5 Packages (3 Paired + 1 Indiv) · 3 Students · 4 Parties</div>
+<div style="height: 32px;"></div>
+
+<div class="flow">
+
+<!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  V5 DATA MODEL — PARTY → PACKAGE GROUPING                              ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  Purchased:                                                             ║ -->
+<!-- ║    1× package of 30 individual 25-min booking credits                   ║ -->
+<!-- ║    2× package of 90 paired 25-min booking credits                       ║ -->
+<!-- ║    2× package of 60 paired 50-min booking credits                       ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  Packages to assign:                                                    ║ -->
+<!-- ║    PKG1 — 30 individual 25-min booking credits                          ║ -->
+<!-- ║    PKG2 — 90 paired 25-min booking credits                              ║ -->
+<!-- ║    PKG3 — 90 paired 25-min booking credits                              ║ -->
+<!-- ║    PKG4 — 60 paired 50-min booking credits                              ║ -->
+<!-- ║    PKG5 — 60 paired 50-min booking credits                              ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  Students: Jack (JP/blue), Diana (DP/purple), Susan (SP/teal)           ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  KEY INSIGHT: Party → Package means each unique student combo            ║ -->
+<!-- ║  (party) gets ONE card. Packages are listed inside. Every package        ║ -->
+<!-- ║  appears exactly once — no duplication across cards.                     ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  Parties (final state):                                                 ║ -->
+<!-- ║    Jack Powell (solo)           → PKG1 (30 indiv 25-min)                ║ -->
+<!-- ║    Jack Powell & Diana Powell   → PKG2 (90 paired 25-min)               ║ -->
+<!-- ║                                   PKG5 (60 paired 50-min)               ║ -->
+<!-- ║    Jack Powell & Susan Powell   → PKG3 (90 paired 25-min)               ║ -->
+<!-- ║    Diana Powell & Susan Powell  → PKG4 (60 paired 50-min)               ║ -->
+<!-- ║                                                                         ║ -->
+<!-- ║  Per-student totals:                                                    ║ -->
+<!-- ║    Jack:  PKG1+PKG2+PKG3+PKG5 = 270 credits (4 pkgs)                   ║ -->
+<!-- ║    Diana: PKG2+PKG4+PKG5      = 210 credits (3 pkgs)                    ║ -->
+<!-- ║    Susan: PKG3+PKG4           = 150 credits (2 pkgs)                    ║ -->
+<!-- ║    Grand total: 330 credits across 5 packages                           ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- STEP 1 — WELCOME                                                      -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="step-label"><div class="step-num">1</div> Logged In — Welcome Page</div>
+<div class="step-desc">Same welcome card as V4.</div>
+
+<div class="screen">
+  <div class="appbar">
+    <div class="appbar-left"><div class="appbar-logo">HSA Portal</div><div class="appbar-nav"><div class="nav-item">Dashboard</div><div class="nav-item">Students</div><div class="nav-item">Schedule</div><div class="nav-item active">Register Sessions</div><div class="nav-item">Account</div></div></div>
+    <div class="appbar-right"><div class="appbar-user">Sarah Miller</div><div class="av av-32 av-grey">SM</div></div>
+  </div>
+  <div class="wiz-wrap">
+    <div class="wiz">
+      <div class="wiz-body" style="text-align:center; padding:var(--s7) var(--s6);">
+        <div style="width:56px; height:56px; border-radius:50%; background:var(--warning-bg); display:flex; align-items:center; justify-content:center; margin:0 auto var(--s4);"><span style="font-size:26px;">⚠️</span></div>
+        <div style="font-size:22px; font-weight:700; color:var(--text-1); margin-bottom:var(--s4); letter-spacing:-.01em;">Before You Begin</div>
+        <div style="max-width:520px; margin:0 auto; text-align:left;">
+          <div style="font-size:15px; color:var(--text-1); line-height:1.8;">Before you begin, please note that once sessions are assigned, they cannot be easily changed. Assigning sessions is a crucial step in planning your student's learning, so take a moment to carefully review your choices.</div>
+          <div style="font-size:15px; color:var(--text-1); line-height:1.8; margin-top:var(--s3);">When you're ready, let's set up your sessions with confidence!</div>
+        </div>
+        <div class="carousel-dots"><div class="carousel-dot active"></div><div class="carousel-dot"></div><div class="carousel-dot"></div><div class="carousel-dot"></div><div class="carousel-dot"></div></div>
+        <div style="margin-top:var(--s6);"><button class="btn btn-pri btn-lg">Sure, let's continue →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- STEP 2a — ALL 5 PACKAGES UNASSIGNED                                   -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="step-label"><div class="step-num">2a</div> Assign Sessions — All 5 Packages Unassigned (0 of 5)</div>
+<div class="step-desc"><strong>Starting state.</strong> Unassigned pool shows all 5 packages. 3 student cards are empty below. Save is disabled.</div>
+
+<div class="screen">
+  <div class="appbar">
+    <div class="appbar-left"><div class="appbar-logo">HSA Portal</div><div class="appbar-nav"><div class="nav-item">Dashboard</div><div class="nav-item">Students</div><div class="nav-item">Schedule</div><div class="nav-item active">Register Sessions</div><div class="nav-item">Account</div></div></div>
+    <div class="appbar-right"><div class="appbar-user">Sarah Miller</div><div class="av av-32 av-grey">SM</div></div>
+  </div>
+  <div class="wiz-wrap">
+    <div class="wiz wiz-wide">
+      <div class="wiz-head">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="title" style="font-size:20px;">Assign Sessions</div>
+            <div class="subtitle">Assign your purchased packages to students. You have 5 packages to assign.</div>
+          </div>
+          <button class="btn btn-out btn-sm">+ Add Student</button>
+        </div>
+        <div style="margin-top:var(--s3); display:flex; align-items:center; gap:var(--s3);">
+          <div style="font-size:12px; font-weight:500; color:var(--warning);">0 of 5 assigned</div>
+          <div class="progress-track"><div class="progress-fill" style="width:0%; background:var(--warning);"></div></div>
+        </div>
+      </div>
+
+      <div class="wiz-body">
+        <!-- Contact fields -->
+        <div class="sec-title"><span>Your Information</span><a class="link">Edit</a></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--s4); margin-bottom:var(--s5);">
+          <div class="fg" style="margin-bottom:0;"><label class="fl">Timezone *</label><select class="fi fi-sel filled"><option selected>America/Chicago (CST)</option></select></div>
+          <div class="fg" style="margin-bottom:0;"><label class="fl">Email *</label><input type="email" class="fi filled" value="sarah.miller@email.com"></div>
+          <div class="fg" style="margin-bottom:0;"><label class="fl">Phone Number *</label><input type="tel" class="fi filled" value="(512) 555-0147"></div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Unassigned pool (5 packages) -->
+        <div class="pool">
+          <div class="pool-head">
+            <div style="display:flex; align-items:center; gap:var(--s1);"><span style="font-size:16px;">📦</span><span style="font-size:13px; font-weight:600; color:var(--warning);">Unassigned Packages (5)</span></div>
+            <span class="chip chip-warn">5 need assignment</span>
+          </div>
+          <div class="pool-body">
+            <div class="pool-item">
+              <div style="font-size:16px; flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG1 · 30 individual 25‑min booking credits</div><div style="font-size:12px; color:var(--text-2);">Individual Class · 30 credits · 25 min</div></div>
+              <button class="btn btn-pri btn-sm">Assign to Student</button>
+            </div>
+            <div class="pool-item">
+              <div style="font-size:16px; flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG2 · 90 paired 25‑min booking credits</div><div style="font-size:12px; color:var(--text-2);">Paired Class · 90 credits · 25 min · Requires 2 students</div></div>
+              <span class="chip chip-purple">Paired</span>
+              <button class="btn btn-pri btn-sm" style="margin-left:var(--s1);">Assign Students</button>
+            </div>
+            <div class="pool-item">
+              <div style="font-size:16px; flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG3 · 90 paired 25‑min booking credits</div><div style="font-size:12px; color:var(--text-2);">Paired Class · 90 credits · 25 min · Requires 2 students</div></div>
+              <span class="chip chip-purple">Paired</span>
+              <button class="btn btn-pri btn-sm" style="margin-left:var(--s1);">Assign Students</button>
+            </div>
+            <div class="pool-item">
+              <div style="font-size:16px; flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG4 · 60 paired 50‑min booking credits</div><div style="font-size:12px; color:var(--text-2);">Paired Class · 60 credits · 50 min · Requires 2 students</div></div>
+              <span class="chip chip-purple">Paired</span>
+              <button class="btn btn-pri btn-sm" style="margin-left:var(--s1);">Assign Students</button>
+            </div>
+            <div class="pool-item">
+              <div style="font-size:16px; flex-shrink:0;">📦</div>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG5 · 60 paired 50‑min booking credits</div><div style="font-size:12px; color:var(--text-2);">Paired Class · 60 credits · 50 min · Requires 2 students</div></div>
+              <span class="chip chip-purple">Paired</span>
+              <button class="btn btn-pri btn-sm" style="margin-left:var(--s1);">Assign Students</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Students (all empty) -->
+        <div class="sec-title"><div style="display:flex; align-items:center; gap:var(--s1);"><span>Your Students</span><span class="chip chip-mute chip-sm">3 students</span></div><a class="link">+ Add Student</a></div>
+
+        <div class="stu-card warn">
+          <div class="stu-card-head"><div class="stu-card-head-l"><div class="av av-40 av-blue">JP</div><div><div class="stu-name">Jack Powell</div><div class="stu-meta">No packages assigned</div></div></div><span class="chip chip-warn">No packages</span></div>
+          <div class="stu-card-body"><div class="empty-slot"><div class="empty-slot-icon"><span style="font-size:14px; color:var(--text-3);">+</span></div><div class="empty-slot-text">No packages assigned. Use "Assign" buttons above.</div></div></div>
+        </div>
+        <div class="stu-card warn">
+          <div class="stu-card-head"><div class="stu-card-head-l"><div class="av av-40 av-purple">DP</div><div><div class="stu-name">Diana Powell</div><div class="stu-meta">No packages assigned</div></div></div><span class="chip chip-warn">No packages</span></div>
+          <div class="stu-card-body"><div class="empty-slot"><div class="empty-slot-icon"><span style="font-size:14px; color:var(--text-3);">+</span></div><div class="empty-slot-text">No packages assigned. Use "Assign" buttons above.</div></div></div>
+        </div>
+        <div class="stu-card warn">
+          <div class="stu-card-head"><div class="stu-card-head-l"><div class="av av-40 av-teal">SP</div><div><div class="stu-name">Susan Powell</div><div class="stu-meta">No packages assigned</div></div></div><span class="chip chip-warn">No packages</span></div>
+          <div class="stu-card-body"><div class="empty-slot"><div class="empty-slot-icon"><span style="font-size:14px; color:var(--text-3);">+</span></div><div class="empty-slot-text">No packages assigned. Use "Assign" buttons above.</div></div></div>
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-lg btn-dis">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════════ -->
+<!-- STEP 2c — ALL 5 ASSIGNED — PARTY → PACKAGE GROUPING (V5 CORE)               -->
+<!--                                                                              -->
+<!-- Each card = one unique student combo (party). Packages listed inside.         -->
+<!-- Jack & Diana share TWO packages (PKG2 + PKG5) — shown in ONE card.            -->
+<!-- Every package appears exactly once across all cards. No duplication.           -->
+<!-- ══════════════════════════════════════════════════════════════════════════════ -->
+
+<div class="step-label"><div class="step-num">2c</div> Assign Sessions — All 5 Assigned (5 of 5) · <em style="font-weight:400; text-transform:none; letter-spacing:0;">V5 Party→Package</em></div>
+<div class="step-desc"><strong>V5 Party→Package layout.</strong> Each card represents a unique student combination (party). All packages for that combo are listed inside — so Jack &amp; Diana's card contains <em>both</em> PKG2 (90 paired 25‑min) and PKG5 (60 paired 50‑min). Each package appears exactly once across all cards — no duplication, no confusion between identical-looking packages.</div>
+
+<div class="screen">
+  <div class="appbar">
+    <div class="appbar-left"><div class="appbar-logo">HSA Portal</div><div class="appbar-nav"><div class="nav-item">Dashboard</div><div class="nav-item">Students</div><div class="nav-item">Schedule</div><div class="nav-item active">Register Sessions</div><div class="nav-item">Account</div></div></div>
+    <div class="appbar-right"><div class="appbar-user">Sarah Miller</div><div class="av av-32 av-grey">SM</div></div>
+  </div>
+
+  <div class="wiz-wrap">
+    <div class="wiz wiz-wide">
+      <div class="wiz-head">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="title" style="font-size:20px;">Assign Sessions</div>
+            <div class="subtitle">Assign your purchased packages to students. You have 5 packages to assign.</div>
+          </div>
+          <button class="btn btn-out btn-sm">+ Add Student</button>
+        </div>
+        <div style="margin-top:var(--s3); display:flex; align-items:center; gap:var(--s3);">
+          <div style="font-size:12px; font-weight:500; color:var(--success);">5 of 5 assigned ✓</div>
+          <div class="progress-track"><div class="progress-fill" style="width:100%; background:var(--success);"></div></div>
+        </div>
+      </div>
+
+      <div class="wiz-body">
+        <!-- Contact fields -->
+        <div class="sec-title"><span>Your Information</span><a class="link">Edit</a></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--s4); margin-bottom:var(--s5);">
+          <div class="fg" style="margin-bottom:0;"><label class="fl">Timezone *</label><select class="fi fi-sel filled"><option selected>America/Chicago (CST)</option></select></div>
+          <div class="fg" style="margin-bottom:0;"><label class="fl">Email *</label><input type="email" class="fi filled" value="sarah.miller@email.com"></div>
+          <div class="fg" style="margin-bottom:0;"><label class="fl">Phone Number *</label><input type="tel" class="fi filled" value="(512) 555-0147"></div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- All assigned banner -->
+        <div class="alert alert-ok" style="margin-bottom:var(--s4);">
+          <span class="alert-icon">✅</span>
+          <span class="alert-text"><strong>All 5 packages have been assigned.</strong> Review the assignments below, then click "Save &amp; Continue."</span>
+        </div>
+
+        <!-- ▼ PARTY → PACKAGE CARDS ▼ -->
+        <div class="sec-title" style="margin-bottom:var(--s3);">
+          <div style="display:flex; align-items:center; gap:var(--s1);"><span>Assigned Packages</span><span class="chip chip-ok chip-sm">5 of 5</span></div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <!-- PARTY 1: Jack Powell (solo) → PKG1                            -->
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <div class="party-card party-card--solo">
+          <div class="party-head">
+            <div class="party-head-left">
+              <div class="av av-40 av-blue">JP</div>
+              <div>
+                <div style="font-size:15px; font-weight:600; color:var(--text-1);">Jack Powell</div>
+                <div style="font-size:12px; color:var(--text-2);">Individual · 1 package</div>
+              </div>
+            </div>
+            <div class="party-head-right">
+              <span class="chip chip-info chip-sm">Individual</span>
+            </div>
+          </div>
+          <div class="party-body">
+            <div class="pkg-row">
+              <div class="pkg-icon">📦</div>
+              <div class="pkg-info">
+                <div class="pkg-title">PKG1 · 30 individual 25‑min booking credits</div>
+                <div class="pkg-meta">Individual Class · 30 credits · 25 min</div>
+              </div>
+              <div class="pkg-actions">
+                <span class="chip chip-mute chip-sm">30 credits</span>
+                <a class="link" style="font-size:12px;">Reassign</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <!-- PARTY 2: Jack Powell & Diana Powell → PKG2 + PKG5             -->
+        <!-- This is the key showcase: TWO packages in ONE party card       -->
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <div class="party-card party-card--pair">
+          <div class="party-head">
+            <div class="party-head-left">
+              <div class="pair-avatars">
+                <div class="av av-40 av-blue">JP</div>
+                <div class="pair-link">⟷</div>
+                <div class="av av-40 av-purple">DP</div>
+              </div>
+              <div>
+                <div style="font-size:15px; font-weight:600; color:var(--text-1);">Jack Powell &amp; Diana Powell</div>
+                <div style="font-size:12px; color:var(--text-2);">Paired · 2 packages · 150 credits total</div>
+              </div>
+            </div>
+            <div class="party-head-right">
+              <span class="chip chip-purple chip-sm">Paired</span>
+            </div>
+          </div>
+          <div class="party-body">
+            <div class="pkg-row">
+              <div class="pkg-icon">📦</div>
+              <div class="pkg-info">
+                <div class="pkg-title">PKG2 · 90 paired 25‑min booking credits</div>
+                <div class="pkg-meta">Paired Class · 90 credits · 25 min</div>
+              </div>
+              <div class="pkg-actions">
+                <span class="chip chip-mute chip-sm">90 credits</span>
+                <a class="link" style="font-size:12px;">Reassign</a>
+              </div>
+            </div>
+            <div class="pkg-row">
+              <div class="pkg-icon">📦</div>
+              <div class="pkg-info">
+                <div class="pkg-title">PKG5 · 60 paired 50‑min booking credits</div>
+                <div class="pkg-meta">Paired Class · 60 credits · 50 min</div>
+              </div>
+              <div class="pkg-actions">
+                <span class="chip chip-mute chip-sm">60 credits</span>
+                <a class="link" style="font-size:12px;">Reassign</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <!-- PARTY 3: Jack Powell & Susan Powell → PKG3                    -->
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <div class="party-card party-card--pair">
+          <div class="party-head">
+            <div class="party-head-left">
+              <div class="pair-avatars">
+                <div class="av av-40 av-blue">JP</div>
+                <div class="pair-link">⟷</div>
+                <div class="av av-40 av-teal">SP</div>
+              </div>
+              <div>
+                <div style="font-size:15px; font-weight:600; color:var(--text-1);">Jack Powell &amp; Susan Powell</div>
+                <div style="font-size:12px; color:var(--text-2);">Paired · 1 package · 90 credits total</div>
+              </div>
+            </div>
+            <div class="party-head-right">
+              <span class="chip chip-purple chip-sm">Paired</span>
+            </div>
+          </div>
+          <div class="party-body">
+            <div class="pkg-row">
+              <div class="pkg-icon">📦</div>
+              <div class="pkg-info">
+                <div class="pkg-title">PKG3 · 90 paired 25‑min booking credits</div>
+                <div class="pkg-meta">Paired Class · 90 credits · 25 min</div>
+              </div>
+              <div class="pkg-actions">
+                <span class="chip chip-mute chip-sm">90 credits</span>
+                <a class="link" style="font-size:12px;">Reassign</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <!-- PARTY 4: Diana Powell & Susan Powell → PKG4                   -->
+        <!-- ────────────────────────────────────────────────────────────── -->
+        <div class="party-card party-card--pair">
+          <div class="party-head">
+            <div class="party-head-left">
+              <div class="pair-avatars">
+                <div class="av av-40 av-purple">DP</div>
+                <div class="pair-link">⟷</div>
+                <div class="av av-40 av-teal">SP</div>
+              </div>
+              <div>
+                <div style="font-size:15px; font-weight:600; color:var(--text-1);">Diana Powell &amp; Susan Powell</div>
+                <div style="font-size:12px; color:var(--text-2);">Paired · 1 package · 60 credits total</div>
+              </div>
+            </div>
+            <div class="party-head-right">
+              <span class="chip chip-purple chip-sm">Paired</span>
+            </div>
+          </div>
+          <div class="party-body">
+            <div class="pkg-row">
+              <div class="pkg-icon">📦</div>
+              <div class="pkg-info">
+                <div class="pkg-title">PKG4 · 60 paired 50‑min booking credits</div>
+                <div class="pkg-meta">Paired Class · 60 credits · 50 min</div>
+              </div>
+              <div class="pkg-actions">
+                <span class="chip chip-mute chip-sm">60 credits</span>
+                <a class="link" style="font-size:12px;">Reassign</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider" style="margin:var(--s5) 0;">
+
+        <!-- ▼ PER-STUDENT SUMMARY TABLE ▼ -->
+        <div class="sec-title" style="margin-bottom:var(--s2);">
+          <div style="display:flex; align-items:center; gap:var(--s1);"><span>Per-Student Summary</span><span class="chip chip-mute chip-sm">3 students</span></div>
+        </div>
+
+        <div style="border:1px solid var(--divider); border-radius:var(--r3); overflow:hidden;">
+          <table class="sum-table">
+            <thead>
+              <tr>
+                <th style="width:30%;">Student</th>
+                <th style="width:25%;">Packages</th>
+                <th style="width:20%;">Total Credits</th>
+                <th style="width:25%;">Paired With</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="sum-stu"><div class="av av-28 av-blue">JP</div><span style="font-weight:500;">Jack Powell</span></div></td>
+                <td><span>4 packages</span><div style="font-size:11px; color:var(--text-2);">1 individual + 3 paired</div></td>
+                <td><strong>270 credits</strong></td>
+                <td><div style="display:flex; gap:4px; align-items:center;"><div class="av av-24 av-purple">DP</div><div class="av av-24 av-teal">SP</div></div></td>
+              </tr>
+              <tr>
+                <td><div class="sum-stu"><div class="av av-28 av-purple">DP</div><span style="font-weight:500;">Diana Powell</span></div></td>
+                <td><span>3 packages</span><div style="font-size:11px; color:var(--text-2);">3 paired</div></td>
+                <td><strong>210 credits</strong></td>
+                <td><div style="display:flex; gap:4px; align-items:center;"><div class="av av-24 av-blue">JP</div><div class="av av-24 av-teal">SP</div></div></td>
+              </tr>
+              <tr>
+                <td><div class="sum-stu"><div class="av av-28 av-teal">SP</div><span style="font-weight:500;">Susan Powell</span></div></td>
+                <td><span>2 packages</span><div style="font-size:11px; color:var(--text-2);">2 paired</div></td>
+                <td><strong>150 credits</strong></td>
+                <td><div style="display:flex; gap:4px; align-items:center;"><div class="av av-24 av-blue">JP</div><div class="av av-24 av-purple">DP</div></div></td>
+              </tr>
+              <tr class="total-row">
+                <td>Total</td>
+                <td>5 unique packages</td>
+                <td><strong>330 credits</strong></td>
+                <td><span class="chip chip-purple chip-sm">3 pairs</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="wiz-foot">
+        <button class="btn btn-ghost">← Back</button>
+        <button class="btn btn-ok btn-lg">Save &amp; Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- STEP 3 — CONFIRMATION                                                 -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="step-label"><div class="step-num">3</div> Confirmation — All Sessions Registered</div>
+<div class="step-desc"><strong>Confirmation.</strong> Party→Package summary. Each party listed with its package(s). Per-student totals at bottom.</div>
+
+<div class="screen">
+  <div class="appbar">
+    <div class="appbar-left"><div class="appbar-logo">HSA Portal</div><div class="appbar-nav"><div class="nav-item">Dashboard</div><div class="nav-item">Students</div><div class="nav-item">Schedule</div><div class="nav-item active">Register Sessions</div><div class="nav-item">Account</div></div></div>
+    <div class="appbar-right"><div class="appbar-user">Sarah Miller</div><div class="av av-32 av-grey">SM</div></div>
+  </div>
+
+  <div class="wiz-wrap">
+    <div class="wiz wiz-wide">
+      <div class="wiz-body">
+        <div style="text-align:center; padding:var(--s6) var(--s5);">
+          <div style="width:64px; height:64px; border-radius:50%; background:var(--success-bg); border:2px solid var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto var(--s4);"><span style="font-size:28px; color:var(--success);">✓</span></div>
+          <div style="font-size:24px; font-weight:700; color:var(--text-1); letter-spacing:-.01em;">All Your Sessions Are Registered</div>
+          <div style="font-size:14px; color:var(--text-2); margin-top:var(--s1);">All 5 packages have been assigned and saved successfully.</div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="sec-title" style="margin-bottom:var(--s3);"><span>Package Assignments</span><span class="chip chip-ok chip-sm">5 registered</span></div>
+
+        <!-- Party 1: Jack (solo) -->
+        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--pri); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
+          <div class="av av-28 av-blue">JP</div>
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-1);">Jack Powell</div>
+            <div style="font-size:12px; color:var(--text-2);">PKG1 · 30 individual 25‑min credits</div>
+          </div>
+          <span class="chip chip-ok chip-sm">✓</span>
+        </div>
+
+        <!-- Party 2: Jack & Diana (2 packages) -->
+        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2);">
+          <div style="display:flex; align-items:center; gap:var(--s3); margin-bottom:var(--s1);">
+            <div style="display:flex; align-items:center; gap:var(--s1);"><div class="av av-28 av-blue">JP</div><span style="font-size:13px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-purple">DP</div></div>
+            <div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-1);">Jack Powell &amp; Diana Powell</div></div>
+            <span class="chip chip-ok chip-sm">✓</span>
+          </div>
+          <div style="padding-left:var(--s7); font-size:12px; color:var(--text-2); line-height:1.8;">
+            PKG2 · 90 paired 25‑min credits<br>
+            PKG5 · 60 paired 50‑min credits
+          </div>
+        </div>
+
+        <!-- Party 3: Jack & Susan -->
+        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
+          <div style="display:flex; align-items:center; gap:var(--s1);"><div class="av av-28 av-blue">JP</div><span style="font-size:13px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-teal">SP</div></div>
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-1);">Jack Powell &amp; Susan Powell</div>
+            <div style="font-size:12px; color:var(--text-2);">PKG3 · 90 paired 25‑min credits</div>
+          </div>
+          <span class="chip chip-ok chip-sm">✓</span>
+        </div>
+
+        <!-- Party 4: Diana & Susan -->
+        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
+          <div style="display:flex; align-items:center; gap:var(--s1);"><div class="av av-28 av-purple">DP</div><span style="font-size:13px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-teal">SP</div></div>
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-1);">Diana Powell &amp; Susan Powell</div>
+            <div style="font-size:12px; color:var(--text-2);">PKG4 · 60 paired 50‑min credits</div>
+          </div>
+          <span class="chip chip-ok chip-sm">✓</span>
+        </div>
+
+        <div style="margin:var(--s4) 0;"><hr class="divider"></div>
+
+        <!-- Per-student totals -->
+        <div class="sec-title" style="margin-bottom:var(--s2);"><span>Per-Student Totals</span></div>
+        <ul class="summary-list">
+          <li><span class="slbl" style="display:flex; align-items:center; gap:var(--s1);"><div class="av av-24 av-blue">JP</div> Jack Powell</span><span class="sval">4 packages · <strong>270 credits</strong></span></li>
+          <li><span class="slbl" style="display:flex; align-items:center; gap:var(--s1);"><div class="av av-24 av-purple">DP</div> Diana Powell</span><span class="sval">3 packages · <strong>210 credits</strong></span></li>
+          <li><span class="slbl" style="display:flex; align-items:center; gap:var(--s1);"><div class="av av-24 av-teal">SP</div> Susan Powell</span><span class="sval">2 packages · <strong>150 credits</strong></span></li>
+        </ul>
+
+        <!-- Totals -->
+        <div style="margin-top:var(--s4); padding:var(--s3) var(--s4); background:var(--success-bg); border-radius:var(--r2); border-left:4px solid var(--success);">
+          <div style="font-size:14px; color:var(--text-1); font-weight:600;">Total: 330 booking credits across 5 packages</div>
+          <div style="font-size:12px; color:var(--text-2); margin-top:4px;">4 paired packages + 1 individual · 4 unique parties · 3 active pairings</div>
+        </div>
+
+        <div style="margin-top:var(--s3); padding:var(--s3) var(--s4); background:var(--purple-bg); border-radius:var(--r2); border-left:4px solid var(--purple);">
+          <div style="font-size:13px; color:var(--purple); font-weight:600;">🔗 Pairing Network</div>
+          <div style="font-size:12px; color:var(--text-2); margin-top:4px; line-height:1.8;">
+            Jack ⟷ Diana — PKG2 (90 credits · 25‑min) + PKG5 (60 credits · 50‑min)<br>
+            Jack ⟷ Susan — PKG3 (90 credits · 25‑min)<br>
+            Diana ⟷ Susan — PKG4 (60 credits · 50‑min)
+          </div>
+        </div>
+
+        <div style="margin-top:var(--s4); font-size:13px; color:var(--text-2); line-height:1.6;">Our team will assign teachers and reach out to schedule your sessions. You'll receive confirmation emails for each package shortly.</div>
+      </div>
+
+      <div class="wiz-foot" style="justify-content: center;">
+        <div style="display:flex; gap:var(--s3);">
+          <button class="btn btn-pri btn-lg">Go to Dashboard</button>
+          <button class="btn btn-out btn-lg">View Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODALS                                                                 -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+
+<div class="modal-section">
+
+<div style="margin-top:var(--s7);"></div>
+<div class="step-label"><div class="step-num">M</div> Modals — Assignment Flows</div>
+<div class="step-desc">Paired: 2-step Student 1 → Student 2. Individual: single-step. Reassign shows current party + replacement options.</div>
+
+
+<!-- M1: Paired — Select Student 1 -->
+<div style="margin-top:var(--s5);">
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M1 — Paired Package: Select Student 1</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent clicks "Assign Students" on PKG2 (90 Paired 25‑min). Step 1 of 2.</div>
+</div>
+
+<div class="modal-bg">
+  <div class="modal">
+    <button class="modal-x">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Paired Class — Student 1</div>
+      <div class="modal-sub">Select the first student for this paired package.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 90 credits · 25 min</div></div></div>
+      <div class="alert alert-purple" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">🔗</span><span class="alert-text"><strong>Step 1 of 2</strong> — Paired classes require exactly 2 students</span></div>
+      <div class="sec-head">Assign Student 1</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-blue" style="margin-right:4px;">JP</div> Jack Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div> Diana Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
+      </ul>
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-out">Cancel</button>
+      <button class="btn btn-ok">Next: Student 2 →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- M2: Paired — Select Student 2 (Student 1 = Jack) -->
+<div style="margin-top:var(--s5);">
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M2 — Paired Package: Select Student 2 (Student 1 = Jack)</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Step 2 of 2. Jack disabled. Diana selected.</div>
+</div>
+
+<div class="modal-bg">
+  <div class="modal">
+    <button class="modal-x">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Paired Class — Student 2</div>
+      <div class="modal-sub">Select the second student to pair with <strong>Jack Powell</strong>.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 90 credits · 25 min · Student 1: <strong>Jack Powell</strong></div></div></div>
+      <div class="alert alert-purple" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">🔗</span><span class="alert-text"><strong>Step 2 of 2</strong> — Choose who will pair with Jack Powell</span></div>
+      <div class="sec-head">Assign Student 2</div>
+      <ul class="radio-list">
+        <li class="radio-item off"><div class="rc dis"></div><div class="av av-28 av-blue" style="margin-right:4px; opacity:.4;">JP</div> <span style="color:var(--text-3);">Jack Powell (Student 1)</span></li>
+        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div> Diana Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
+      </ul>
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost">← Back</button>
+      <div style="display:flex; gap:var(--s2);"><button class="btn btn-out">Cancel</button><button class="btn btn-ok">Assign Pair</button></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- M3: Second paired package — already-paired info note -->
+<div style="margin-top:var(--s5);">
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M3 — Second Paired Pkg: Diana already paired with Jack elsewhere</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Assigning PKG5 (60 Paired 50‑min). Student 1 = Jack. Diana shows info note — not blocking. Susan selected.</div>
+</div>
+
+<div class="modal-bg">
+  <div class="modal">
+    <button class="modal-x">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Paired Class — Student 2</div>
+      <div class="modal-sub">Select the second student to pair with <strong>Jack Powell</strong>.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG5 · 60 paired 50‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 60 credits · 50 min · Student 1: <strong>Jack Powell</strong></div></div></div>
+      <div class="alert alert-purple" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">🔗</span><span class="alert-text"><strong>Step 2 of 2</strong> — Choose who will pair with Jack Powell</span></div>
+      <div class="sec-head">Assign Student 2</div>
+      <ul class="radio-list">
+        <li class="radio-item off"><div class="rc dis"></div><div class="av av-28 av-blue" style="margin-right:4px; opacity:.4;">JP</div> <span style="color:var(--text-3);">Jack Powell (Student 1)</span></li>
+        <li class="radio-item">
+          <div class="rc"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div>
+          <div>Diana Powell<div style="font-size:11px; color:var(--purple); font-weight:500;">Already paired with Jack in PKG2</div></div>
+        </li>
+        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
+      </ul>
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+      <div class="note"><strong>Note:</strong> Students can be paired with different partners across separate packages.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost">← Back</button>
+      <div style="display:flex; gap:var(--s2);"><button class="btn btn-out">Cancel</button><button class="btn btn-ok">Assign Pair</button></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- M4: Reassign paired package -->
+<div style="margin-top:var(--s5);">
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M4 — Reassign Paired Package</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Clicked "Reassign" on PKG2 inside the Jack &amp; Diana party card.</div>
+</div>
+
+<div class="modal-bg">
+  <div class="modal">
+    <button class="modal-x">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Reassign Paired Package</div>
+      <div class="modal-sub">Replace one student in this paired assignment.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Currently: <strong>Jack Powell</strong> ⟷ <strong>Diana Powell</strong></div></div></div>
+      <div class="alert alert-warn" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">⚠️</span><span class="alert-text">Reassigning will affect both students in this pair</span></div>
+      <div class="sec-head">Which student to replace?</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="rc on"></div> Replace Diana Powell (keep Jack)</li>
+        <li class="radio-item"><div class="rc"></div> Replace Jack Powell (keep Diana)</li>
+      </ul>
+      <hr style="border:none; border-top:1px solid var(--divider); margin:var(--s3) 0;">
+      <div class="sec-head">New student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
+      </ul>
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+      <div class="note"><strong>Note:</strong> This will move PKG2 out of the "Jack &amp; Diana" party. If they have no other shared packages, that party card disappears.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-out">Cancel</button>
+      <button class="btn btn-ok">Reassign Pair</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- M5: Assign individual package -->
+<div style="margin-top:var(--s5);">
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M5 — Assign Individual Package</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Single-student assign for PKG1 (30 Individual 25-min).</div>
+</div>
+
+<div class="modal-bg">
+  <div class="modal">
+    <button class="modal-x">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Assign Package</div>
+      <div class="modal-sub">Choose which student should receive this package.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG1 · 30 individual 25‑min booking credits</div><div class="modal-pkg-meta">Individual Class · 30 credits · 25 min</div></div></div>
+      <div class="sec-head">Assign to Student</div>
+      <ul class="radio-list">
+        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-blue" style="margin-right:4px;">JP</div> Jack Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div> Diana Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
+        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
+      </ul>
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-out">Cancel</button>
+      <button class="btn btn-ok">Save</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.modal-section -->
+</body>
+</html>
