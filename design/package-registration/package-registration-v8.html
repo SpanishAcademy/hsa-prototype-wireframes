@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Package Registration — V7 Inline Package→Party Wizard</title>
+  <title>Package Registration — V9 Refined Inline Layout</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -146,10 +146,14 @@
     .alert-text strong { font-weight: 600; }
 
     /* ╔══════════════════════════════════════════════════════════════╗ */
-    /* ║  V8: INLINE PACKAGE → PARTY ROWS                            ║ */
-    /* ║  Each package = one horizontal row.                          ║ */
-    /* ║  LEFT: student slot(s) in chevron zone.                     ║ */
-    /* ║  RIGHT: package type, duration, credits.                     ║ */
+    /* ║  V9: REFINED INLINE PACKAGE → PARTY ROWS                    ║ */
+    /* ║  Changes from V8:                                           ║ */
+    /* ║  1. Entire left chevron zone is a single clickable action   ║ */
+    /* ║     Slots + "Assign pair" text sit in a horizontal row      ║ */
+    /* ║  2. Purchased date badge moved under subtitle in right zone ║ */
+    /* ║  3. Step 3 = Review & Confirm (new), Step 4 = Success       ║ */
+    /* ║  4. Unified paired modal with 2 dropdowns (replaces M1-M4) ║ */
+    /* ║  5. Individual modal uses single dropdown                   ║ */
     /* ╚══════════════════════════════════════════════════════════════╝ */
 
     /* Package inline row — the main horizontal strip */
@@ -157,14 +161,17 @@
     .pkg-strip:last-child { margin-bottom: 0; }
     .pkg-strip:hover { box-shadow: var(--elev2); }
 
-    /* Left chevron zone — holds student slot(s)
-       The chevron is formed by an angled right edge via clip-path */
-    .pkg-strip-left { display: flex; align-items: center; gap: var(--s1); padding: var(--s2) var(--s4) var(--s2) var(--s3); background: #F0F4F8; position: relative; flex-shrink: 0; min-width: 100px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%); padding-right: var(--s6); }
+    /* Left chevron zone — holds student slot(s) + action text
+       Entire zone is clickable. Slots + "Assign pair" in a row. */
+    .pkg-strip-left { display: flex; align-items: center; justify-content: center; gap: var(--s2); padding: var(--s2) var(--s4) var(--s2) var(--s3); background: #F0F4F8; position: relative; flex-shrink: 0; min-width: 110px; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%); padding-right: var(--s6); cursor: pointer; }
+    .pkg-strip-left:hover { background: #E8EEF4; }
+    .pkg-strip-left .slot-action { font-size: 11px; font-weight: 500; color: var(--pri); text-decoration: none; letter-spacing: .01em; white-space: nowrap; }
+    .pkg-strip-left:hover .slot-action { text-decoration: underline; }
 
-    /* Right info zone — package details */
+    /* Right info zone — package details, aligned */
     .pkg-strip-right { display: flex; align-items: center; flex: 1; padding: var(--s2) var(--s4) var(--s2) var(--s3); gap: var(--s3); }
     .pkg-strip-info { flex: 1; min-width: 0; }
-    .pkg-strip-chips { display: flex; align-items: center; gap: var(--s1); flex-shrink: 0; }
+    .pkg-strip-meta { display: flex; align-items: center; gap: var(--s2); flex-shrink: 0; }
 
     /* Empty student slot (dashed box with +) */
     .slot { width: 44px; height: 44px; border: 2px dashed rgba(0,0,0,.2); border-radius: var(--r2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: border-color .15s, background .15s; background: rgba(255,255,255,.6); }
@@ -183,18 +190,11 @@
 
     /* Assigned state — success accent */
     .pkg-strip--assigned .pkg-strip-left { background: #F0F8F0; }
+    .pkg-strip--assigned .pkg-strip-left:hover { background: #E4F0E4; }
 
     /* Individual vs paired left zone widths */
-    .pkg-strip-left--indiv { min-width: 100px; }
-    .pkg-strip-left--pair { min-width: 148px; }
-
-    /* Per-student summary table */
-    .sum-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .sum-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); padding: var(--s1) var(--s2); border-bottom: 2px solid var(--divider); }
-    .sum-table td { padding: var(--s2); border-bottom: 1px solid var(--divider); vertical-align: middle; }
-    .sum-table tr:last-child td { border-bottom: none; }
-    .sum-table .sum-stu { display: flex; align-items: center; gap: var(--s1); }
-    .sum-table .total-row td { font-weight: 600; color: var(--text-1); border-top: 2px solid var(--divider); border-bottom: none; }
+    .pkg-strip-left--indiv { min-width: 130px; }
+    .pkg-strip-left--pair { min-width: 190px; }
 
     /* ── Modal ── */
     .modal-section { max-width: 1400px; margin: 0 auto; padding: 0 var(--s5) var(--s5); }
@@ -213,37 +213,44 @@
 
     .sec-head { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-2); padding: var(--s1) var(--s3); background: rgba(0,0,0,.03); border-radius: var(--r2); margin-bottom: var(--s2); }
 
-    .radio-list { list-style: none; padding: 0; }
-    .radio-item { display: flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r2); cursor: pointer; font-size: 14px; color: var(--text-1); transition: background .1s; }
-    .radio-item:hover { background: var(--hover); }
-    .radio-item.off { color: var(--text-3); cursor: default; }
-    .radio-item.off:hover { background: transparent; }
-    .rc { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(0,0,0,.38); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .rc.on { border-color: var(--pri); }
-    .rc.on::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--pri); }
-    .rc.dis { border-color: rgba(0,0,0,.12); }
-
     .add-stu-btn { display: flex; align-items: center; gap: var(--s1); padding: var(--s2) var(--s3); color: var(--pri); font-size: 14px; font-weight: 500; cursor: pointer; border-top: 1px solid var(--divider); margin-top: var(--s1); }
     .add-stu-btn:hover { background: rgba(25,118,210,.04); }
 
     .note { display: flex; align-items: flex-start; gap: var(--s1); background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--r2); padding: var(--s1) var(--s3); font-size: 12px; color: #E65100; margin-top: var(--s3); }
+
+    /* ── V9: Dropdown student selectors in modals ── */
+    .stu-dropdown { margin-bottom: var(--s3); }
+    .stu-dropdown label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-2); margin-bottom: 6px; }
+    .stu-dropdown select { width: 100%; font-family: var(--font); font-size: 14px; padding: 10px 36px 10px 14px; border: 1px solid var(--border); border-radius: var(--r2); background: #fff; color: var(--text-1); appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; cursor: pointer; transition: border-color .15s; }
+    .stu-dropdown select:focus { border-color: var(--pri); outline: none; box-shadow: 0 0 0 2px rgba(25,118,210,.12); }
+    .stu-dropdown select.filled { border-color: rgba(25,118,210,.5); }
+
+    /* ── V9: Review step — editable strip with edit link ── */
+    .review-strip { display: flex; align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); border: 1px solid var(--divider); border-radius: var(--r2); margin-bottom: var(--s2); }
+    .review-strip-avatars { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .review-strip-info { flex: 1; min-width: 0; }
+    .review-strip-actions { flex-shrink: 0; }
+
+
   </style>
 </head>
 <body>
 
-<div class="wf-banner">Wireframe — Package Registration — V8 Inline Package→Party · Desktop Only · 5 Packages · 3 Students · Chevron Slot Layout</div>
+<div class="wf-banner">Wireframe — Package Registration — V9 Refined Inline · Desktop Only · 5 Packages · 3 Students · Review Before Commit</div>
 <div style="height: 32px;"></div>
 
 <div class="flow">
 
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  V8 DATA MODEL — INLINE PACKAGE → PARTY                                ║ -->
+<!-- ║  V9 DATA MODEL — Same as V8                                             ║ -->
 <!-- ║                                                                         ║ -->
-<!-- ║  Same 5-package / 3-student data as V5/V7.                              ║ -->
-<!-- ║  Layout: each package = one horizontal row.                             ║ -->
-<!-- ║    LEFT chevron zone: student slot(s) — dashed [+] when empty,          ║ -->
-<!-- ║                        avatar when filled.                              ║ -->
-<!-- ║    RIGHT zone: class type chip, duration, credits.                      ║ -->
+<!-- ║  Changes from V8:                                                       ║ -->
+<!-- ║  1. Assign/Reassign action moved into chevron zone (near slots)         ║ -->
+<!-- ║  2. Package details better aligned in right zone                        ║ -->
+<!-- ║  3. New Step 3: Review & Confirm (before commit)                        ║ -->
+<!-- ║  4. Step 4: Success Confirmation (was Step 3)                           ║ -->
+<!-- ║  5. Unified paired modal — two dropdowns (replaces M1+M2+M3+M4)        ║ -->
+<!-- ║  6. Individual modal — single dropdown (replaces M5)                    ║ -->
 <!-- ║                                                                         ║ -->
 <!-- ║  Packages:                                                              ║ -->
 <!-- ║    PKG1 — 30 individual 25-min → Jack (solo)                            ║ -->
@@ -257,8 +264,8 @@
 <!-- ══════════════════════════════════════════════════════════════════════ -->
 <!-- STEP 1 — WELCOME                                                      -->
 <!-- ══════════════════════════════════════════════════════════════════════ -->
-<div class="step-label"><div class="step-num">1</div> Logged In — Welcome Page</div>
-<div class="step-desc">Same welcome card as V5/V7.</div>
+<div class="step-label"><div class="step-num">1</div> Welcome — Before You Begin</div>
+<div class="step-desc">Same welcome card as V8. Carousel onboarding intro.</div>
 
 <div class="screen">
   <div class="appbar">
@@ -283,10 +290,10 @@
 
 
 <!-- ══════════════════════════════════════════════════════════════════════ -->
-<!-- STEP 2a — ALL 5 PACKAGES UNASSIGNED (INLINE LAYOUT)                   -->
+<!-- STEP 2a — ALL 5 PACKAGES UNASSIGNED                                   -->
 <!-- ══════════════════════════════════════════════════════════════════════ -->
-<div class="step-label"><div class="step-num">2a</div> Assign Sessions — All 5 Packages Unassigned (0 of 5)</div>
-<div class="step-desc"><strong>V8 Inline layout — starting state.</strong> Each package is a horizontal row. The left chevron zone holds empty student placeholder slots [+]. Click a slot to open the assignment modal. Individual has 1 slot, paired has 2 slots.</div>
+<div class="step-label"><div class="step-num">2a</div> Assign Sessions — All 5 Unassigned (0 of 5)</div>
+<div class="step-desc"><strong>V9 layout.</strong> The entire left chevron zone is a single clickable action — slots + "Assign" / "Assign pair" text in a horizontal row. Purchased date badge sits under the package subtitle. No separate right-side action link.</div>
 
 <div class="screen">
   <div class="appbar">
@@ -296,10 +303,11 @@
   <div class="wiz-wrap">
     <div class="wiz wiz-wide">
       <div class="wiz-head">
+
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <div>
             <div class="title" style="font-size:20px;">Assign Sessions</div>
-            <div class="subtitle">Assign students to each purchased package. Click the [+] slots to assign.</div>
+            <div class="subtitle">Assign students to each purchased package. Click the [+] slots or "Assign" link.</div>
           </div>
           <button class="btn btn-out btn-sm">+ Add Student</button>
         </div>
@@ -328,15 +336,15 @@
         <div class="pkg-strip pkg-strip--unassigned">
           <div class="pkg-strip-left pkg-strip-left--indiv">
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG1 · 30 individual 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 1 student</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -346,15 +354,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG2 · 90 paired 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -364,15 +372,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG3 · 90 paired 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -382,15 +390,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG4 · 60 paired 50‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -400,15 +408,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG5 · 60 paired 50‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -417,7 +425,7 @@
 
       <div class="wiz-foot">
         <button class="btn btn-ghost">← Back</button>
-        <button class="btn btn-lg btn-dis">Save &amp; Continue</button>
+        <button class="btn btn-lg btn-dis">Review Assignments →</button>
       </div>
     </div>
   </div>
@@ -428,7 +436,7 @@
 <!-- STEP 2b — PARTIALLY ASSIGNED (2 of 5)                                -->
 <!-- ══════════════════════════════════════════════════════════════════════ -->
 <div class="step-label"><div class="step-num">2b</div> Assign Sessions — Partially Assigned (2 of 5)</div>
-<div class="step-desc"><strong>Mid-flow.</strong> PKG1 and PKG2 have been assigned (slots show avatars). PKG3–PKG5 still empty.</div>
+<div class="step-desc"><strong>Mid-flow.</strong> PKG1 and PKG2 assigned. Slots show avatars with "Reassign" text inside the clickable chevron zone. PKG3–PKG5 still empty with "Assign pair" action.</div>
 
 <div class="screen">
   <div class="appbar">
@@ -441,7 +449,7 @@
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <div>
             <div class="title" style="font-size:20px;">Assign Sessions</div>
-            <div class="subtitle">Assign students to each purchased package. Click the [+] slots to assign.</div>
+            <div class="subtitle">Assign students to each purchased package. Click the [+] slots or "Assign" link.</div>
           </div>
           <button class="btn btn-out btn-sm">+ Add Student</button>
         </div>
@@ -466,27 +474,27 @@
           <div style="display:flex; align-items:center; gap:var(--s1);"><span>Your Packages</span><span class="chip chip-warn chip-sm">3 need assignment</span></div>
         </div>
 
-        <!-- PKG1 — ASSIGNED: Jack -->
+        <!-- PKG1 — ASSIGNED: Jack (individual) -->
         <div class="pkg-strip pkg-strip--assigned">
           <div class="pkg-strip-left pkg-strip-left--indiv" style="background:#F0F8F0;">
             <div class="slot-filled">
               <div class="av av-36 av-blue" style="border-radius:var(--r2);">JP</div>
               <div class="slot-filled-name">Jack</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG1 · 30 individual 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Jack Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
 
-        <!-- PKG2 — ASSIGNED: Jack & Diana -->
+        <!-- PKG2 — ASSIGNED: Jack & Diana (paired) -->
         <div class="pkg-strip pkg-strip--assigned">
           <div class="pkg-strip-left pkg-strip-left--pair" style="background:#F0F8F0;">
             <div class="slot-filled">
@@ -497,15 +505,15 @@
               <div class="av av-36 av-purple" style="border-radius:var(--r2);">DP</div>
               <div class="slot-filled-name">Diana</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG2 · 90 paired 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Jack &amp; Diana Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
@@ -515,15 +523,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG3 · 90 paired 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -533,15 +541,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG4 · 60 paired 50‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -551,15 +559,15 @@
           <div class="pkg-strip-left pkg-strip-left--pair">
             <div class="slot"><span class="slot-plus">+</span></div>
             <div class="slot"><span class="slot-plus">+</span></div>
+            <a class="slot-action">Assign pair</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG5 · 60 paired 50‑min booking credits</div>
               <div style="font-size:12px; color:var(--text-2); margin-top:2px;">Assign 2 students (pair)</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Assign</a>
             </div>
           </div>
         </div>
@@ -568,19 +576,18 @@
 
       <div class="wiz-foot">
         <button class="btn btn-ghost">← Back</button>
-        <button class="btn btn-lg btn-dis">Save &amp; Continue</button>
+        <button class="btn btn-lg btn-dis">Review Assignments →</button>
       </div>
     </div>
   </div>
 </div>
 
 
-<!-- ══════════════════════════════════════════════════════════════════════════════ -->
-<!-- STEP 2c — ALL 5 ASSIGNED (V8 CORE)                                          -->
-<!-- ══════════════════════════════════════════════════════════════════════════════ -->
-
-<div class="step-label"><div class="step-num">2c</div> Assign Sessions — All 5 Assigned (5 of 5) · <em style="font-weight:400; text-transform:none; letter-spacing:0;">V8 Inline Package→Party</em></div>
-<div class="step-desc"><strong>V8 Inline layout — fully assigned.</strong> Every slot is filled with student avatars. Each row is self-contained: left chevron shows the pair/student, right shows the package details.</div>
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- STEP 2c — ALL 5 ASSIGNED                                             -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="step-label"><div class="step-num">2c</div> Assign Sessions — All 5 Assigned (5 of 5)</div>
+<div class="step-desc"><strong>All assigned.</strong> Each chevron zone is a clickable "Reassign" action showing avatars + text. Footer button says "Review Assignments →" (leads to Step 3 review screen, not immediate commit).</div>
 
 <div class="screen">
   <div class="appbar">
@@ -594,7 +601,7 @@
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <div>
             <div class="title" style="font-size:20px;">Assign Sessions</div>
-            <div class="subtitle">Assign students to each purchased package. Click the [+] slots to assign.</div>
+            <div class="subtitle">Assign students to each purchased package. Click the [+] slots or "Assign" link.</div>
           </div>
           <button class="btn btn-out btn-sm">+ Add Student</button>
         </div>
@@ -618,7 +625,7 @@
         <!-- All assigned banner -->
         <div class="alert alert-ok" style="margin-bottom:var(--s4);">
           <span class="alert-icon">✅</span>
-          <span class="alert-text"><strong>All 5 packages have been assigned.</strong> Review the assignments below, then click "Save &amp; Continue."</span>
+          <span class="alert-text"><strong>All 5 packages have been assigned.</strong> Click "Review Assignments" to review before confirming.</span>
         </div>
 
         <div class="sec-title" style="margin-bottom:var(--s3);">
@@ -632,15 +639,15 @@
               <div class="av av-36 av-blue" style="border-radius:var(--r2);">JP</div>
               <div class="slot-filled-name">Jack</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG1 · 30 individual 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Jack Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
@@ -656,15 +663,15 @@
               <div class="av av-36 av-purple" style="border-radius:var(--r2);">DP</div>
               <div class="slot-filled-name">Diana</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG2 · 90 paired 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Jack &amp; Diana Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
@@ -680,15 +687,15 @@
               <div class="av av-36 av-teal" style="border-radius:var(--r2);">SP</div>
               <div class="slot-filled-name">Susan</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG3 · 90 paired 25‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Jack &amp; Susan Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
@@ -704,15 +711,15 @@
               <div class="av av-36 av-teal" style="border-radius:var(--r2);">SP</div>
               <div class="slot-filled-name">Susan</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG4 · 60 paired 50‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Diana &amp; Susan Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
@@ -728,15 +735,15 @@
               <div class="av av-36 av-purple" style="border-radius:var(--r2);">DP</div>
               <div class="slot-filled-name">Diana</div>
             </div>
+            <a class="slot-action">Reassign</a>
           </div>
           <div class="pkg-strip-right">
             <div class="pkg-strip-info">
               <div style="font-size:14px; font-weight:600; color:var(--text-1);">PKG5 · 60 paired 50‑min booking credits</div>
               <div style="font-size:12px; color:var(--success); margin-top:2px;">✓ Assigned to Jack &amp; Diana Powell</div>
             </div>
-            <div class="pkg-strip-chips">
+            <div class="pkg-strip-meta">
               <span class="chip chip-mute chip-sm">Purchased Mar 15, 2026</span>
-              <a class="link" style="font-size:12px;">Reassign</a>
             </div>
           </div>
         </div>
@@ -745,7 +752,7 @@
 
       <div class="wiz-foot">
         <button class="btn btn-ghost">← Back</button>
-        <button class="btn btn-ok btn-lg">Save &amp; Continue</button>
+        <button class="btn btn-ok btn-lg">Review Assignments →</button>
       </div>
     </div>
   </div>
@@ -753,10 +760,10 @@
 
 
 <!-- ══════════════════════════════════════════════════════════════════════ -->
-<!-- STEP 3 — CONFIRMATION                                                 -->
+<!-- STEP 3 — REVIEW & CONFIRM (NEW IN V9)                                -->
 <!-- ══════════════════════════════════════════════════════════════════════ -->
-<div class="step-label"><div class="step-num">3</div> Confirmation — All Sessions Registered</div>
-<div class="step-desc"><strong>Confirmation.</strong> Compact inline rows preserved from the assignment step, now read-only. Per-student totals below.</div>
+<div class="step-label"><div class="step-num">3</div> Review &amp; Confirm — Summary Before Committing</div>
+<div class="step-desc"><strong>V9 addition.</strong> Review screen before final submit. Shows compact assignment summary with "Edit" links back to Step 2. Per-student totals, pairing network. Parent must click "Confirm &amp; Register" to finalize.</div>
 
 <div class="screen">
   <div class="appbar">
@@ -766,64 +773,111 @@
 
   <div class="wiz-wrap">
     <div class="wiz wiz-wide">
+      <div class="wiz-head">
+
+        <div>
+          <div class="title" style="font-size:20px;">Review Your Assignments</div>
+          <div class="subtitle">Please review everything below before confirming. Once confirmed, assignments cannot be easily changed.</div>
+        </div>
+      </div>
+
       <div class="wiz-body">
-        <div style="text-align:center; padding:var(--s6) var(--s5);">
-          <div style="width:64px; height:64px; border-radius:50%; background:var(--success-bg); border:2px solid var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto var(--s4);"><span style="font-size:28px; color:var(--success);">✓</span></div>
-          <div style="font-size:24px; font-weight:700; color:var(--text-1); letter-spacing:-.01em;">All Your Sessions Are Registered</div>
-          <div style="font-size:14px; color:var(--text-2); margin-top:var(--s1);">All 5 packages have been assigned and saved successfully.</div>
+
+        <!-- Contact info summary -->
+        <div class="sec-title"><span>Your Information</span><a class="link">Edit</a></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--s3); margin-bottom:var(--s4); font-size:13px;">
+          <div><span style="color:var(--text-2);">Timezone:</span> <strong>America/Chicago (CST)</strong></div>
+          <div><span style="color:var(--text-2);">Email:</span> <strong>sarah.miller@email.com</strong></div>
+          <div><span style="color:var(--text-2);">Phone:</span> <strong>(512) 555-0147</strong></div>
         </div>
 
-        <hr class="divider">
+        <hr class="divider" style="margin:var(--s3) 0;">
 
-        <div class="sec-title" style="margin-bottom:var(--s3);"><span>Package Assignments</span><span class="chip chip-ok chip-sm">5 registered</span></div>
+        <!-- Package assignments — compact review strips with edit links -->
+        <div class="sec-title" style="margin-bottom:var(--s3);">
+          <div style="display:flex; align-items:center; gap:var(--s1);"><span>Package Assignments</span><span class="chip chip-ok chip-sm">5 packages</span></div>
+          <a class="link" style="font-size:12px;">← Edit assignments</a>
+        </div>
 
-        <!-- Compact confirmation strips (no chevron, just inline avatars + package) -->
-        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--pri); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
-          <div class="av av-28 av-blue">JP</div>
-          <div style="flex:1;">
+        <!-- PKG1 review strip -->
+        <div class="review-strip" style="border-left:4px solid var(--pri);">
+          <div class="review-strip-avatars">
+            <div class="av av-28 av-blue">JP</div>
+          </div>
+          <div class="review-strip-info">
             <div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG1 · 30 individual 25‑min credits</div>
             <div style="font-size:12px; color:var(--text-2);">Jack Powell · Individual</div>
           </div>
-          <span class="chip chip-ok chip-sm">✓</span>
+          <div class="review-strip-actions">
+            <a class="link" style="font-size:12px;">Edit</a>
+          </div>
         </div>
 
-        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
-          <div style="display:flex; align-items:center; gap:4px;"><div class="av av-28 av-blue">JP</div><span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-purple">DP</div></div>
-          <div style="flex:1;">
+        <!-- PKG2 review strip -->
+        <div class="review-strip" style="border-left:4px solid var(--purple);">
+          <div class="review-strip-avatars">
+            <div class="av av-28 av-blue">JP</div>
+            <span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span>
+            <div class="av av-28 av-purple">DP</div>
+          </div>
+          <div class="review-strip-info">
             <div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG2 · 90 paired 25‑min credits</div>
-            <div style="font-size:12px; color:var(--text-2);">Jack &amp; Diana · Paired</div>
+            <div style="font-size:12px; color:var(--text-2);">Jack &amp; Diana Powell · Paired</div>
           </div>
-          <span class="chip chip-ok chip-sm">✓</span>
+          <div class="review-strip-actions">
+            <a class="link" style="font-size:12px;">Edit</a>
+          </div>
         </div>
 
-        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
-          <div style="display:flex; align-items:center; gap:4px;"><div class="av av-28 av-blue">JP</div><span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-teal">SP</div></div>
-          <div style="flex:1;">
+        <!-- PKG3 review strip -->
+        <div class="review-strip" style="border-left:4px solid var(--purple);">
+          <div class="review-strip-avatars">
+            <div class="av av-28 av-blue">JP</div>
+            <span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span>
+            <div class="av av-28 av-teal">SP</div>
+          </div>
+          <div class="review-strip-info">
             <div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG3 · 90 paired 25‑min credits</div>
-            <div style="font-size:12px; color:var(--text-2);">Jack &amp; Susan · Paired</div>
+            <div style="font-size:12px; color:var(--text-2);">Jack &amp; Susan Powell · Paired</div>
           </div>
-          <span class="chip chip-ok chip-sm">✓</span>
+          <div class="review-strip-actions">
+            <a class="link" style="font-size:12px;">Edit</a>
+          </div>
         </div>
 
-        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
-          <div style="display:flex; align-items:center; gap:4px;"><div class="av av-28 av-purple">DP</div><span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-teal">SP</div></div>
-          <div style="flex:1;">
+        <!-- PKG4 review strip -->
+        <div class="review-strip" style="border-left:4px solid var(--purple);">
+          <div class="review-strip-avatars">
+            <div class="av av-28 av-purple">DP</div>
+            <span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span>
+            <div class="av av-28 av-teal">SP</div>
+          </div>
+          <div class="review-strip-info">
             <div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG4 · 60 paired 50‑min credits</div>
-            <div style="font-size:12px; color:var(--text-2);">Diana &amp; Susan · Paired</div>
+            <div style="font-size:12px; color:var(--text-2);">Diana &amp; Susan Powell · Paired</div>
           </div>
-          <span class="chip chip-ok chip-sm">✓</span>
+          <div class="review-strip-actions">
+            <a class="link" style="font-size:12px;">Edit</a>
+          </div>
         </div>
 
-        <div style="padding:var(--s2) var(--s3); border:1px solid var(--divider); border-left:4px solid var(--purple); border-radius:var(--r2); margin-bottom:var(--s2); display:flex; align-items:center; gap:var(--s3);">
-          <div style="display:flex; align-items:center; gap:4px;"><div class="av av-28 av-blue">JP</div><span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span><div class="av av-28 av-purple">DP</div></div>
-          <div style="flex:1;">
+        <!-- PKG5 review strip -->
+        <div class="review-strip" style="border-left:4px solid var(--purple);">
+          <div class="review-strip-avatars">
+            <div class="av av-28 av-blue">JP</div>
+            <span style="font-size:12px; color:var(--purple); font-weight:600;">⟷</span>
+            <div class="av av-28 av-purple">DP</div>
+          </div>
+          <div class="review-strip-info">
             <div style="font-size:13px; font-weight:600; color:var(--text-1);">PKG5 · 60 paired 50‑min credits</div>
-            <div style="font-size:12px; color:var(--text-2);">Jack &amp; Diana · Paired</div>
+            <div style="font-size:12px; color:var(--text-2);">Jack &amp; Diana Powell · Paired</div>
           </div>
-          <span class="chip chip-ok chip-sm">✓</span>
+          <div class="review-strip-actions">
+            <a class="link" style="font-size:12px;">Edit</a>
+          </div>
         </div>
 
-        <div style="margin:var(--s4) 0;"><hr class="divider"></div>
+        <div style="margin:var(--s4) 0;"><hr class="divider" style="margin:0;"></div>
 
         <!-- Per-student totals -->
         <div class="sec-title" style="margin-bottom:var(--s2);"><span>Per-Student Totals</span></div>
@@ -848,7 +902,60 @@
           </div>
         </div>
 
-        <div style="margin-top:var(--s4); font-size:13px; color:var(--text-2); line-height:1.6;">Our team will assign teachers and reach out to schedule your sessions. You'll receive confirmation emails for each package shortly.</div>
+        <!-- Confirmation warning -->
+        <div class="alert alert-warn" style="margin-top:var(--s4);">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-text"><strong>Once confirmed, assignments cannot be easily changed.</strong> Please double-check all assignments above before proceeding.</span>
+        </div>
+
+      </div>
+
+      <div class="wiz-foot">
+        <button class="btn btn-ghost">← Back to Assignments</button>
+        <button class="btn btn-ok btn-lg">Confirm &amp; Register</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- STEP 4 — SUCCESS CONFIRMATION (was Step 3 in V8)                      -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div class="step-label"><div class="step-num">4</div> Success — All Sessions Registered</div>
+<div class="step-desc"><strong>Post-commit success.</strong> Lightweight confirmation page. Detailed summary was already reviewed in Step 3, so this is just a confirmation + next-steps CTA.</div>
+
+<div class="screen">
+  <div class="appbar">
+    <div class="appbar-left"><div class="appbar-logo">HSA Portal</div><div class="appbar-nav"><div class="nav-item">Dashboard</div><div class="nav-item">Students</div><div class="nav-item">Schedule</div><div class="nav-item active">Register Sessions</div><div class="nav-item">Account</div></div></div>
+    <div class="appbar-right"><div class="appbar-user">Sarah Miller</div><div class="av av-32 av-grey">SM</div></div>
+  </div>
+
+  <div class="wiz-wrap">
+    <div class="wiz wiz-wide">
+
+
+      <div class="wiz-body">
+        <div style="text-align:center; padding:var(--s5) var(--s5) var(--s4);">
+          <div style="width:64px; height:64px; border-radius:50%; background:var(--success-bg); border:2px solid var(--success); display:flex; align-items:center; justify-content:center; margin:0 auto var(--s4);"><span style="font-size:28px; color:var(--success);">✓</span></div>
+          <div style="font-size:24px; font-weight:700; color:var(--text-1); letter-spacing:-.01em;">All Sessions Registered!</div>
+          <div style="font-size:14px; color:var(--text-2); margin-top:var(--s1); max-width:480px; margin-left:auto; margin-right:auto;">All 5 packages have been assigned and confirmed successfully. Our team will assign teachers and reach out to schedule your sessions.</div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Quick summary (compact, not the full review) -->
+        <div style="max-width:520px; margin:0 auto;">
+          <div class="sec-title" style="margin-bottom:var(--s2);"><span>Summary</span></div>
+          <ul class="summary-list">
+            <li><span class="slbl">Total packages</span><span class="sval">5 registered</span></li>
+            <li><span class="slbl">Total credits</span><span class="sval">330 booking credits</span></li>
+            <li><span class="slbl">Students</span><span class="sval">Jack, Diana, Susan Powell</span></li>
+            <li><span class="slbl">Class types</span><span class="sval">4 paired + 1 individual</span></li>
+          </ul>
+
+          <div style="margin-top:var(--s4); font-size:13px; color:var(--text-2); line-height:1.6;">You'll receive confirmation emails for each package shortly. You can view your registered sessions on the <a class="link">Schedule</a> page.</div>
+        </div>
       </div>
 
       <div class="wiz-foot" style="justify-content: center;">
@@ -869,111 +976,108 @@
 <div class="modal-section">
 
 <div style="margin-top:var(--s7);"></div>
-<div class="step-label"><div class="step-num">M</div> Modals — Assignment Flows</div>
-<div class="step-desc">Triggered by clicking a [+] slot or "Reassign" link. Same modal structure as V5/V7.</div>
+<div class="step-label"><div class="step-num">M</div> Modals — Unified Assignment Flows (V9)</div>
+<div class="step-desc"><strong>V9 simplification.</strong> Paired packages now use a single modal with two dropdowns (Student 1 &amp; Student 2). Same modal for both Assign (empty dropdowns) and Reassign (prepopulated dropdowns). Eliminates V8's M1+M2+M3+M4. Individual packages use a single-dropdown modal.</div>
 
 
-<!-- M1: Paired — Select Student 1 -->
+<!-- M1: Paired — Assign (empty, new assignment) -->
 <div style="margin-top:var(--s5);">
-  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M1 — Paired Package: Select Student 1</div>
-  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent clicks a [+] slot on PKG2 (90 Paired 25‑min). Step 1 of 2.</div>
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M1 — Paired: New Assignment (empty dropdowns)</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent clicks "Assign pair" or a [+] slot on PKG2 (90 Paired 25‑min). Both dropdowns start empty. Single modal, no multi-step.</div>
 </div>
 
 <div class="modal-bg">
   <div class="modal">
     <button class="modal-x">×</button>
     <div class="modal-body">
-      <div class="modal-title">Paired Class — Student 1</div>
-      <div class="modal-sub">Select the first student for this paired package.</div>
+      <div class="modal-title">Assign Paired Package</div>
+      <div class="modal-sub">Select two students for this paired package.</div>
       <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 90 credits · 25 min</div></div></div>
-      <div class="alert alert-purple" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">🔗</span><span class="alert-text"><strong>Step 1 of 2</strong> — Paired classes require exactly 2 students</span></div>
-      <div class="sec-head">Assign Student 1</div>
-      <ul class="radio-list">
-        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-blue" style="margin-right:4px;">JP</div> Jack Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div> Diana Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
-      </ul>
+
+      <div class="stu-dropdown">
+        <label>Student 1</label>
+        <select>
+          <option value="" disabled selected>Select a student…</option>
+          <option>Jack Powell</option>
+          <option>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
+      <div class="stu-dropdown">
+        <label>Student 2</label>
+        <select>
+          <option value="" disabled selected>Select a student…</option>
+          <option>Jack Powell</option>
+          <option>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
       <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-out">Cancel</button>
-      <button class="btn btn-ok">Next: Student 2 →</button>
+      <button class="btn btn-dis">Assign Pair</button>
     </div>
   </div>
 </div>
 
 
-<!-- M2: Paired — Select Student 2 -->
+<!-- M2: Paired — Assign (selections made: Jack & Diana) -->
 <div style="margin-top:var(--s5);">
-  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M2 — Paired Package: Select Student 2 (Student 1 = Jack)</div>
-  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Step 2 of 2. Jack disabled. Diana selected.</div>
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M2 — Paired: Assignment with Selections (Jack &amp; Diana)</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent has selected Jack as Student 1 and Diana as Student 2. Button is now active. Shows the "already paired" info note when relevant.</div>
 </div>
 
 <div class="modal-bg">
   <div class="modal">
     <button class="modal-x">×</button>
     <div class="modal-body">
-      <div class="modal-title">Paired Class — Student 2</div>
-      <div class="modal-sub">Select the second student to pair with <strong>Jack Powell</strong>.</div>
-      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 90 credits · 25 min · Student 1: <strong>Jack Powell</strong></div></div></div>
-      <div class="alert alert-purple" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">🔗</span><span class="alert-text"><strong>Step 2 of 2</strong> — Choose who will pair with Jack Powell</span></div>
-      <div class="sec-head">Assign Student 2</div>
-      <ul class="radio-list">
-        <li class="radio-item off"><div class="rc dis"></div><div class="av av-28 av-blue" style="margin-right:4px; opacity:.4;">JP</div> <span style="color:var(--text-3);">Jack Powell (Student 1)</span></li>
-        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div> Diana Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
-      </ul>
+      <div class="modal-title">Assign Paired Package</div>
+      <div class="modal-sub">Select two students for this paired package.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG5 · 60 paired 50‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 60 credits · 50 min</div></div></div>
+
+      <div class="stu-dropdown">
+        <label>Student 1</label>
+        <select class="filled">
+          <option value="" disabled>Select a student…</option>
+          <option selected>Jack Powell</option>
+          <option>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
+      <div class="stu-dropdown">
+        <label>Student 2</label>
+        <select class="filled">
+          <option value="" disabled>Select a student…</option>
+          <option disabled>Jack Powell (Student 1)</option>
+          <option selected>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
+      <div class="note"><strong>Note:</strong> Jack &amp; Diana are already paired in PKG2. Students can be paired with different partners across separate packages.</div>
+
       <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost">← Back</button>
-      <div style="display:flex; gap:var(--s2);"><button class="btn btn-out">Cancel</button><button class="btn btn-ok">Assign Pair</button></div>
+      <button class="btn btn-out">Cancel</button>
+      <button class="btn btn-ok">Assign Pair</button>
     </div>
   </div>
 </div>
 
 
-<!-- M3: Already-paired info note -->
+<!-- M3: Paired — Reassign (prepopulated, both editable) -->
 <div style="margin-top:var(--s5);">
-  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M3 — Second Paired Pkg: Diana already paired with Jack in PKG2</div>
-  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Assigning PKG5 (60 Paired 50‑min). Student 1 = Jack. Diana shows info — not blocking.</div>
-</div>
-
-<div class="modal-bg">
-  <div class="modal">
-    <button class="modal-x">×</button>
-    <div class="modal-body">
-      <div class="modal-title">Paired Class — Student 2</div>
-      <div class="modal-sub">Select the second student to pair with <strong>Jack Powell</strong>.</div>
-      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG5 · 60 paired 50‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 60 credits · 50 min · Student 1: <strong>Jack Powell</strong></div></div></div>
-      <div class="alert alert-purple" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">🔗</span><span class="alert-text"><strong>Step 2 of 2</strong> — Choose who will pair with Jack Powell</span></div>
-      <div class="sec-head">Assign Student 2</div>
-      <ul class="radio-list">
-        <li class="radio-item off"><div class="rc dis"></div><div class="av av-28 av-blue" style="margin-right:4px; opacity:.4;">JP</div> <span style="color:var(--text-3);">Jack Powell (Student 1)</span></li>
-        <li class="radio-item">
-          <div class="rc"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div>
-          <div>Diana Powell<div style="font-size:11px; color:var(--purple); font-weight:500;">Already paired with Jack in PKG2</div></div>
-        </li>
-        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
-      </ul>
-      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
-      <div class="note"><strong>Note:</strong> Students can be paired with different partners across separate packages.</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost">← Back</button>
-      <div style="display:flex; gap:var(--s2);"><button class="btn btn-out">Cancel</button><button class="btn btn-ok">Assign Pair</button></div>
-    </div>
-  </div>
-</div>
-
-
-<!-- M4: Reassign -->
-<div style="margin-top:var(--s5);">
-  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M4 — Reassign Paired Package</div>
-  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Clicked "Reassign" on PKG2 row.</div>
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M3 — Paired: Reassign (prepopulated with Jack &amp; Diana)</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent clicks "Reassign" on PKG2. Same modal as M1/M2, but dropdowns are prepopulated with current assignment. Parent can change either or both students.</div>
 </div>
 
 <div class="modal-bg">
@@ -981,35 +1085,47 @@
     <button class="modal-x">×</button>
     <div class="modal-body">
       <div class="modal-title">Reassign Paired Package</div>
-      <div class="modal-sub">Replace one student in this paired assignment.</div>
-      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Currently: <strong>Jack Powell</strong> ⟷ <strong>Diana Powell</strong></div></div></div>
-      <div class="alert alert-warn" style="margin-bottom:var(--s3); padding:var(--s1) var(--s3); font-size:12px;"><span class="alert-icon" style="font-size:14px;">⚠️</span><span class="alert-text">Reassigning will affect both students in this pair</span></div>
-      <div class="sec-head">Which student to replace?</div>
-      <ul class="radio-list">
-        <li class="radio-item"><div class="rc on"></div> Replace Diana Powell (keep Jack)</li>
-        <li class="radio-item"><div class="rc"></div> Replace Jack Powell (keep Diana)</li>
-      </ul>
-      <hr style="border:none; border-top:1px solid var(--divider); margin:var(--s3) 0;">
-      <div class="sec-head">New student</div>
-      <ul class="radio-list">
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
-      </ul>
-      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+      <div class="modal-sub">Change one or both students for this paired package.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG2 · 90 paired 25‑min booking credits</div><div class="modal-pkg-meta">Paired Class · 90 credits · 25 min · Currently: Jack &amp; Diana</div></div></div>
+
+      <div class="stu-dropdown">
+        <label>Student 1</label>
+        <select class="filled">
+          <option value="" disabled>Select a student…</option>
+          <option selected>Jack Powell</option>
+          <option>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
+      <div class="stu-dropdown">
+        <label>Student 2</label>
+        <select class="filled">
+          <option value="" disabled>Select a student…</option>
+          <option disabled>Jack Powell (Student 1)</option>
+          <option selected>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
       <div class="note"><strong>Note:</strong> Jack &amp; Diana also share PKG5. This reassignment only affects PKG2.</div>
+
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-out">Cancel</button>
-      <button class="btn btn-ok">Reassign Pair</button>
+      <button class="btn btn-ok">Save Changes</button>
     </div>
   </div>
 </div>
 
 
-<!-- M5: Individual assign -->
+<!-- M4: Individual — Assign (new, empty dropdown) -->
 <div style="margin-top:var(--s5);">
-  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M5 — Assign Individual Package</div>
-  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Clicked the [+] slot on PKG1 (30 Individual 25-min).</div>
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M4 — Individual: Assign (empty)</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent clicks "Assign" or [+] on PKG1 (30 Individual 25‑min). Single dropdown.</div>
 </div>
 
 <div class="modal-bg">
@@ -1019,18 +1135,58 @@
       <div class="modal-title">Assign Package</div>
       <div class="modal-sub">Choose which student should receive this package.</div>
       <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG1 · 30 individual 25‑min booking credits</div><div class="modal-pkg-meta">Individual Class · 30 credits · 25 min</div></div></div>
-      <div class="sec-head">Assign to Student</div>
-      <ul class="radio-list">
-        <li class="radio-item"><div class="rc on"></div><div class="av av-28 av-blue" style="margin-right:4px;">JP</div> Jack Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-purple" style="margin-right:4px;">DP</div> Diana Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-teal" style="margin-right:4px;">SP</div> Susan Powell</li>
-        <li class="radio-item"><div class="rc"></div><div class="av av-28 av-grey" style="margin-right:4px;">SM</div> Me (Sarah Miller)</li>
-      </ul>
+
+      <div class="stu-dropdown">
+        <label>Student</label>
+        <select>
+          <option value="" disabled selected>Select a student…</option>
+          <option>Jack Powell</option>
+          <option>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
       <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-out">Cancel</button>
-      <button class="btn btn-ok">Save</button>
+      <button class="btn btn-dis">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- M5: Individual — Reassign (prepopulated with Jack) -->
+<div style="margin-top:var(--s5);">
+  <div style="font-size:13px; font-weight:600; color:var(--text-1); margin-bottom:var(--s1); text-transform:uppercase; letter-spacing:.06em;">M5 — Individual: Reassign (prepopulated with Jack)</div>
+  <div style="font-size:12px; color:var(--text-2); margin-bottom:var(--s3);">Parent clicks "Reassign" on PKG1. Same modal as M4 but dropdown is prepopulated. Parent can change to a different student.</div>
+</div>
+
+<div class="modal-bg">
+  <div class="modal">
+    <button class="modal-x">×</button>
+    <div class="modal-body">
+      <div class="modal-title">Reassign Package</div>
+      <div class="modal-sub">Change which student receives this package.</div>
+      <div class="modal-pkg"><div class="modal-pkg-icon">📦</div><div><div class="modal-pkg-title">PKG1 · 30 individual 25‑min booking credits</div><div class="modal-pkg-meta">Individual Class · 30 credits · 25 min · Currently: Jack Powell</div></div></div>
+
+      <div class="stu-dropdown">
+        <label>Student</label>
+        <select class="filled">
+          <option value="" disabled>Select a student…</option>
+          <option selected>Jack Powell</option>
+          <option>Diana Powell</option>
+          <option>Susan Powell</option>
+          <option>Me (Sarah Miller)</option>
+        </select>
+      </div>
+
+      <div class="add-stu-btn"><span style="font-size:16px; font-weight:700;">+</span> Add New Student</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-out">Cancel</button>
+      <button class="btn btn-ok">Save Changes</button>
     </div>
   </div>
 </div>
