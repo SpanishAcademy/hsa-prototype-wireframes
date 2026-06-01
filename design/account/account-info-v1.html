@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — Account Information Wireframe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── HSA Design Tokens ── */
+      --font: 'Open Sans', sans-serif;
+
+      /* Primary (blue) */
+      --pri-50:  #F2F9FD;
+      --pri-100: #D8ECFA;
+      --pri-200: #A4D2F2;
+      --pri-300: #7DBFED;
+      --pri-400: #56ACE8;
+      --pri-500: #1A7ABC;
+      --pri-600: #135B8D;
+      --pri-700: #0D3D5E;
+
+      /* Neutral */
+      --n-50:  #F8FAFC;
+      --n-100: #EDEFF1;
+      --n-200: #DBDFE3;
+      --n-300: #C9D0D4;
+      --n-400: #B8C0C6;
+      --n-500: #8896A0;
+      --n-600: #63717B;
+      --n-700: #424B52;
+      --n-800: #212629;
+      --n-900: #101315;
+
+      /* Success (green) */
+      --ok-50:  #F4FCF7;
+      --ok-100: #DFF7E6;
+      --ok-500: #33BF5C;
+      --ok-600: #268F45;
+
+      /* Warning (orange) */
+      --warn-50:  #FEF8F4;
+      --warn-100: #FCEADE;
+      --warn-500: #ED7524;
+
+      /* Error (red) */
+      --err-50:  #FCF7F7;
+      --err-100: #F7E7E7;
+      --err-500: #CA5C5C;
+      --err-600: #A63636;
+
+      /* Shades */
+      --white: #FFFFFF;
+      --black: #000000;
+
+      /* Text */
+      --text-1: #212629;
+      --text-2: #63717B;
+      --text-3: #8896A0;
+
+      /* Shape */
+      --r-sm: 4px;
+      --r-md: 8px;
+      --r-soft: 10px;
+      --r-full: 50%;
+
+      /* Spacing / Padding */
+      --sp-xs:  8px;
+      --sp-sm:  12px;
+      --sp-md:  16px;
+      --sp-lg:  24px;
+      --sp-xl:  32px;
+
+      /* Gap */
+      --gap-xxs: 4px;
+      --gap-xs:  8px;
+      --gap-sm:  16px;
+      --gap-md:  20px;
+      --gap-lg:  32px;
+
+      /* Typography */
+      --fs-tiny:   10px;
+      --fs-small:  12px;
+      --fs-med:    14px;
+      --fs-large:  16px;
+      --fs-xlarge: 18px;
+      --fs-xxl:    20px;
+      --fs-biggest:24px;
+
+      --fw-normal:  400;
+      --fw-semi:    600;
+      --fw-bold:    700;
+
+      /* Elevation */
+      --elev1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --elev2: 0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.04);
+      --elev3: 0 10px 15px -3px rgba(0,0,0,.06), 0 4px 6px -4px rgba(0,0,0,.04);
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: var(--fs-med);
+      line-height: 1.5;
+      color: var(--text-1);
+      background: #E0E4E8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Wireframe chrome ── */
+    .wireframe-banner {
+      background: var(--n-800);
+      color: var(--white);
+      padding: var(--sp-xs) var(--sp-md);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+    }
+    .wireframe-flow {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--sp-xl);
+    }
+    .section-label {
+      background: var(--pri-500);
+      color: var(--white);
+      padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--r-soft) var(--r-soft) 0 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-top: 48px;
+    }
+    .section-label:first-of-type { margin-top: var(--sp-lg); }
+    .section-num {
+      background: rgba(255,255,255,.2);
+      width: 28px; height: 28px;
+      border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--fs-med); font-weight: 700;
+    }
+    .section-desc {
+      background: var(--pri-50);
+      border: 1px solid rgba(26,122,188,.15);
+      border-top: none;
+      padding: var(--sp-sm) var(--sp-lg);
+      font-size: 13px;
+      color: var(--pri-600);
+      line-height: 1.6;
+    }
+
+    /* ── Full-page shell (Stage) ── */
+    .shell {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      border: 1px solid var(--n-200);
+      border-top: none;
+      border-radius: 0 0 var(--r-soft) var(--r-soft);
+      overflow: hidden;
+      box-shadow: var(--elev2);
+      min-height: 760px;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: relative;
+      background: var(--pri-500);
+      min-height: 56px;
+      width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      padding: 0 var(--sp-xl);
+    }
+    .topbar-logo {
+      position: absolute;
+      top: 0;
+      left: 32px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      z-index: 1;
+    }
+    .topbar-logo svg { height: 40px; }
+    .topbar-logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -.02em;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+    }
+    .topbar-icon-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--r-full);
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,.85);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .topbar-icon-btn:hover { background: rgba(255,255,255,.12); }
+    .topbar-badge {
+      position: relative;
+    }
+    .topbar-badge-count {
+      position: absolute;
+      top: -2px; right: -2px;
+      width: 16px; height: 16px;
+      border-radius: var(--r-full);
+      background: var(--err-500);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .topbar-account {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+      padding: 6px 12px;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      color: var(--white);
+    }
+    .topbar-account:hover { background: rgba(255,255,255,.12); }
+    .topbar-avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      background: #268F45;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-account-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.3;
+    }
+    .topbar-account-name { font-size: 13px; font-weight: 600; }
+    .topbar-account-sub { font-size: 11px; opacity: .75; }
+    .topbar-chevron { font-size: 16px; opacity: .7; }
+
+    /* ── Stage content area (sidebar + main) ── */
+    .stage-body {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      background: var(--n-50);
+      min-height: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--n-200);
+      padding: var(--sp-lg) var(--sp-md);
+      overflow-y: auto;
+    }
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      font-size: var(--fs-med);
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    .nav-item:hover { background: var(--n-50); color: var(--text-1); }
+    .nav-item.active {
+      background: var(--pri-50);
+      color: var(--pri-600);
+      font-weight: 600;
+    }
+    .nav-icon {
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: .65;
+    }
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    /* ── Main content ── */
+    .main {
+      padding: var(--sp-xl) var(--sp-md);
+      overflow-y: auto;
+    }
+
+    /* ── Page title ── */
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-lg);
+    }
+    .page-title-icon {
+      width: 28px; height: 28px;
+      color: var(--n-500);
+    }
+    .page-title h1 {
+      font-size: var(--fs-biggest);
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -.01em;
+    }
+
+    /* ── Content tabs (mobile-like top nav) ── */
+    .content-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--n-200);
+      margin-bottom: var(--sp-lg);
+    }
+    .content-tab {
+      padding: var(--sp-sm) var(--sp-md);
+      font-size: var(--fs-med);
+      font-weight: 500;
+      color: var(--text-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+    }
+    .content-tab:hover { color: var(--text-2); }
+    .content-tab.active {
+      color: var(--pri-500);
+      border-bottom-color: var(--pri-500);
+      font-weight: 600;
+    }
+
+    /* ── Form card ── */
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--n-200);
+      border-radius: var(--r-soft);
+      overflow: hidden;
+    }
+
+    /* ── Form sections ── */
+    .form-section {
+      padding: var(--sp-lg);
+    }
+    .form-section + .form-section {
+      border-top: 1px solid var(--n-200);
+    }
+    .form-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--sp-md);
+    }
+    .form-section-title {
+      font-size: var(--fs-large);
+      font-weight: 700;
+      color: var(--text-1);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+    }
+    .form-section-title .sec-icon {
+      width: 18px; height: 18px;
+      color: var(--n-500);
+    }
+    .form-section-desc {
+      font-size: var(--fs-small);
+      color: var(--text-2);
+      margin-top: 2px;
+    }
+
+    /* ── Fields ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-sm);
+    }
+    .field-row.single { grid-template-columns: 1fr; }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-xxs);
+      margin-bottom: var(--sp-md);
+    }
+    .field-label {
+      font-size: var(--fs-small);
+      font-weight: 600;
+      color: var(--text-2);
+    }
+    .field-label .req {
+      color: var(--err-500);
+      margin-left: 2px;
+    }
+    .field-input, .field-select {
+      width: 100%;
+      font-family: var(--font);
+      font-size: var(--fs-med);
+      padding: 10px 14px;
+      border: 1px solid var(--n-300);
+      border-radius: var(--r-md);
+      background: var(--white);
+      color: var(--text-1);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .field-input:focus, .field-select:focus {
+      outline: none;
+      border-color: var(--pri-500);
+      box-shadow: 0 0 0 3px rgba(26,122,188,.12);
+    }
+    .field-input::placeholder { color: var(--n-400); }
+    .field-input.filled { border-color: var(--n-400); }
+    .field-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2363717B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+    .field-helper {
+      font-size: var(--fs-small);
+      color: var(--text-3);
+      margin-top: 2px;
+    }
+
+    /* ── List items (email, phone, oauth) ── */
+    .list-items {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xs);
+    }
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding: var(--sp-sm) var(--sp-md);
+      border: 1px solid var(--n-200);
+      border-radius: var(--r-md);
+      background: var(--n-50);
+      transition: border-color .15s;
+    }
+    .list-item:hover { border-color: var(--n-300); }
+    .list-item-icon {
+      width: 36px; height: 36px;
+      border-radius: var(--r-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .list-item-icon.email-icon { background: var(--pri-50); color: var(--pri-500); }
+    .list-item-icon.phone-icon { background: var(--ok-50); color: var(--ok-600); }
+    .list-item-icon.google-icon { background: var(--n-100); color: var(--text-2); }
+    .list-item-body { flex: 1; min-width: 0; }
+    .list-item-value {
+      font-size: var(--fs-med);
+      font-weight: 600;
+      color: var(--text-1);
+    }
+    .list-item-meta {
+      font-size: var(--fs-small);
+      color: var(--text-3);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+    }
+    .list-item-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-xxs);
+    }
+
+    /* ── Badges / Tags ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: var(--r-sm);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+    .badge-primary { background: var(--pri-100); color: var(--pri-600); }
+    .badge-success { background: var(--ok-100); color: var(--ok-600); }
+    .badge-warning { background: var(--warn-100); color: var(--warn-500); }
+    .badge-neutral { background: var(--n-100); color: var(--n-600); }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: var(--fs-med);
+      line-height: 1.75;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-xs);
+      padding: 8px 20px;
+      border: none;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: background .15s, box-shadow .15s;
+    }
+    .btn-sm { padding: 4px 12px; font-size: 13px; }
+    .btn-xs { padding: 2px 8px; font-size: 12px; }
+    .btn-pri { background: var(--pri-500); color: var(--white); box-shadow: var(--elev1); }
+    .btn-pri:hover { background: var(--pri-600); }
+    .btn-out { background: transparent; color: var(--pri-500); border: 1px solid var(--pri-200); }
+    .btn-out:hover { background: var(--pri-50); }
+    .btn-text { background: transparent; color: var(--pri-500); border: none; padding: 8px 12px; }
+    .btn-text:hover { background: var(--pri-50); }
+    .btn-ghost { background: transparent; color: var(--text-2); border: none; }
+    .btn-ghost:hover { background: var(--n-100); }
+    .btn-danger-text { background: transparent; color: var(--err-500); border: none; padding: 8px 12px; }
+    .btn-danger-text:hover { background: var(--err-50); }
+    .btn-dis { background: var(--n-200); color: var(--text-3); cursor: not-allowed; box-shadow: none; }
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background .15s, color .15s;
+    }
+    .icon-btn:hover { background: var(--n-100); color: var(--text-1); }
+    .icon-btn.danger:hover { background: var(--err-50); color: var(--err-500); }
+
+    /* ── Toggle switch ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-sm) 0;
+    }
+    .toggle-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .toggle-label-title { font-size: var(--fs-med); font-weight: 600; color: var(--text-1); }
+    .toggle-label-desc { font-size: var(--fs-small); color: var(--text-2); }
+    .toggle-switch {
+      width: 44px; height: 24px;
+      background: var(--n-300);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .toggle-switch.on { background: var(--pri-500); }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      border-radius: var(--r-full);
+      background: var(--white);
+      box-shadow: var(--elev1);
+      transition: transform .2s;
+    }
+    .toggle-switch.on::after { transform: translateX(20px); }
+
+    /* ── Form footer ── */
+    .form-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-sm);
+      padding: var(--sp-md) var(--sp-lg);
+      border-top: 1px solid var(--n-200);
+      background: var(--n-50);
+    }
+
+    /* ── Add button (dashed) ── */
+    .add-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-xs);
+      width: 100%;
+      padding: var(--sp-sm);
+      border: 1.5px dashed var(--pri-200);
+      border-radius: var(--r-md);
+      color: var(--pri-500);
+      font-size: var(--fs-med);
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      transition: background .15s, border-color .15s;
+      font-family: var(--font);
+    }
+    .add-btn:hover { background: var(--pri-50); border-color: var(--pri-400); }
+
+    /* ── Password strength ── */
+    .pwd-strength {
+      display: flex;
+      gap: var(--gap-xxs);
+      margin-top: var(--sp-xs);
+    }
+    .pwd-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--n-200);
+    }
+    .pwd-bar.filled { background: var(--ok-500); }
+    .pwd-bar.warn { background: var(--warn-500); }
+    .pwd-bar.weak { background: var(--err-500); }
+
+    /* ── Confirmation banner ── */
+    .confirm-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding: var(--sp-sm) var(--sp-md);
+      border-radius: var(--r-md);
+      font-size: var(--fs-small);
+      margin-bottom: var(--sp-md);
+    }
+    .confirm-banner.info {
+      background: var(--pri-50);
+      border: 1px solid var(--pri-100);
+      color: var(--pri-700);
+    }
+    .confirm-banner.success {
+      background: var(--ok-50);
+      border: 1px solid var(--ok-100);
+      color: var(--ok-600);
+    }
+    .confirm-banner .banner-icon { font-size: 16px; flex-shrink: 0; }
+
+    /* ── Inline-edit overlay for email/phone ── */
+    .inline-edit-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+      padding: var(--sp-sm) var(--sp-md);
+      border: 1.5px solid var(--pri-300);
+      border-radius: var(--r-md);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(26,122,188,.08);
+    }
+    .inline-edit-row .field-input {
+      flex: 1;
+      margin: 0;
+      border: none;
+      padding: 6px 0;
+      box-shadow: none;
+      font-size: var(--fs-med);
+    }
+    .inline-edit-row .field-input:focus { box-shadow: none; }
+
+    /* ── OAuth card ── */
+    .oauth-card {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding: var(--sp-md);
+      border: 1px solid var(--n-200);
+      border-radius: var(--r-md);
+      background: var(--white);
+    }
+    .oauth-logo {
+      width: 40px; height: 40px;
+      border-radius: var(--r-md);
+      background: var(--white);
+      border: 1px solid var(--n-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .oauth-logo svg { width: 22px; height: 22px; }
+    .oauth-body { flex: 1; min-width: 0; }
+    .oauth-provider { font-size: var(--fs-med); font-weight: 600; color: var(--text-1); }
+    .oauth-email { font-size: var(--fs-small); color: var(--text-2); }
+
+    /* ── Mobile view frame ── */
+    .mobile-frame {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .mobile-frame .stage-body {
+      grid-template-columns: 1fr;
+    }
+    .mobile-frame .sidebar { display: none; }
+    .mobile-frame .main { padding: var(--sp-md); }
+
+    /* ── Utility ── */
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-xs { gap: var(--gap-xs); }
+    .gap-sm { gap: var(--gap-sm); }
+    .gap-md { gap: var(--gap-md); }
+    .mt-sm { margin-top: var(--sp-sm); }
+    .mt-md { margin-top: var(--sp-md); }
+    .mt-lg { margin-top: var(--sp-lg); }
+    .mb-sm { margin-bottom: var(--sp-sm); }
+    .mb-md { margin-bottom: var(--sp-md); }
+    .text-sm { font-size: var(--fs-small); }
+    .text-muted { color: var(--text-2); }
+    .w-full { width: 100%; }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe &mdash; My Account &middot; Account Information &middot; V1</div>
+
+<div class="wireframe-flow">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Desktop — Full View                     -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">1</span>
+    Desktop — My Account &gt; My Info (default state)
+  </div>
+  <div class="section-desc">
+    Full desktop layout with sidebar navigation and the account edit form.
+    Uses the <code>UserStage</code> shell (SizedStage + sidebar). Sidebar renders
+    <code>MyAccountStage</code> nav items. Content is the <code>EditAccountForm</code>
+    with all five sections: profile, emails, phones, credentials, and OAuth.
+  </div>
+  <div class="shell">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-logo">
+        <span class="topbar-logo-text">HSA</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage body -->
+    <div class="stage-body">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </span>
+            My Info
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            My Students
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </span>
+            Purchase History
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            Access Pass
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg>
+            </span>
+            Payment Portal
+          </a>
+        </nav>
+      </div>
+
+      <!-- Main content -->
+      <div class="main">
+        <!-- Page title -->
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <!-- Form card -->
+        <div class="form-card">
+
+          <!-- Section: Profile Info -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+                <div class="form-section-desc">Your personal details and preferences</div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">First name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Angelo" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Last name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Penalosa" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Birthday <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="March 15, 1990" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Timezone <span class="req">*</span></label>
+                <select class="field-select filled">
+                  <option selected>America/Chicago (CST)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Emails -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Email Addresses
+                </div>
+                <div class="form-section-desc">Manage your email addresses and set your primary contact</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <!-- Primary email -->
+              <div class="list-item">
+                <div class="list-item-icon email-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-primary">Primary</span>
+                    <span class="badge badge-success">Verified</span>
+                  </div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="icon-btn" title="More options">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+                  </button>
+                </div>
+              </div>
+              <!-- Secondary email -->
+              <div class="list-item">
+                <div class="list-item-icon email-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo@hsacademy.com</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-warning">Unverified</span>
+                  </div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn btn-text btn-xs">Set primary</button>
+                  <button class="icon-btn danger" title="Remove">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Add email address
+              </button>
+            </div>
+          </div>
+
+          <!-- Section: Phone Numbers -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Phone Numbers
+                </div>
+                <div class="form-section-desc">Manage your phone numbers</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon phone-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div class="list-item-body">
+                  <div class="list-item-value">+1 (555) 234-5678</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-primary">Primary</span>
+                    <span class="badge badge-success">Verified</span>
+                  </div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="icon-btn" title="More options">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Add phone number
+              </button>
+            </div>
+          </div>
+
+          <!-- Section: Security / Credentials -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Security
+                </div>
+                <div class="form-section-desc">Manage your password</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-label-title">Update password</span>
+                <span class="toggle-label-desc">Toggle to change your account password</span>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <!-- Password fields (shown when toggled on) -->
+            <div style="opacity: .4; pointer-events: none; margin-top: 12px;">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">New password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Enter new password" disabled />
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Confirm password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Re-enter password" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Connected Accounts (OAuth) -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Connected Accounts
+                </div>
+                <div class="form-section-desc">Sign in faster with linked third-party accounts</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="oauth-card">
+                <div class="oauth-logo">
+                  <svg viewBox="0 0 24 24" width="22" height="22">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                </div>
+                <div class="oauth-body">
+                  <div class="oauth-provider">Google</div>
+                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                </div>
+                <button class="icon-btn danger" title="Unlink">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                Link another account
+              </button>
+            </div>
+          </div>
+
+          <!-- Form footer -->
+          <div class="form-footer">
+            <button class="btn btn-ghost">Reset</button>
+            <button class="btn btn-pri">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 2: Desktop — Password Toggle Active        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">2</span>
+    Desktop — Password Change Active
+  </div>
+  <div class="section-desc">
+    When the "Update password" toggle is enabled, the password fields become active with
+    strength indicator. The form footer buttons become active since the form is now dirty.
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#">
+            <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+            My Info
+          </a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <div class="form-card">
+
+          <!-- Section: Profile Info -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+                <div class="form-section-desc">Your personal details and preferences</div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">First name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Angelo" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Last name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Penalosa" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Birthday <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="March 15, 1990" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Timezone <span class="req">*</span></label>
+                <select class="field-select filled"><option selected>America/Chicago (CST)</option></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Emails -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Email Addresses
+                </div>
+                <div class="form-section-desc">Manage your email addresses and set your primary contact</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+              <div class="list-item">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo@hsacademy.com</div>
+                  <div class="list-item-meta"><span class="badge badge-warning">Unverified</span></div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn btn-text btn-xs">Set primary</button>
+                  <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add email address</button>
+            </div>
+          </div>
+
+          <!-- Section: Phone Numbers -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Phone Numbers
+                </div>
+                <div class="form-section-desc">Manage your phone numbers</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon phone-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">+1 (555) 234-5678</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add phone number</button>
+            </div>
+          </div>
+
+          <!-- Section: Security — TOGGLE ACTIVE -->
+          <div class="form-section" style="background: var(--pri-50);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Security
+                </div>
+                <div class="form-section-desc">Manage your password</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-label-title">Update password</span>
+                <span class="toggle-label-desc">Toggle to change your account password</span>
+              </div>
+              <div class="toggle-switch on"></div>
+            </div>
+            <div style="margin-top: 12px;">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">New password <span class="req">*</span></label>
+                  <input class="field-input" type="password" value="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" />
+                  <div class="pwd-strength">
+                    <div class="pwd-bar filled"></div>
+                    <div class="pwd-bar filled"></div>
+                    <div class="pwd-bar filled"></div>
+                    <div class="pwd-bar"></div>
+                  </div>
+                  <div class="field-helper" style="color: var(--ok-600);">Strong password</div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Confirm password <span class="req">*</span></label>
+                  <input class="field-input" type="password" value="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" />
+                  <div class="field-helper" style="color: var(--ok-600);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="vertical-align: -1px;"><polyline points="20 6 9 17 4 12"/></svg>
+                    Passwords match
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Connected Accounts -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Connected Accounts
+                </div>
+                <div class="form-section-desc">Sign in faster with linked third-party accounts</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="oauth-card">
+                <div class="oauth-logo">
+                  <svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                </div>
+                <div class="oauth-body">
+                  <div class="oauth-provider">Google</div>
+                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                </div>
+                <button class="icon-btn danger" title="Unlink"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Link another account</button>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button class="btn btn-ghost">Reset</button>
+            <button class="btn btn-pri">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Adding a New Email (inline edit)        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">3</span>
+    Interaction — Adding a New Email Address
+  </div>
+  <div class="section-desc">
+    When "Add email address" is clicked, an inline input row appears at the bottom of the
+    list. The input is focused and bordered with the primary color to indicate active editing.
+    A "Resend verification" link appears for unverified emails.
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <div class="form-card">
+
+          <!-- Section: Profile Info -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+                <div class="form-section-desc">Your personal details and preferences</div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">First name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Angelo" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Last name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Penalosa" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Birthday <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="March 15, 1990" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Timezone <span class="req">*</span></label>
+                <select class="field-select filled"><option selected>America/Chicago (CST)</option></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Emails — INLINE ADD ACTIVE -->
+          <div class="form-section" style="background: var(--pri-50);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Email Addresses
+                </div>
+                <div class="form-section-desc">Manage your email addresses and set your primary contact</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+              <div class="list-item">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo@hsacademy.com</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-warning">Unverified</span>
+                    <a href="#" style="font-size: 12px; color: var(--pri-500); text-decoration: none;">Resend verification</a>
+                  </div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn btn-text btn-xs">Set primary</button>
+                  <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+              </div>
+              <div class="inline-edit-row">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+                <input class="field-input" type="email" placeholder="Enter email address" value="newemail@example.com" style="flex:1; border: none; padding: 6px 0; box-shadow: none;" />
+                <button class="icon-btn danger" title="Cancel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+              </div>
+            </div>
+            <div class="confirm-banner info mt-md">
+              <span class="banner-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+              A verification email will be sent to the new address once you save.
+            </div>
+          </div>
+
+          <!-- Section: Phone Numbers -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Phone Numbers
+                </div>
+                <div class="form-section-desc">Manage your phone numbers</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon phone-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">+1 (555) 234-5678</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add phone number</button>
+            </div>
+          </div>
+
+          <!-- Section: Security -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Security
+                </div>
+                <div class="form-section-desc">Manage your password</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-label-title">Update password</span>
+                <span class="toggle-label-desc">Toggle to change your account password</span>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div style="opacity: .4; pointer-events: none; margin-top: 12px;">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">New password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Enter new password" disabled />
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Confirm password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Re-enter password" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Connected Accounts -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Connected Accounts
+                </div>
+                <div class="form-section-desc">Sign in faster with linked third-party accounts</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="oauth-card">
+                <div class="oauth-logo">
+                  <svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                </div>
+                <div class="oauth-body">
+                  <div class="oauth-provider">Google</div>
+                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                </div>
+                <button class="icon-btn danger" title="Unlink"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Link another account</button>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button class="btn btn-ghost">Reset</button>
+            <button class="btn btn-pri">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 4: Success State                           -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">4</span>
+    State — Save Success
+  </div>
+  <div class="section-desc">
+    After a successful save, a success banner appears at the top of the form card. The form
+    resets to the clean state with the new values reflected.
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <div class="confirm-banner success mb-md">
+          <span class="banner-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+          Your account information has been updated successfully.
+        </div>
+
+        <div class="form-card">
+
+          <!-- Section: Profile Info -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+                <div class="form-section-desc">Your personal details and preferences</div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">First name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Angelo" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Last name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Penalosa" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Birthday <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="March 15, 1990" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Timezone <span class="req">*</span></label>
+                <select class="field-select filled"><option selected>America/Chicago (CST)</option></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Emails — with newly added email highlighted -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Email Addresses
+                </div>
+                <div class="form-section-desc">Manage your email addresses and set your primary contact</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+              <div class="list-item">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo@hsacademy.com</div>
+                  <div class="list-item-meta"><span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn btn-text btn-xs">Set primary</button>
+                  <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+              </div>
+              <div class="list-item" style="border-color: var(--ok-500); background: var(--ok-50);">
+                <div class="list-item-icon email-icon" style="background: var(--ok-100);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">newemail@example.com</div>
+                  <div class="list-item-meta"><span class="badge badge-warning">Pending verification</span></div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn btn-text btn-xs">Set primary</button>
+                  <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add email address</button>
+            </div>
+          </div>
+
+          <!-- Section: Phone Numbers -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Phone Numbers
+                </div>
+                <div class="form-section-desc">Manage your phone numbers</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon phone-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">+1 (555) 234-5678</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add phone number</button>
+            </div>
+          </div>
+
+          <!-- Section: Security -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Security
+                </div>
+                <div class="form-section-desc">Manage your password</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-label-title">Update password</span>
+                <span class="toggle-label-desc">Toggle to change your account password</span>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div style="opacity: .4; pointer-events: none; margin-top: 12px;">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">New password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Enter new password" disabled />
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Confirm password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Re-enter password" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Connected Accounts -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Connected Accounts
+                </div>
+                <div class="form-section-desc">Sign in faster with linked third-party accounts</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="oauth-card">
+                <div class="oauth-logo">
+                  <svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                </div>
+                <div class="oauth-body">
+                  <div class="oauth-provider">Google</div>
+                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                </div>
+                <button class="icon-btn danger" title="Unlink"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Link another account</button>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button class="btn btn-dis">Reset</button>
+            <button class="btn btn-dis">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Mobile / Condensed Layout               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">5</span>
+    Mobile — Condensed View with Top Tab Navigation
+  </div>
+  <div class="section-desc">
+    On mobile (&lt;768px), the sidebar collapses and navigation moves to a horizontal
+    tab strip below the topbar. The hamburger menu in the topbar opens a slideout with
+    account + nav items. Form sections stack single-column.
+  </div>
+  <div class="shell mobile-frame" style="min-height: 700px;">
+    <div class="topbar" style="padding: 0 16px;">
+      <div class="topbar-logo" style="left: 16px;">
+        <span class="topbar-logo-text" style="font-size: 16px;">HSA</span>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="main" style="padding: var(--sp-md);">
+        <!-- Page title -->
+        <div class="page-title" style="margin-bottom: var(--sp-md);">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1 style="font-size: 20px;">My Account</h1>
+        </div>
+
+        <!-- Horizontal tabs (replaces sidebar) -->
+        <div class="content-tabs" style="overflow-x: auto; white-space: nowrap;">
+          <div class="content-tab active">My Info</div>
+          <div class="content-tab">Students</div>
+          <div class="content-tab">History</div>
+          <div class="content-tab">Access</div>
+          <div class="content-tab">Payment</div>
+        </div>
+
+        <div class="form-card">
+          <!-- Profile Info — single column on mobile -->
+          <div class="form-section" style="padding: var(--sp-md);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title" style="font-size: var(--fs-med);">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+              </div>
+            </div>
+            <div class="field-row single">
+              <div class="field-group">
+                <label class="field-label">First name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Angelo" />
+              </div>
+            </div>
+            <div class="field-row single">
+              <div class="field-group">
+                <label class="field-label">Last name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Penalosa" />
+              </div>
+            </div>
+            <div class="field-row single">
+              <div class="field-group">
+                <label class="field-label">Birthday <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="March 15, 1990" />
+              </div>
+            </div>
+            <div class="field-row single">
+              <div class="field-group">
+                <label class="field-label">Timezone <span class="req">*</span></label>
+                <select class="field-select filled">
+                  <option selected>America/Chicago</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Emails — compact on mobile -->
+          <div class="form-section" style="padding: var(--sp-md);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title" style="font-size: var(--fs-med);">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Emails
+                </div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item" style="padding: var(--sp-xs) var(--sp-sm);">
+                <div class="list-item-body">
+                  <div class="list-item-value" style="font-size: 13px;">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-primary">Primary</span>
+                    <span class="badge badge-success">Verified</span>
+                  </div>
+                </div>
+                <button class="icon-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn" style="padding: var(--sp-xs); font-size: 13px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Add email
+              </button>
+            </div>
+          </div>
+
+          <!-- Phone — compact -->
+          <div class="form-section" style="padding: var(--sp-md);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title" style="font-size: var(--fs-med);">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Phones
+                </div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item" style="padding: var(--sp-xs) var(--sp-sm);">
+                <div class="list-item-body">
+                  <div class="list-item-value" style="font-size: 13px;">+1 (555) 234-5678</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-primary">Primary</span>
+                    <span class="badge badge-success">Verified</span>
+                  </div>
+                </div>
+                <button class="icon-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn" style="padding: var(--sp-xs); font-size: 13px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Add phone
+              </button>
+            </div>
+          </div>
+
+          <!-- Security — compact mobile -->
+          <div class="form-section" style="padding: var(--sp-md);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title" style="font-size: var(--fs-med);">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Security
+                </div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-label-title" style="font-size: 13px;">Update password</span>
+                <span class="toggle-label-desc" style="font-size: 11px;">Toggle to change your password</span>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div style="opacity: .4; pointer-events: none; margin-top: 12px;">
+              <div class="field-row single">
+                <div class="field-group">
+                  <label class="field-label">New password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Enter new password" disabled />
+                </div>
+              </div>
+              <div class="field-row single">
+                <div class="field-group">
+                  <label class="field-label">Confirm password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Re-enter password" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Connected Accounts — compact mobile -->
+          <div class="form-section" style="padding: var(--sp-md);">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title" style="font-size: var(--fs-med);">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Connected Accounts
+                </div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="oauth-card" style="padding: var(--sp-sm);">
+                <div class="oauth-logo" style="width: 32px; height: 32px;">
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                </div>
+                <div class="oauth-body">
+                  <div class="oauth-provider" style="font-size: 13px;">Google</div>
+                  <div class="oauth-email" style="font-size: 11px;">angelo.penalosa@gmail.com</div>
+                </div>
+                <button class="icon-btn danger" title="Unlink">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn" style="padding: var(--sp-xs); font-size: 13px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                Link account
+              </button>
+            </div>
+          </div>
+
+          <div class="form-footer" style="padding: var(--sp-sm) var(--sp-md);">
+            <button class="btn btn-ghost btn-sm">Reset</button>
+            <button class="btn btn-pri btn-sm">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
