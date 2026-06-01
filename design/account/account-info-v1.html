@@ -712,6 +712,64 @@
     .oauth-provider { font-size: var(--fs-med); font-weight: 600; color: var(--text-1); }
     .oauth-email { font-size: var(--fs-small); color: var(--text-2); }
 
+    /* ── Pending-removal state (staged delete, not yet saved) ── */
+    .list-item.pending-removal,
+    .oauth-card.pending-removal {
+      background: var(--err-50);
+      border-color: var(--err-500);
+      border-style: dashed;
+      opacity: .7;
+    }
+    .list-item.pending-removal .list-item-value,
+    .oauth-card.pending-removal .oauth-provider {
+      text-decoration: line-through;
+      color: var(--text-3);
+    }
+    .oauth-card.pending-removal .oauth-email {
+      text-decoration: line-through;
+      color: var(--text-3);
+    }
+    .badge-removal {
+      background: var(--err-100);
+      color: var(--err-600);
+    }
+
+    /* ── Pending-primary state (staged primary change, not yet saved) ── */
+    .list-item.pending-primary {
+      border-color: var(--pri-400);
+      border-style: dashed;
+      background: var(--pri-50);
+    }
+    .badge-pending-primary {
+      background: var(--pri-100);
+      color: var(--pri-600);
+      border: 1px dashed var(--pri-400);
+    }
+    .list-item.losing-primary {
+      border-style: dashed;
+      border-color: var(--warn-500);
+      background: var(--warn-50);
+    }
+
+    /* ── Undo button ── */
+    .btn-undo {
+      background: transparent;
+      color: var(--pri-500);
+      border: 1px solid var(--pri-200);
+      border-radius: var(--r-md);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .btn-undo:hover { background: var(--pri-50); }
+
     /* ── Mobile view frame ── */
     .mobile-frame {
       max-width: 420px;
@@ -883,25 +941,20 @@
               </div>
             </div>
             <div class="list-items">
-              <!-- Primary email -->
+              <!-- Primary email — no actions available (already primary, can't delete) -->
               <div class="list-item">
                 <div class="list-item-icon email-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 </div>
                 <div class="list-item-body">
-                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-value">john.doe@example.com</div>
                   <div class="list-item-meta">
                     <span class="badge badge-primary">Primary</span>
                     <span class="badge badge-success">Verified</span>
                   </div>
                 </div>
-                <div class="list-item-actions">
-                  <button class="icon-btn" title="More options">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
-                  </button>
-                </div>
               </div>
-              <!-- Secondary email -->
+              <!-- Secondary email — unverified, so no "Set primary" option -->
               <div class="list-item">
                 <div class="list-item-icon email-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -910,10 +963,10 @@
                   <div class="list-item-value">angelo@hsacademy.com</div>
                   <div class="list-item-meta">
                     <span class="badge badge-warning">Unverified</span>
+                    <a href="#" style="font-size: 12px; color: var(--pri-500); text-decoration: none;">Resend verification</a>
                   </div>
                 </div>
                 <div class="list-item-actions">
-                  <button class="btn btn-text btn-xs">Set primary</button>
                   <button class="icon-btn danger" title="Remove">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                   </button>
@@ -1022,7 +1075,7 @@
                 </div>
                 <div class="oauth-body">
                   <div class="oauth-provider">Google</div>
-                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                  <div class="oauth-email">john.doe@example.com</div>
                 </div>
                 <button class="icon-btn danger" title="Unlink">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -1151,19 +1204,20 @@
               <div class="list-item">
                 <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                 <div class="list-item-body">
-                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-value">john.doe@example.com</div>
                   <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
                 </div>
-                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
               </div>
               <div class="list-item">
                 <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                 <div class="list-item-body">
                   <div class="list-item-value">angelo@hsacademy.com</div>
-                  <div class="list-item-meta"><span class="badge badge-warning">Unverified</span></div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-warning">Unverified</span>
+                    <a href="#" style="font-size: 12px; color: var(--pri-500); text-decoration: none;">Resend verification</a>
+                  </div>
                 </div>
                 <div class="list-item-actions">
-                  <button class="btn btn-text btn-xs">Set primary</button>
                   <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                 </div>
               </div>
@@ -1260,7 +1314,7 @@
                 </div>
                 <div class="oauth-body">
                   <div class="oauth-provider">Google</div>
-                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                  <div class="oauth-email">john.doe@example.com</div>
                 </div>
                 <button class="icon-btn danger" title="Unlink"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
               </div>
@@ -1377,10 +1431,9 @@
               <div class="list-item">
                 <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                 <div class="list-item-body">
-                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-value">john.doe@example.com</div>
                   <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
                 </div>
-                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
               </div>
               <div class="list-item">
                 <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
@@ -1392,7 +1445,6 @@
                   </div>
                 </div>
                 <div class="list-item-actions">
-                  <button class="btn btn-text btn-xs">Set primary</button>
                   <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                 </div>
               </div>
@@ -1484,7 +1536,7 @@
                 </div>
                 <div class="oauth-body">
                   <div class="oauth-provider">Google</div>
-                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                  <div class="oauth-email">john.doe@example.com</div>
                 </div>
                 <button class="icon-btn danger" title="Unlink"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
               </div>
@@ -1505,10 +1557,263 @@
 
 
   <!-- ═══════════════════════════════════════════════════ -->
-  <!-- SECTION 4: Success State                           -->
+  <!-- SECTION 4: Staged Deletions & Primary Change       -->
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="section-label">
     <span class="section-num">4</span>
+    Interaction — Staged Deletions &amp; Primary Change (Unsaved)
+  </div>
+  <div class="section-desc">
+    When the user presses the trash icon on a list item or clicks "Set primary" on a non-primary
+    email, the change is <strong>staged locally</strong> but not yet committed to the server.
+    The item remains visible with a distinct visual treatment so the user understands what will
+    happen when they hit "Save Changes". The trash button is replaced with an "Undo" action
+    to revert the staged change. This state applies uniformly to emails, phones, and connected
+    accounts.<br><br>
+    <strong>Pending removal:</strong> Red dashed border, faded background, strikethrough text,
+    "Will be removed" badge, undo button.<br>
+    <strong>Pending primary change:</strong> Only verified emails may be set as primary. The
+    target email gets a dashed blue border with "Will become primary" badge; the current
+    primary gets a dashed orange border with "Will lose primary" badge.
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <!-- Unsaved changes banner -->
+        <div class="confirm-banner info mb-md">
+          <span class="banner-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+          You have unsaved changes. Click <strong>&nbsp;Save Changes&nbsp;</strong> to apply them, or <strong>&nbsp;Reset&nbsp;</strong> to discard.
+        </div>
+
+        <div class="form-card">
+
+          <!-- Section: Profile Info (unchanged) -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+                <div class="form-section-desc">Your personal details and preferences</div>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">First name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Angelo" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Last name <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="Penalosa" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Birthday <span class="req">*</span></label>
+                <input class="field-input filled" type="text" value="March 15, 1990" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Timezone <span class="req">*</span></label>
+                <select class="field-select filled"><option selected>America/Chicago (CST)</option></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Emails — PENDING PRIMARY CHANGE -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  Email Addresses
+                </div>
+                <div class="form-section-desc">Manage your email addresses and set your primary contact</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <!-- Current primary — will lose primary status after save -->
+              <div class="list-item losing-primary">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">john.doe@example.com</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-primary">Primary</span>
+                    <span class="badge badge-success">Verified</span>
+                    <span class="badge badge-warning" style="border: 1px dashed var(--warn-500);">Will lose primary</span>
+                  </div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn-undo" title="Undo primary change">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    Undo
+                  </button>
+                </div>
+              </div>
+              <!-- Secondary email — verified, will become primary after save -->
+              <div class="list-item pending-primary">
+                <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">angelo@hsacademy.com</div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-success">Verified</span>
+                    <span class="badge badge-pending-primary">Will become primary</span>
+                  </div>
+                </div>
+                <div class="list-item-actions">
+                  <button class="btn-undo" title="Undo primary change">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    Undo
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add email address</button>
+            </div>
+          </div>
+
+          <!-- Section: Phone Numbers (unchanged) -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  Phone Numbers
+                </div>
+                <div class="form-section-desc">Manage your phone numbers</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <div class="list-item">
+                <div class="list-item-icon phone-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                <div class="list-item-body">
+                  <div class="list-item-value">+1 (555) 234-5678</div>
+                  <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
+                </div>
+                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Add phone number</button>
+            </div>
+          </div>
+
+          <!-- Section: Security -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  Security
+                </div>
+                <div class="form-section-desc">Manage your password</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <span class="toggle-label-title">Update password</span>
+                <span class="toggle-label-desc">Toggle to change your account password</span>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div style="opacity: .4; pointer-events: none; margin-top: 12px;">
+              <div class="field-row">
+                <div class="field-group">
+                  <label class="field-label">New password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Enter new password" disabled />
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Confirm password <span class="req">*</span></label>
+                  <input class="field-input" type="password" placeholder="Re-enter password" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Connected Accounts — GOOGLE PENDING REMOVAL -->
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Connected Accounts
+                </div>
+                <div class="form-section-desc">Sign in faster with linked third-party accounts</div>
+              </div>
+            </div>
+            <div class="list-items">
+              <!-- Google — pending removal (user pressed trash) -->
+              <div class="oauth-card pending-removal">
+                <div class="oauth-logo" style="opacity: .5;">
+                  <svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                </div>
+                <div class="oauth-body">
+                  <div class="oauth-provider">Google</div>
+                  <div class="oauth-email">john.doe@example.com</div>
+                  <div style="margin-top: 4px;">
+                    <span class="badge badge-removal">Will be removed</span>
+                  </div>
+                </div>
+                <button class="btn-undo" title="Undo removal">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                  Undo
+                </button>
+              </div>
+            </div>
+            <div class="mt-sm">
+              <button class="add-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Link another account</button>
+            </div>
+          </div>
+
+          <!-- Form footer — ACTIVE because form is dirty -->
+          <div class="form-footer">
+            <button class="btn btn-ghost">Reset</button>
+            <button class="btn btn-pri">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 5: Success State                           -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">5</span>
     State — Save Success
   </div>
   <div class="section-desc">
@@ -1605,10 +1910,9 @@
               <div class="list-item">
                 <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                 <div class="list-item-body">
-                  <div class="list-item-value">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-value">john.doe@example.com</div>
                   <div class="list-item-meta"><span class="badge badge-primary">Primary</span> <span class="badge badge-success">Verified</span></div>
                 </div>
-                <div class="list-item-actions"><button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button></div>
               </div>
               <div class="list-item">
                 <div class="list-item-icon email-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
@@ -1625,10 +1929,12 @@
                 <div class="list-item-icon email-icon" style="background: var(--ok-100);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
                 <div class="list-item-body">
                   <div class="list-item-value">newemail@example.com</div>
-                  <div class="list-item-meta"><span class="badge badge-warning">Pending verification</span></div>
+                  <div class="list-item-meta">
+                    <span class="badge badge-warning">Pending verification</span>
+                    <a href="#" style="font-size: 12px; color: var(--pri-500); text-decoration: none;">Resend verification</a>
+                  </div>
                 </div>
                 <div class="list-item-actions">
-                  <button class="btn btn-text btn-xs">Set primary</button>
                   <button class="icon-btn danger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                 </div>
               </div>
@@ -1714,7 +2020,7 @@
                 </div>
                 <div class="oauth-body">
                   <div class="oauth-provider">Google</div>
-                  <div class="oauth-email">angelo.penalosa@gmail.com</div>
+                  <div class="oauth-email">john.doe@example.com</div>
                 </div>
                 <button class="icon-btn danger" title="Unlink"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
               </div>
@@ -1735,10 +2041,10 @@
 
 
   <!-- ═══════════════════════════════════════════════════ -->
-  <!-- SECTION 5: Mobile / Condensed Layout               -->
+  <!-- SECTION 6: Mobile / Condensed Layout               -->
   <!-- ═══════════════════════════════════════════════════ -->
   <div class="section-label">
-    <span class="section-num">5</span>
+    <span class="section-num">6</span>
     Mobile — Condensed View with Top Tab Navigation
   </div>
   <div class="section-desc">
@@ -1826,13 +2132,12 @@
             <div class="list-items">
               <div class="list-item" style="padding: var(--sp-xs) var(--sp-sm);">
                 <div class="list-item-body">
-                  <div class="list-item-value" style="font-size: 13px;">angelo.penalosa@gmail.com</div>
+                  <div class="list-item-value" style="font-size: 13px;">john.doe@example.com</div>
                   <div class="list-item-meta">
                     <span class="badge badge-primary">Primary</span>
                     <span class="badge badge-success">Verified</span>
                   </div>
                 </div>
-                <button class="icon-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
               </div>
             </div>
             <div class="mt-sm">
@@ -1928,7 +2233,7 @@
                 </div>
                 <div class="oauth-body">
                   <div class="oauth-provider" style="font-size: 13px;">Google</div>
-                  <div class="oauth-email" style="font-size: 11px;">angelo.penalosa@gmail.com</div>
+                  <div class="oauth-email" style="font-size: 11px;">john.doe@example.com</div>
                 </div>
                 <button class="icon-btn danger" title="Unlink">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
