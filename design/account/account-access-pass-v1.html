@@ -631,6 +631,13 @@
     Grandfathered pricing: green &ldquo;Locked-In Price&rdquo; chip + orange &ldquo;New price&rdquo; chip.
     &ldquo;Important: Your benefits are at risk!&rdquo; accordion in the benefits panel.
     Benefits show lapsing icons (green check + orange clock).
+    <br><br>
+    <strong>Stripe implementation:</strong> The subscription has <code>cancel_at_period_end: true</code>.
+    If the user re-enables (selects their current plan and clicks Continue), this flips back to
+    <code>cancel_at_period_end: false</code> &mdash; no new charge, same locked-in price.
+    However, if the subscription has already lapsed and the user reactivates, Stripe creates a
+    <strong>new subscription at the current price</strong> (not the grandfathered rate). The copy
+    already warns about this (&ldquo;reactivating will be charged at the new current Monthly rate&rdquo;).
   </div>
   <div class="shell">
     <div class="topbar">
@@ -767,6 +774,11 @@
   <div class="section-desc">
     Triggered when a user with a paid pass selects Free and clicks Continue. Lists the consequences
     of downgrading. &ldquo;Cancel&rdquo; dismisses; &ldquo;Yes, Downgrade&rdquo; executes.
+    <br><br>
+    <strong>Stripe implementation:</strong> This maps to
+    <code>cancel_at_period_end: true</code> on the existing subscription &mdash; no proration,
+    no immediate charge. Benefits continue until the current period ends, then the subscription
+    lapses. The &ldquo;ends on&rdquo; date comes from <code>subscription.current_period_end</code>.
   </div>
   <div class="modal-overlay">
     <div class="modal">
@@ -906,6 +918,18 @@
   <div class="section-desc">
     User already has an active Monthly plan and selects Yearly. The modal explains the billing
     change: prorated credit from remaining monthly period, new yearly charge, and the savings.
+    <br><br>
+    <strong>Stripe implementation:</strong> This is a subscription update
+    (<code>POST /v1/subscriptions/{id}</code> with <code>proration_behavior: 'always_invoice'</code>),
+    not a cancel-and-recreate. Before showing this modal, fetch the proration preview via
+    <code>GET /v1/invoices/upcoming</code> with the proposed price change &mdash; the response
+    includes exact credit and charge line items. All dollar amounts below (<strong>$6.00</strong>
+    credit, <strong>$84.00</strong> charge) are <strong>dynamic values from that preview</strong>,
+    not hardcoded copy. The modal should show a loading state while the preview is fetched.
+    <br><br>
+    <strong>Confirmed:</strong> Charge happens immediately on switch (Stripe&rsquo;s default &mdash;
+    generates an invoice and charges right away). Use <code>proration_behavior: 'always_invoice'</code>
+    so the prorated credit and new yearly charge appear on a single invoice at the time of the switch.
   </div>
   <div class="modal-overlay">
     <div class="modal">
@@ -919,9 +943,9 @@
         <div class="modal-info-box">
           <strong>Billing change</strong>
           <ul>
-            <li>Your current Monthly subscription ($9.00/month) will be canceled.</li>
+            <li>Your billing will change from Monthly ($9.00/mo) to Yearly ($90.00/yr) effective today.</li>
             <li>A prorated credit of <strong>$6.00</strong> will be applied for the remaining 20 days of your current billing cycle.</li>
-            <li>You will be charged <strong>$84.00 today</strong>, and then <strong>$90.00 / Yearly</strong> starting <strong>January 1, 2027</strong>.</li>
+            <li>You will be charged <strong>$84.00 today</strong> ($90.00 &minus; $6.00 credit), and then <strong>$90.00 / Yearly</strong> starting <strong>January 1, 2027</strong>.</li>
           </ul>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-md);">
