@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — Purchase History Wireframe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── HSA Design Tokens ── */
+      --font: 'Open Sans', sans-serif;
+
+      /* Primary (blue) */
+      --pri-50:  #F2F9FD;
+      --pri-100: #D8ECFA;
+      --pri-200: #A4D2F2;
+      --pri-300: #7DBFED;
+      --pri-400: #56ACE8;
+      --pri-500: #1A7ABC;
+      --pri-600: #135B8D;
+      --pri-700: #0D3D5E;
+
+      /* Neutral */
+      --n-50:  #F8FAFC;
+      --n-100: #EDEFF1;
+      --n-200: #DBDFE3;
+      --n-300: #C9D0D4;
+      --n-400: #B8C0C6;
+      --n-500: #8896A0;
+      --n-600: #63717B;
+      --n-700: #424B52;
+      --n-800: #212629;
+      --n-900: #101315;
+
+      /* Success (green) */
+      --ok-50:  #F4FCF7;
+      --ok-100: #DFF7E6;
+      --ok-500: #33BF5C;
+      --ok-600: #268F45;
+
+      /* Warning (orange) */
+      --warn-50:  #FEF8F4;
+      --warn-100: #FCEADE;
+      --warn-500: #ED7524;
+
+      /* Error (red) */
+      --err-50:  #FCF7F7;
+      --err-100: #F7E7E7;
+      --err-500: #CA5C5C;
+      --err-600: #A63636;
+
+      /* Shades */
+      --white: #FFFFFF;
+      --black: #000000;
+
+      /* Text */
+      --text-1: #212629;
+      --text-2: #63717B;
+      --text-3: #8896A0;
+
+      /* Shape */
+      --r-sm: 4px;
+      --r-md: 8px;
+      --r-soft: 10px;
+      --r-full: 50%;
+
+      /* Spacing / Padding */
+      --sp-xs:  8px;
+      --sp-sm:  12px;
+      --sp-md:  16px;
+      --sp-lg:  24px;
+      --sp-xl:  32px;
+
+      /* Gap */
+      --gap-xxs: 4px;
+      --gap-xs:  8px;
+      --gap-sm:  16px;
+      --gap-md:  20px;
+      --gap-lg:  32px;
+
+      /* Typography */
+      --fs-tiny:   10px;
+      --fs-small:  12px;
+      --fs-med:    14px;
+      --fs-large:  16px;
+      --fs-xlarge: 18px;
+      --fs-xxl:    20px;
+      --fs-biggest:24px;
+
+      --fw-normal:  400;
+      --fw-semi:    600;
+      --fw-bold:    700;
+
+      /* Elevation */
+      --elev1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --elev2: 0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.04);
+      --elev3: 0 10px 15px -3px rgba(0,0,0,.06), 0 4px 6px -4px rgba(0,0,0,.04);
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: var(--fs-med);
+      line-height: 1.5;
+      color: var(--text-1);
+      background: #E0E4E8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Wireframe chrome ── */
+    .wireframe-banner {
+      background: var(--n-800);
+      color: var(--white);
+      padding: var(--sp-xs) var(--sp-md);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+    }
+    .wireframe-flow {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--sp-xl);
+    }
+    .section-label {
+      background: var(--pri-500);
+      color: var(--white);
+      padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--r-soft) var(--r-soft) 0 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-top: 48px;
+    }
+    .section-label:first-of-type { margin-top: var(--sp-lg); }
+    .section-num {
+      background: rgba(255,255,255,.2);
+      width: 28px; height: 28px;
+      border-radius: var(--r-full);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--fs-med); font-weight: 700;
+    }
+    .section-desc {
+      background: var(--pri-50);
+      border: 1px solid rgba(26,122,188,.15);
+      border-top: none;
+      padding: var(--sp-sm) var(--sp-lg);
+      font-size: 13px;
+      color: var(--pri-600);
+      line-height: 1.6;
+    }
+
+    /* ── Full-page shell (Stage) ── */
+    .shell {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      border: 1px solid var(--n-200);
+      border-top: none;
+      border-radius: 0 0 var(--r-soft) var(--r-soft);
+      overflow: hidden;
+      box-shadow: var(--elev2);
+      min-height: 760px;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: relative;
+      background: var(--pri-500);
+      min-height: 56px;
+      width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      padding: 0 var(--sp-xl);
+    }
+    .topbar-logo {
+      position: absolute;
+      top: 0;
+      left: 32px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      z-index: 1;
+    }
+    .topbar-logo svg { height: 40px; }
+    .topbar-logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -.02em;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+    }
+    .topbar-icon-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--r-full);
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,.85);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .topbar-icon-btn:hover { background: rgba(255,255,255,.12); }
+    .topbar-badge { position: relative; }
+    .topbar-badge-count {
+      position: absolute;
+      top: -2px; right: -2px;
+      width: 16px; height: 16px;
+      border-radius: var(--r-full);
+      background: var(--err-500);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .topbar-account {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+      padding: 6px 12px;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      color: var(--white);
+    }
+    .topbar-account:hover { background: rgba(255,255,255,.12); }
+    .topbar-avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      background: #268F45;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar-account-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.3;
+    }
+    .topbar-account-name { font-size: 13px; font-weight: 600; }
+    .topbar-account-sub { font-size: 11px; opacity: .75; }
+    .topbar-chevron { font-size: 16px; opacity: .7; }
+
+    /* ── Stage content area (sidebar + main) ── */
+    .stage-body {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      background: var(--n-50);
+      min-height: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--n-200);
+      padding: var(--sp-lg) var(--sp-md);
+      overflow-y: auto;
+    }
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding: 10px 12px;
+      border-radius: var(--r-md);
+      font-size: var(--fs-med);
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    .nav-item:hover { background: var(--n-50); color: var(--text-1); }
+    .nav-item.active {
+      background: var(--pri-50);
+      color: var(--pri-600);
+      font-weight: 600;
+    }
+    .nav-icon {
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: .65;
+    }
+    .nav-item.active .nav-icon { opacity: 1; }
+
+    /* ── Main content ── */
+    .main {
+      padding: var(--sp-xl) var(--sp-md);
+      overflow-y: auto;
+    }
+
+    /* ── Page title ── */
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      margin-bottom: var(--sp-lg);
+    }
+    .page-title-icon {
+      width: 28px; height: 28px;
+      color: var(--n-500);
+    }
+    .page-title h1 {
+      font-size: var(--fs-biggest);
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -.01em;
+    }
+
+    /* ── Content tabs (mobile-like top nav) ── */
+    .content-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--n-200);
+      margin-bottom: var(--sp-lg);
+      overflow-x: auto;
+    }
+    .content-tab {
+      padding: var(--sp-sm) var(--sp-md);
+      font-size: var(--fs-med);
+      font-weight: 500;
+      color: var(--text-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+    }
+    .content-tab:hover { color: var(--text-2); }
+    .content-tab.active {
+      color: var(--pri-500);
+      border-bottom-color: var(--pri-500);
+      font-weight: 600;
+    }
+    .content-tab-icon {
+      width: 16px; height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ── Form card ── */
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--n-200);
+      border-radius: var(--r-soft);
+      overflow: hidden;
+    }
+
+    /* ── Section header (reused for content title) ── */
+    .section-title-bar {
+      padding: var(--sp-lg);
+      border-bottom: 1px solid var(--n-200);
+    }
+    .section-title-text {
+      font-size: var(--fs-xlarge);
+      font-weight: 700;
+      color: var(--text-1);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-xs);
+    }
+    .section-title-text .sec-icon {
+      width: 20px; height: 20px;
+      color: var(--n-500);
+    }
+
+    /* ── Data table ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--fs-med);
+    }
+    .data-table thead th {
+      text-align: left;
+      padding: var(--sp-sm) var(--sp-md);
+      font-size: var(--fs-small);
+      font-weight: 700;
+      color: var(--text-1);
+      background: var(--n-50);
+      border-bottom: 2px solid var(--n-200);
+      white-space: nowrap;
+      letter-spacing: .02em;
+    }
+    .data-table tbody td {
+      padding: var(--sp-sm) var(--sp-md);
+      border-bottom: 1px solid var(--n-100);
+      color: var(--text-1);
+      vertical-align: middle;
+    }
+    .data-table tbody tr:hover {
+      background: var(--n-50);
+    }
+    .data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .data-table .col-date {
+      white-space: nowrap;
+      color: var(--text-2);
+      font-size: var(--fs-med);
+    }
+    .data-table .col-desc {
+      color: var(--text-1);
+    }
+    .data-table .col-cost {
+      text-align: right;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .data-table thead th.col-cost {
+      text-align: right;
+    }
+    .data-table .col-actions {
+      text-align: center;
+      white-space: nowrap;
+    }
+    .data-table thead th.col-actions {
+      text-align: center;
+    }
+
+    /* ── Invoice link ── */
+    .invoice-link {
+      color: var(--pri-500);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: var(--fs-med);
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .invoice-link:hover {
+      color: var(--pri-600);
+      text-decoration: underline;
+    }
+
+    /* ── Pagination ── */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-sm) var(--sp-md);
+      border-top: 1px solid var(--n-200);
+      background: var(--n-50);
+      font-size: var(--fs-small);
+      color: var(--text-2);
+      flex-wrap: wrap;
+      gap: var(--sp-sm);
+    }
+    .pagination-left {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+    }
+    .pagination-left label {
+      font-size: var(--fs-small);
+      color: var(--text-2);
+      white-space: nowrap;
+    }
+    .pagination-select {
+      font-family: var(--font);
+      font-size: var(--fs-small);
+      padding: 4px 24px 4px 8px;
+      border: 1px solid var(--n-300);
+      border-radius: var(--r-sm);
+      background: var(--white);
+      color: var(--text-1);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2363717B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      cursor: pointer;
+    }
+    .pagination-info {
+      font-size: var(--fs-small);
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+    .pagination-right {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-xxs);
+    }
+    .page-btn {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      border: none;
+      background: transparent;
+      color: var(--text-2);
+      font-family: var(--font);
+      font-size: var(--fs-small);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+    }
+    .page-btn:hover { background: var(--n-100); color: var(--text-1); }
+    .page-btn.active {
+      background: var(--pri-500);
+      color: var(--white);
+    }
+    .page-btn.active:hover { background: var(--pri-600); }
+    .page-btn:disabled {
+      color: var(--n-300);
+      cursor: not-allowed;
+    }
+    .page-btn:disabled:hover { background: transparent; }
+    .page-arrow {
+      width: 32px; height: 32px;
+      border-radius: var(--r-full);
+      border: none;
+      background: transparent;
+      color: var(--text-3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s, color .15s;
+    }
+    .page-arrow:hover { background: var(--n-100); color: var(--text-1); }
+    .page-arrow:disabled { color: var(--n-300); cursor: not-allowed; }
+    .page-arrow:disabled:hover { background: transparent; }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: var(--fs-med);
+      line-height: 1.75;
+      border-radius: var(--r-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-xs);
+      padding: 8px 20px;
+      border: none;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: background .15s, box-shadow .15s;
+    }
+    .btn-sm { padding: 4px 12px; font-size: 13px; }
+    .btn-pri { background: var(--pri-500); color: var(--white); box-shadow: var(--elev1); }
+    .btn-pri:hover { background: var(--pri-600); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 64px var(--sp-lg);
+      text-align: center;
+    }
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      color: var(--n-300);
+      margin-bottom: var(--sp-md);
+    }
+    .empty-state-title {
+      font-size: var(--fs-large);
+      font-weight: 700;
+      color: var(--text-1);
+      margin-bottom: var(--gap-xxs);
+    }
+    .empty-state-desc {
+      font-size: var(--fs-med);
+      color: var(--text-3);
+      max-width: 320px;
+    }
+
+    /* ── Mobile view frame ── */
+    .mobile-frame {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .mobile-frame .stage-body {
+      grid-template-columns: 1fr;
+    }
+    .mobile-frame .sidebar { display: none; }
+    .mobile-frame .main { padding: var(--sp-md); }
+    .mobile-frame .topbar { padding: 0 var(--sp-md); }
+    .mobile-frame .topbar-logo { left: 16px; }
+    .mobile-frame .topbar-account-info { display: none; }
+    .mobile-frame .topbar-chevron { display: none; }
+
+    /* ── Mobile topbar Buy Sessions button ── */
+    .mobile-buy-btn {
+      background: var(--err-500);
+      color: var(--white);
+      border: none;
+      border-radius: var(--r-md);
+      padding: 6px 14px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .mobile-buy-btn:hover { background: var(--err-600); }
+
+    /* ── Mobile hamburger ── */
+    .mobile-hamburger {
+      width: 36px; height: 36px;
+      border-radius: var(--r-full);
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,.85);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Responsive table wrapper for mobile ── */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── Utility ── */
+    .flex { display: flex; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-xs { gap: var(--gap-xs); }
+    .gap-sm { gap: var(--gap-sm); }
+    .gap-md { gap: var(--gap-md); }
+    .mt-sm { margin-top: var(--sp-sm); }
+    .mt-md { margin-top: var(--sp-md); }
+    .mt-lg { margin-top: var(--sp-lg); }
+    .mb-sm { margin-bottom: var(--sp-sm); }
+    .mb-md { margin-bottom: var(--sp-md); }
+    .text-sm { font-size: var(--fs-small); }
+    .text-muted { color: var(--text-2); }
+    .w-full { width: 100%; }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe &mdash; My Account &middot; Purchase History &middot; V1</div>
+
+<div class="wireframe-flow">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 1: Desktop — Purchase History (default)    -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">1</span>
+    Desktop — My Account &gt; Purchase History (default state)
+  </div>
+  <div class="section-desc">
+    Full desktop layout with sidebar navigation. The "Purchase History" nav item is active.
+    Content shows a data table with purchase date, description, total cost, and an
+    "Invoice" action link per row. Pagination controls appear below the table.
+  </div>
+  <div class="shell">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-logo">
+        <span class="topbar-logo-text">HSA</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage body -->
+    <div class="stage-body">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </span>
+            My Info
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            My Students
+          </a>
+          <a class="nav-item active" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </span>
+            Purchase History
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            Access Pass
+          </a>
+          <a class="nav-item" href="#">
+            <span class="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg>
+            </span>
+            Payment Portal
+          </a>
+        </nav>
+      </div>
+
+      <!-- Main content -->
+      <div class="main">
+        <!-- Page title -->
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <!-- Content card -->
+        <div class="form-card">
+          <!-- Section header -->
+          <div class="section-title-bar">
+            <div class="section-title-text">
+              <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Purchase History
+            </div>
+          </div>
+
+          <!-- Data table -->
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Purchase Date</th>
+                <th>Description</th>
+                <th class="col-cost">Total Cost</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">1-on-1; 60 sessions; 25 min each</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+              <tr>
+                <td class="col-date">Feb 8, 2025</td>
+                <td class="col-desc">50 min. Sessions Pack</td>
+                <td class="col-cost">$500.00</td>
+                <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="pagination-bar">
+            <div class="pagination-left">
+              <label>Rows per page:</label>
+              <select class="pagination-select">
+                <option selected>10</option>
+                <option>25</option>
+                <option>50</option>
+              </select>
+              <span class="pagination-info">Showing 3 of 3 results</span>
+            </div>
+            <div class="pagination-right">
+              <button class="page-arrow" disabled title="Previous">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">4</button>
+              <button class="page-arrow" title="Next">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 2: Desktop — Empty State                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">2</span>
+    Desktop — Purchase History (empty state)
+  </div>
+  <div class="section-desc">
+    When the user has no purchase history, an empty-state message is displayed
+    with an icon and description encouraging the user to buy sessions.
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+        <div class="form-card">
+          <div class="section-title-bar">
+            <div class="section-title-text">
+              <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Purchase History
+            </div>
+          </div>
+          <div class="empty-state">
+            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+              <line x1="6" y1="14" x2="12" y2="14"/>
+              <line x1="6" y1="17" x2="10" y2="17"/>
+            </svg>
+            <div class="empty-state-title">No purchases yet</div>
+            <div class="empty-state-desc">Your purchase history will appear here once you buy a session package.</div>
+            <button class="btn btn-pri mt-lg">Browse Packages</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Mobile — Purchase History               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">3</span>
+    Mobile — My Account &gt; Purchase History
+  </div>
+  <div class="section-desc">
+    Mobile layout (iPhone 14/15 Pro Max). The sidebar is replaced by horizontal
+    scrollable tabs. The data table scrolls horizontally within the card. The topbar
+    shows a "Buy Sessions" CTA button and hamburger menu instead of the full account dropdown.
+  </div>
+  <div class="shell mobile-frame">
+    <!-- Mobile Topbar -->
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <button class="mobile-buy-btn">Buy Sessions</button>
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Notifications">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <span class="topbar-badge-count">1</span>
+        </div>
+        <button class="mobile-hamburger" title="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="stage-body">
+      <div class="sidebar"></div>
+      <div class="main">
+        <!-- Page title -->
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1 style="font-size: var(--fs-xxl);">Account</h1>
+        </div>
+
+        <!-- Horizontal tabs replacing sidebar -->
+        <div class="content-tabs">
+          <div class="content-tab">
+            <svg class="content-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Info &amp; Students
+          </div>
+          <div class="content-tab active">
+            <svg class="content-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Purchase History
+          </div>
+          <div class="content-tab">
+            <svg class="content-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Access Pass
+          </div>
+        </div>
+
+        <!-- Content card with scrollable table -->
+        <div class="form-card">
+          <div class="section-title-bar" style="padding: var(--sp-md);">
+            <div class="section-title-text" style="font-size: var(--fs-large);">
+              Purchase History
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data-table" style="min-width: 520px;">
+              <thead>
+                <tr>
+                  <th>Purchase Date</th>
+                  <th>Description</th>
+                  <th class="col-cost">Total Cost</th>
+                  <th class="col-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">1-on-1; 60 sessions; 25 min each</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+                <tr>
+                  <td class="col-date">Feb 8, 2025</td>
+                  <td class="col-desc">50 min. Sessions Pack</td>
+                  <td class="col-cost">$500.00</td>
+                  <td class="col-actions"><a class="invoice-link" href="#">Invoice</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination-bar" style="flex-direction: column; align-items: stretch; gap: var(--sp-sm);">
+            <div class="pagination-left">
+              <label>Rows per page:</label>
+              <select class="pagination-select">
+                <option selected>10</option>
+                <option>25</option>
+                <option>50</option>
+              </select>
+              <span class="pagination-info">Showing 3 of 3 results</span>
+            </div>
+            <div class="pagination-right" style="justify-content: center;">
+              <button class="page-arrow" disabled title="Previous">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="page-btn active">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">3</button>
+              <button class="page-btn">4</button>
+              <button class="page-arrow" title="Next">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -781,6 +781,148 @@
     .mobile-frame .sidebar { display: none; }
     .mobile-frame .main { padding: var(--sp-md); }
 
+    /* ── Danger zone ── */
+    .danger-zone {
+      border-top: 1px solid var(--err-500);
+      background: var(--err-50);
+    }
+    .danger-zone .form-section-title {
+      color: var(--err-600);
+    }
+    .danger-zone .sec-icon {
+      color: var(--err-500);
+    }
+    .btn-danger {
+      background: var(--err-500);
+      color: var(--white);
+      box-shadow: var(--elev1);
+    }
+    .btn-danger:hover {
+      background: var(--err-600);
+    }
+    .btn-danger-out {
+      background: transparent;
+      color: var(--err-500);
+      border: 1px solid var(--err-500);
+    }
+    .btn-danger-out:hover {
+      background: var(--err-50);
+    }
+
+    /* ── Modal overlay ── */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      border-radius: 0 0 var(--r-soft) var(--r-soft);
+    }
+    .modal-dialog {
+      background: var(--white);
+      border-radius: var(--r-soft);
+      box-shadow: var(--elev3);
+      width: 480px;
+      max-width: 90%;
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+      padding: var(--sp-lg);
+      border-bottom: 1px solid var(--n-200);
+    }
+    .modal-header-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r-full);
+      background: var(--err-50);
+      color: var(--err-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-size: var(--fs-xlarge);
+      font-weight: 700;
+      color: var(--text-1);
+    }
+    .modal-body {
+      padding: var(--sp-lg);
+    }
+    .modal-body p {
+      font-size: var(--fs-med);
+      color: var(--text-2);
+      line-height: 1.65;
+      margin-bottom: var(--sp-md);
+    }
+    .modal-body p:last-child {
+      margin-bottom: 0;
+    }
+    .modal-consequences {
+      background: var(--err-50);
+      border: 1px solid var(--err-100);
+      border-radius: var(--r-md);
+      padding: var(--sp-md);
+      margin-bottom: var(--sp-md);
+    }
+    .modal-consequences-title {
+      font-size: var(--fs-small);
+      font-weight: 700;
+      color: var(--err-600);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: var(--sp-xs);
+    }
+    .modal-consequences ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-consequences li {
+      font-size: var(--fs-med);
+      color: var(--text-1);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-xs);
+      line-height: 1.5;
+    }
+    .modal-consequences li svg {
+      flex-shrink: 0;
+      margin-top: 3px;
+      color: var(--err-500);
+    }
+    .modal-confirm-field {
+      margin-top: var(--sp-md);
+    }
+    .modal-confirm-field label {
+      display: block;
+      font-size: var(--fs-small);
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: var(--gap-xxs);
+    }
+    .modal-confirm-field .field-input {
+      border-color: var(--err-500);
+    }
+    .modal-confirm-field .field-input:focus {
+      border-color: var(--err-500);
+      box-shadow: 0 0 0 3px rgba(202, 92, 92, .12);
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-sm);
+      padding: var(--sp-md) var(--sp-lg);
+      border-top: 1px solid var(--n-200);
+      background: var(--n-50);
+    }
+
     /* ── Utility ── */
     .flex { display: flex; }
     .flex-col { display: flex; flex-direction: column; }
@@ -1088,6 +1230,26 @@
                 Link another account
               </button>
             </div>
+          </div>
+
+          <!-- Section: Delete Account (Danger Zone) -->
+          <div class="form-section danger-zone">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Delete Account
+                </div>
+                <div class="form-section-desc" style="color: var(--err-600);">Permanently remove your account and all associated data</div>
+              </div>
+            </div>
+            <p style="font-size: var(--fs-med); color: var(--text-2); line-height: 1.6; margin-bottom: var(--sp-md);">
+              Once you delete your account, there is no going back. All of your data, including class history, schedules, and payment records, will be permanently removed.
+            </p>
+            <button class="btn btn-danger-out">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Delete my account
+            </button>
           </div>
 
           <!-- Form footer -->
@@ -2252,6 +2414,237 @@
             <button class="btn btn-ghost btn-sm">Reset</button>
             <button class="btn btn-pri btn-sm">Save Changes</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 7: Delete Account Confirmation Modal       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">7</span>
+    Modal — Delete Account Confirmation
+  </div>
+  <div class="section-desc">
+    When the user clicks "Delete my account" in the danger zone, a confirmation modal
+    appears over the page. The modal explains the consequences of deletion and requires
+    the user to type "DELETE" to confirm. The primary action is a destructive red button
+    that remains disabled until the confirmation text matches.
+  </div>
+  <div class="shell" style="position: relative;">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          </button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage body (dimmed behind modal) -->
+    <div class="stage-body" style="filter: blur(2px); pointer-events: none;">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+        <div class="form-card" style="opacity: .5;">
+          <div class="form-section">
+            <div class="form-section-header">
+              <div>
+                <div class="form-section-title">
+                  <svg class="sec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Profile Information
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal overlay -->
+    <div class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-header-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <div class="modal-title">Delete your account?</div>
+          </div>
+        </div>
+        <div class="modal-body">
+          <p>
+            You are about to permanently delete your HSA account. This action cannot be undone and will take effect immediately.
+          </p>
+          <div class="modal-consequences">
+            <div class="modal-consequences-title">What will happen</div>
+            <ul>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                All upcoming classes will be cancelled and any remaining credits will be forfeited.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Your class history, student profiles, and progress data will be permanently erased.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Any active subscriptions or payment plans will be terminated. No refunds will be issued for the current billing period.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Connected third-party accounts (Google, etc.) will be unlinked.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                You will be signed out of all devices immediately.
+              </li>
+            </ul>
+          </div>
+          <div class="modal-confirm-field">
+            <label>Type <strong>DELETE</strong> to confirm</label>
+            <input class="field-input" type="text" placeholder="DELETE" value="" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-dis">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete my account
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 8: Delete Modal — Confirmed (ready to submit) -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-label">
+    <span class="section-num">8</span>
+    Modal — Delete Confirmed (DELETE typed, button active)
+  </div>
+  <div class="section-desc">
+    Once the user types "DELETE" in the confirmation field, the destructive action button
+    becomes active (red). Clicking it will permanently delete the account.
+  </div>
+  <div class="shell" style="position: relative; min-height: 520px;">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
+          <span class="topbar-badge-count">2</span>
+        </div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account">
+          <div class="topbar-avatar">AP</div>
+          <div class="topbar-account-info">
+            <span class="topbar-account-name">Angelo Penalosa</span>
+            <span class="topbar-account-sub">angelo.p</span>
+          </div>
+          <span class="topbar-chevron">&#9662;</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-body" style="filter: blur(2px); pointer-events: none;">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal overlay — confirmed state -->
+    <div class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-header-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <div class="modal-title">Delete your account?</div>
+          </div>
+        </div>
+        <div class="modal-body">
+          <p>
+            You are about to permanently delete your HSA account. This action cannot be undone and will take effect immediately.
+          </p>
+          <div class="modal-consequences">
+            <div class="modal-consequences-title">What will happen</div>
+            <ul>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                All upcoming classes will be cancelled and any remaining credits will be forfeited.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Your class history, student profiles, and progress data will be permanently erased.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Any active subscriptions or payment plans will be terminated. No refunds will be issued for the current billing period.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Connected third-party accounts (Google, etc.) will be unlinked.
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                You will be signed out of all devices immediately.
+              </li>
+            </ul>
+          </div>
+          <div class="modal-confirm-field">
+            <label>Type <strong>DELETE</strong> to confirm</label>
+            <input class="field-input" type="text" value="DELETE" style="border-color: var(--ok-500);" />
+            <div class="field-helper" style="color: var(--ok-600); margin-top: 4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="vertical-align: -1px;"><polyline points="20 6 9 17 4 12"/></svg>
+              Confirmation matches
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-danger">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Delete my account
+          </button>
         </div>
       </div>
     </div>
