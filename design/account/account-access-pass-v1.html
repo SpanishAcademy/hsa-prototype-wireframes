@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — Access Pass Wireframe V1</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font: 'Open Sans', sans-serif;
+      --pri-50:  #F2F9FD; --pri-100: #D8ECFA; --pri-200: #A4D2F2;
+      --pri-300: #7DBFED; --pri-400: #56ACE8; --pri-500: #1A7ABC;
+      --pri-600: #135B8D; --pri-700: #0D3D5E;
+      --n-50:  #F8FAFC; --n-100: #EDEFF1; --n-200: #DBDFE3;
+      --n-300: #C9D0D4; --n-400: #B8C0C6; --n-500: #8896A0;
+      --n-600: #63717B; --n-700: #424B52; --n-800: #212629; --n-900: #101315;
+      --ok-50:  #F4FCF7; --ok-100: #DFF7E6; --ok-500: #33BF5C; --ok-600: #268F45;
+      --warn-50:  #FEF8F4; --warn-100: #FCEADE; --warn-500: #ED7524; --warn-600: #BD5610;
+      --err-50:  #FCF7F7; --err-100: #F7E7E7; --err-500: #CA5C5C; --err-600: #A63636;
+      --white: #FFFFFF; --black: #000000;
+      --text-1: #212629; --text-2: #63717B; --text-3: #8896A0;
+      --r-sm: 4px; --r-md: 8px; --r-soft: 10px; --r-full: 50%;
+      --sp-xs: 8px; --sp-sm: 12px; --sp-md: 16px; --sp-lg: 24px; --sp-xl: 32px;
+      --gap-xxs: 4px; --gap-xs: 8px; --gap-sm: 16px; --gap-md: 20px; --gap-lg: 32px;
+      --fs-tiny: 10px; --fs-small: 12px; --fs-med: 14px; --fs-large: 16px;
+      --fs-xlarge: 18px; --fs-xxl: 20px; --fs-biggest: 24px;
+      --fw-normal: 400; --fw-semi: 600; --fw-bold: 700;
+      --elev1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --elev2: 0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.04);
+      --elev3: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
+      --elev4: 0 20px 25px -5px rgba(0,0,0,.10), 0 8px 10px -6px rgba(0,0,0,.06);
+
+      /* Access pass specific tokens (from purchase/theme.ts) */
+      --ap-side-padding: 28px 20px;
+      --ap-side-gap: 12px;
+      --ap-list-icon-min: 56px;
+      --ap-panel-row-gap: 36px;
+      --ap-main-top-offset: 76px;
+      --ap-side-max: 264px;
+    }
+
+    body { font-family: var(--font); font-size: var(--fs-med); line-height: 1.5; color: var(--text-1); background: #E0E4E8; -webkit-font-smoothing: antialiased; }
+
+    /* == Wireframe chrome == */
+    .wireframe-banner { background: var(--n-800); color: var(--white); padding: var(--sp-xs) var(--sp-md); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 9999; }
+    .wireframe-flow { max-width: 1440px; margin: 0 auto; padding: var(--sp-xl); }
+    .section-label { background: var(--pri-500); color: var(--white); padding: var(--sp-md) var(--sp-lg); border-radius: var(--r-soft) var(--r-soft) 0 0; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; gap: var(--sp-sm); margin-top: 48px; }
+    .section-label:first-of-type { margin-top: var(--sp-lg); }
+    .section-num { background: rgba(255,255,255,.2); width: 28px; height: 28px; border-radius: var(--r-full); display: flex; align-items: center; justify-content: center; font-size: var(--fs-med); font-weight: 700; }
+    .section-desc { background: var(--pri-50); border: 1px solid rgba(26,122,188,.15); border-top: none; padding: var(--sp-sm) var(--sp-lg); font-size: 13px; color: var(--pri-600); line-height: 1.6; }
+
+    /* == Shell == */
+    .shell { display: grid; grid-template-rows: auto 1fr; border: 1px solid var(--n-200); border-top: none; border-radius: 0 0 var(--r-soft) var(--r-soft); overflow: hidden; box-shadow: var(--elev2); min-height: 760px; }
+
+    /* == Topbar == */
+    .topbar { position: relative; background: var(--pri-500); min-height: 56px; width: 100%; display: flex; flex-direction: row-reverse; align-items: center; padding: 0 var(--sp-xl); }
+    .topbar-logo { position: absolute; top: 0; left: 32px; height: 72px; display: flex; align-items: center; z-index: 1; }
+    .topbar-logo-text { font-size: 18px; font-weight: 700; color: var(--white); letter-spacing: -.02em; }
+    .topbar-right { display: flex; align-items: center; gap: var(--sp-sm); }
+    .topbar-icon-btn { width: 36px; height: 36px; border-radius: var(--r-full); background: transparent; border: none; color: rgba(255,255,255,.85); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .topbar-badge { position: relative; }
+    .topbar-badge-count { position: absolute; top: -2px; right: -2px; width: 16px; height: 16px; border-radius: var(--r-full); background: var(--err-500); color: var(--white); font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .topbar-account { display: flex; align-items: center; gap: var(--sp-xs); padding: 6px 12px; border-radius: var(--r-md); cursor: pointer; color: var(--white); }
+    .topbar-avatar { width: 32px; height: 32px; border-radius: var(--r-full); background: #268F45; color: var(--white); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .topbar-account-info { display: flex; flex-direction: column; line-height: 1.3; }
+    .topbar-account-name { font-size: 13px; font-weight: 600; }
+    .topbar-account-sub { font-size: 11px; opacity: .75; }
+    .topbar-chevron { font-size: 16px; opacity: .7; }
+
+    /* == Stage == */
+    .stage-body { display: grid; grid-template-columns: 240px 1fr; background: var(--n-50); min-height: 0; }
+    .sidebar { background: var(--white); border-right: 1px solid var(--n-200); padding: var(--sp-lg) var(--sp-md); overflow-y: auto; }
+    .nav-menu { display: flex; flex-direction: column; gap: 2px; }
+    .nav-item { display: flex; align-items: center; gap: var(--sp-sm); padding: 10px 12px; border-radius: var(--r-md); font-size: var(--fs-med); font-weight: 500; color: var(--text-2); cursor: pointer; text-decoration: none; transition: background .15s, color .15s; }
+    .nav-item:hover { background: var(--n-50); color: var(--text-1); }
+    .nav-item.active { background: var(--pri-50); color: var(--pri-600); font-weight: 600; }
+    .nav-icon { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; opacity: .65; }
+    .nav-item.active .nav-icon { opacity: 1; }
+    .main { padding: var(--sp-xl) var(--sp-md); overflow-y: auto; }
+    .page-title { display: flex; align-items: center; gap: var(--sp-sm); margin-bottom: var(--sp-lg); }
+    .page-title-icon { width: 28px; height: 28px; color: var(--n-500); }
+    .page-title h1 { font-size: var(--fs-biggest); font-weight: 700; color: var(--text-1); letter-spacing: -.01em; }
+
+    /* ==================================================== */
+    /* AccessPassSelector grid (matches portal-frontend)    */
+    /* ==================================================== */
+
+    /* Outer selector: 2-column grid, side + main */
+    .ap-selector {
+      display: grid;
+      grid-template-columns: minmax(auto, var(--ap-side-max)) 1fr;
+      row-gap: var(--ap-panel-row-gap);
+    }
+
+    /* Each Panel card spans the full grid and uses subgrid */
+    .ap-panel {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1 / -1;
+      border: 1px solid var(--n-400);
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    /* Side panel — centered, green when selected, grey when not */
+    .ap-side {
+      display: grid;
+      align-items: center;
+      align-content: center;
+      grid-template-columns: 1fr;
+      justify-content: center;
+      justify-items: center;
+      gap: var(--ap-side-gap);
+      padding: var(--ap-side-padding);
+    }
+    .ap-side.selected { background: var(--ok-100); }
+    .ap-side.unselected { background: var(--n-100); }
+
+    /* Main panel (benefits) */
+    .ap-main {
+      padding: var(--ap-main-top-offset) var(--sp-lg) var(--sp-lg) var(--sp-lg);
+      display: grid;
+      grid-template-columns: 1fr;
+      align-content: start;
+      gap: var(--gap-xxs);
+    }
+    .ap-main.no-offset { padding-top: var(--sp-lg); }
+
+    /* Stacked period cards container (Monthly + Yearly in left column) */
+    .ap-periods {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Crown icon */
+    .ap-crown { color: #F5A623; width: 36px; height: 36px; }
+
+    /* Plan title */
+    .ap-plan-title { font-size: var(--fs-xlarge); font-weight: 700; text-align: center; }
+
+    /* "(Your Current Plan)" label */
+    .ap-current-plan { font-size: var(--fs-small); font-weight: 700; color: var(--ok-500); }
+
+    /* Green/Orange chips */
+    .ap-chip {
+      display: inline-flex; align-items: center;
+      padding: 4px 12px; border-radius: 16px;
+      font-size: var(--fs-small); font-weight: 700; color: var(--white);
+    }
+    .ap-chip-success { background: var(--ok-500); }
+    .ap-chip-warning { background: var(--warn-500); }
+
+    /* Pricing */
+    .ap-price { font-size: var(--fs-xlarge); font-weight: 700; text-align: center; }
+    .ap-price-sub { font-size: var(--fs-small); color: var(--text-3); text-align: center; }
+    .ap-price-save { font-size: var(--fs-small); color: var(--text-3); text-decoration: line-through; text-align: center; }
+    .ap-save-pct { text-decoration: none; color: var(--ok-600); font-weight: 600; }
+
+    /* Select / Selected button (SecondaryButton) */
+    .ap-select-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 6px 20px; border-radius: var(--r-md);
+      font-family: var(--font); font-size: var(--fs-small); font-weight: 600;
+      cursor: pointer; transition: background .15s; border: 1px solid;
+    }
+    .ap-select-btn.selected { background: transparent; color: var(--ok-500); border-color: var(--ok-500); cursor: default; }
+    .ap-select-btn.unselected { background: transparent; color: var(--pri-500); border-color: var(--pri-200); }
+    .ap-select-btn.unselected:hover { background: var(--pri-50); }
+
+    /* Benefit list items (matches AccessPassListItem) */
+    .ap-benefits-title { font-size: var(--fs-xlarge); font-weight: 700; margin: var(--sp-sm) 0 var(--sp-xs); }
+    .ap-benefit-item {
+      display: flex; align-items: flex-start; gap: 0;
+      padding: var(--gap-xs) 0; font-size: var(--fs-med); line-height: 1.5;
+    }
+    .ap-benefit-icons {
+      min-width: var(--ap-list-icon-min);
+      display: flex; align-items: center; gap: var(--gap-xxs);
+      flex-shrink: 0;
+    }
+    .ap-benefit-icon { width: 22px; height: 22px; flex-shrink: 0; }
+    .ap-benefit-icon.granted { color: var(--ok-500); }
+    .ap-benefit-icon.denied { color: var(--err-500); }
+    .ap-benefit-icon.lapsing { color: var(--warn-500); }
+
+    /* Info alert (blue) */
+    .ap-alert-info {
+      display: flex; align-items: flex-start; gap: var(--sp-xs);
+      padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md);
+      background: var(--pri-50); border: 1px solid var(--pri-100);
+      color: var(--pri-700); font-size: var(--fs-small); line-height: 1.5;
+      width: 100%;
+    }
+    .ap-alert-info svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* Warning alert (orange) */
+    .ap-alert-warning {
+      display: flex; align-items: flex-start; gap: var(--sp-xs);
+      padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md);
+      background: var(--warn-50); border: 1px solid var(--warn-100);
+      color: var(--warn-600); font-size: var(--fs-small); line-height: 1.5;
+    }
+    .ap-alert-warning svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* Error alert bar — Renewal: Disabled */
+    .ap-renewal-bar {
+      display: flex; align-items: center; gap: var(--sp-xs);
+      padding: var(--sp-sm) var(--sp-md);
+      background: var(--err-50); border: 1px solid var(--err-100);
+      font-size: var(--fs-small);
+    }
+    .ap-renewal-label { font-weight: 700; color: var(--err-600); display: flex; align-items: center; gap: var(--gap-xxs); }
+    .ap-renewal-sub { font-weight: 400; color: var(--text-1); display: block; font-size: var(--fs-small); }
+
+    /* Expiring warning accordion */
+    .ap-expiring-box { background: var(--warn-50); border: 1px solid var(--warn-100); border-radius: var(--r-md); overflow: hidden; }
+    .ap-expiring-summary { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-sm) var(--sp-md); cursor: pointer; }
+    .ap-expiring-label { font-size: var(--fs-small); font-weight: 700; color: var(--warn-600); display: flex; align-items: center; gap: var(--gap-xxs); }
+    .ap-expiring-toggle { font-size: var(--fs-small); font-weight: 600; color: var(--pri-500); }
+    .ap-expiring-details { padding: 0 var(--sp-md) var(--sp-md); font-size: var(--fs-small); color: var(--warn-600); line-height: 1.6; }
+    .ap-expiring-details ul { margin: var(--sp-xs) 0 0 var(--sp-md); }
+    .ap-expiring-details li { margin-bottom: 4px; }
+
+    /* Bottom nav (AccessPassBottomNav) */
+    .ap-bottom-nav { display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-sm); margin-top: var(--sp-lg); }
+
+    /* Buttons */
+    .btn { font-family: var(--font); font-weight: 600; font-size: var(--fs-med); line-height: 1.75; border-radius: var(--r-md); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-xs); padding: 10px 24px; border: none; white-space: nowrap; text-decoration: none; transition: background .15s; }
+    .btn-pri { background: var(--ok-500); color: var(--white); box-shadow: var(--elev1); }
+    .btn-pri:hover { background: var(--ok-600); }
+    .btn-out { background: transparent; color: var(--n-600); border: 1px solid var(--n-300); }
+    .btn-out:hover { background: var(--n-50); }
+    .btn-danger { background: var(--err-500); color: var(--white); box-shadow: var(--elev1); }
+    .btn-danger:hover { background: var(--err-600); }
+
+    /* ==================================================== */
+    /* Mobile radio group (AccessPassRadio)                 */
+    /* ==================================================== */
+    .ap-radio-group { display: grid; grid-template-columns: 1fr 1fr 1fr; border: 1px solid var(--n-300); border-radius: var(--r-md); overflow: hidden; }
+    .ap-radio-option {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: var(--sp-sm) var(--sp-xs); cursor: pointer;
+      border-right: 1px solid var(--n-200); background: var(--white);
+      position: relative; transition: background .15s;
+    }
+    .ap-radio-option:last-child { border-right: none; }
+    .ap-radio-option.active { background: var(--pri-50); }
+    .ap-radio-label { font-size: var(--fs-med); font-weight: 600; color: var(--text-1); }
+    .ap-radio-sub { font-size: var(--fs-small); color: var(--text-3); }
+    .ap-radio-dot { width: 18px; height: 18px; border-radius: var(--r-full); border: 2px solid var(--n-300); margin-bottom: 2px; }
+    .ap-radio-option.active .ap-radio-dot { border-color: var(--pri-500); background: var(--pri-500); box-shadow: inset 0 0 0 3px var(--white); }
+    .ap-current-plan-chip {
+      position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; font-weight: 700; color: var(--white); background: var(--ok-500);
+      padding: 1px 8px; border-radius: 0 0 var(--r-sm) var(--r-sm); white-space: nowrap;
+    }
+
+    /* Compact (mobile) single-card panel */
+    .ap-panel-compact {
+      border: 1px solid var(--n-400); border-radius: var(--r-md); overflow: hidden;
+    }
+    .ap-panel-compact .ap-side { border-bottom: 0; }
+    .ap-panel-compact .ap-main { padding: var(--sp-lg); }
+
+    /* ==================================================== */
+    /* Modal                                                */
+    /* ==================================================== */
+    .modal-overlay { position: relative; background: rgba(0,0,0,.45); border-radius: var(--r-md); padding: 40px 24px; display: flex; justify-content: center; align-items: flex-start; min-height: 400px; }
+    .modal { background: var(--white); border-radius: var(--r-soft); box-shadow: var(--elev4); width: 100%; max-width: 520px; position: relative; overflow: hidden; }
+    .modal-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: var(--r-full); border: none; background: transparent; color: var(--text-3); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-body { padding: var(--sp-lg); }
+    .modal-title { font-size: var(--fs-xxl); font-weight: 700; color: var(--text-1); margin-bottom: var(--sp-xs); display: flex; align-items: center; gap: var(--sp-xs); }
+    .modal-sub { font-size: var(--fs-med); color: var(--text-2); line-height: 1.5; margin-bottom: var(--sp-md); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: var(--sp-sm); padding: var(--sp-md) var(--sp-lg); border-top: 1px solid var(--n-200); background: var(--n-50); }
+    .modal-info-box { background: var(--n-50); border: 1px solid var(--n-200); border-radius: var(--r-md); padding: var(--sp-sm) var(--sp-md); margin-bottom: var(--sp-md); font-size: 13px; color: var(--text-2); line-height: 1.6; }
+    .modal-info-box strong { color: var(--text-1); }
+    .modal-info-box ul { margin: var(--sp-xs) 0 0 var(--sp-md); }
+
+    /* ==================================================== */
+    /* Success / Thank You page                             */
+    /* ==================================================== */
+    .success-page { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px var(--sp-lg); min-height: 500px; background: var(--white); }
+    .success-icon { width: 80px; height: 80px; color: var(--ok-500); margin-bottom: var(--sp-lg); }
+    .success-title { font-size: var(--fs-biggest); font-weight: 700; color: var(--text-1); margin-bottom: var(--sp-xs); max-width: 400px; }
+    .success-desc { font-size: var(--fs-large); color: var(--text-2); margin-bottom: var(--sp-xl); }
+
+    /* == Mobile frame == */
+    .mobile-frame { max-width: 420px; margin: 0 auto; }
+    .mobile-frame .stage-body { grid-template-columns: 1fr; }
+    .mobile-frame .sidebar { display: none; }
+    .mobile-frame .main { padding: var(--sp-md); }
+    .mobile-frame .topbar { padding: 0 var(--sp-md); }
+    .mobile-frame .topbar-logo { left: 16px; }
+    .mobile-frame .topbar-account-info { display: none; }
+    .mobile-frame .topbar-chevron { display: none; }
+    .mobile-buy-btn { background: var(--err-500); color: var(--white); border: none; border-radius: var(--r-md); padding: 6px 14px; font-family: var(--font); font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .mobile-hamburger { width: 36px; height: 36px; border-radius: var(--r-full); background: transparent; border: none; color: rgba(255,255,255,.85); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* Mobile content tabs */
+    .content-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--n-200); margin-bottom: var(--sp-lg); overflow-x: auto; }
+    .content-tab { padding: var(--sp-sm) var(--sp-md); font-size: var(--fs-med); font-weight: 500; color: var(--text-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; display: flex; align-items: center; gap: var(--sp-xs); }
+    .content-tab.active { color: var(--pri-500); border-bottom-color: var(--pri-500); font-weight: 600; }
+    .content-tab-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* Utility */
+    .mt-sm { margin-top: var(--sp-sm); }
+    .mt-md { margin-top: var(--sp-md); }
+    .mb-sm { margin-bottom: var(--sp-sm); }
+    .mb-md { margin-bottom: var(--sp-md); }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-banner">Wireframe &mdash; My Account &middot; Access Pass &middot; V1</div>
+
+<div class="wireframe-flow">
+
+  <!-- =========================================================== -->
+  <!-- SECTION 1: Desktop — Free user (no access pass)              -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">1</span>
+    Desktop — Free / Basic Plan (no paid access pass)
+  </div>
+  <div class="section-desc">
+    User has no paid access pass. The Free card is highlighted (green side panel, &ldquo;Selected&rdquo;).
+    Advanced benefits show red <strong>&times;</strong> icons. Monthly and Yearly cards show retail
+    pricing with unselected &ldquo;Select&rdquo; buttons. Layout uses <code>grid-template-columns:
+    minmax(auto, 264px) 1fr</code> with subgrid panels and a <code>36px</code> row gap between cards.
+  </div>
+  <div class="shell">
+    <!-- topbar -->
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button><span class="topbar-badge-count">2</span></div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account"><div class="topbar-avatar">JD</div><div class="topbar-account-info"><span class="topbar-account-name">John Doe</span><span class="topbar-account-sub">john.d</span></div><span class="topbar-chevron">&#9662;</span></div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <!-- sidebar -->
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <!-- main -->
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <!-- AccessPassSelector grid -->
+        <div class="ap-selector">
+
+          <!-- Free / Basic panel (selected) -->
+          <div class="ap-panel" style="border-color: var(--ok-500);">
+            <div class="ap-side selected">
+              <div class="ap-plan-title">Free</div>
+              <div class="ap-current-plan">(Your Current Plan)</div>
+              <span class="ap-select-btn selected">Selected</span>
+            </div>
+            <div class="ap-main">
+              <div class="ap-benefits-title">Basic Access Pass</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Included with any paid package of sessions.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>View and compare teacher availability.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Book sessions within 30 days from current date.</div>
+            </div>
+          </div>
+
+          <!-- Advanced / Paid panel (not selected — denied icons) -->
+          <div class="ap-panel">
+            <div class="ap-periods">
+              <div class="ap-side unselected">
+                <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+                <div class="ap-plan-title">Monthly</div>
+                <span class="ap-chip ap-chip-success">Your price now</span>
+                <div class="ap-price">$9.00 / Monthly</div>
+                <div class="ap-price-sub">($108.00 / year)</div>
+                <span class="ap-select-btn unselected">Select</span>
+              </div>
+              <div class="ap-side unselected">
+                <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+                <div class="ap-plan-title">Yearly</div>
+                <span class="ap-chip ap-chip-success">Your price now</span>
+                <div class="ap-price">$90.00 / Yearly</div>
+                <div class="ap-price-sub">($7.50 / month)</div>
+                <div class="ap-price-save">$108.00/Yearly <span class="ap-save-pct">(You save 30%)</span></div>
+                <span class="ap-select-btn unselected">Select</span>
+              </div>
+            </div>
+            <div class="ap-main">
+              <div class="ap-benefits-title">Advanced Access Pass</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon denied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Book out past 30 days.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon denied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>1 Advanced Access Pass is valid for up to 5 students to schedule out past 30 days.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon denied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Cancel your Advanced Access Pass anytime.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon denied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Lock in your current Advanced Pass rate as long as you have sessions.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon denied" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Auto Cancel - Your Advanced Access Pass renews if you or linked accounts have booked or unused sessions; otherwise, it ends with no charge on your next billing cycle.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="ap-bottom-nav">
+          <button class="btn btn-out">Cancel</button>
+          <button class="btn btn-pri">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 2: Desktop — Autopay Enabled                         -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">2</span>
+    Desktop — Active Monthly Plan (Autopayment Enabled)
+  </div>
+  <div class="section-desc">
+    User has an active Monthly plan with auto-renewal ON. Monthly card shows green side panel,
+    &ldquo;(Your Current Plan)&rdquo;, blue info alert with renewal date, &ldquo;Your price now&rdquo; chip,
+    and &ldquo;Selected&rdquo; button. Benefits show green checks. Yearly offers savings.
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button><span class="topbar-badge-count">2</span></div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account"><div class="topbar-avatar">JD</div><div class="topbar-account-info"><span class="topbar-account-name">John Doe</span><span class="topbar-account-sub">john.d</span></div><span class="topbar-chevron">&#9662;</span></div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <div class="ap-selector">
+          <!-- Free panel (unselected) -->
+          <div class="ap-panel">
+            <div class="ap-side unselected">
+              <div class="ap-plan-title">Free</div>
+              <span class="ap-select-btn unselected">Select</span>
+            </div>
+            <div class="ap-main">
+              <div class="ap-benefits-title">Basic Access Pass</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Included with any paid package of sessions.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>View and compare teacher availability.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Book sessions within 30 days from current date.</div>
+            </div>
+          </div>
+
+          <!-- Advanced panel (Monthly selected, autopay on) -->
+          <div class="ap-panel">
+            <div class="ap-periods">
+              <!-- Monthly (current, selected) -->
+              <div class="ap-side selected">
+                <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+                <div class="ap-plan-title">Monthly</div>
+                <div class="ap-current-plan">(Your Current Plan)</div>
+                <div class="ap-alert-info">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  This access pass will renew on: January 1, 2025.
+                </div>
+                <span class="ap-chip ap-chip-success">Your price now</span>
+                <div class="ap-price">$9.00 / Monthly</div>
+                <div class="ap-price-sub">($108.00 / year)</div>
+                <span class="ap-select-btn selected">Selected</span>
+              </div>
+              <!-- Yearly (available) -->
+              <div class="ap-side unselected">
+                <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+                <div class="ap-plan-title">Yearly</div>
+                <span class="ap-chip ap-chip-success">Your price now</span>
+                <div class="ap-price">$90.00 / Yearly</div>
+                <div class="ap-price-sub">($7.50 / month)</div>
+                <div class="ap-price-save">$108.00/Yearly <span class="ap-save-pct">(You save 30%)</span></div>
+                <span class="ap-select-btn unselected">Select</span>
+              </div>
+            </div>
+            <div class="ap-main">
+              <div class="ap-benefits-title">Advanced Access Pass</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Book out past 30 days.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>1 Advanced Access Pass is valid for up to 5 students to schedule out past 30 days.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Cancel your Advanced Access Pass anytime.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Lock in your current Advanced Pass rate as long as you have sessions.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Auto Cancel - Your Advanced Access Pass renews if you or linked accounts have booked or unused sessions; otherwise, it ends with no charge on your next billing cycle.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ap-bottom-nav">
+          <button class="btn btn-out">Cancel</button>
+          <button class="btn btn-pri">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 3: Desktop — Autopay Disabled (Grandfathered)        -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">3</span>
+    Desktop — Active Monthly Plan (Autopay Disabled, Grandfathered)
+  </div>
+  <div class="section-desc">
+    Auto-renewal is OFF. Red &ldquo;Renewal: Disabled&rdquo; bar between Monthly/Yearly.
+    Grandfathered pricing: green &ldquo;Locked-In Price&rdquo; chip + orange &ldquo;New price&rdquo; chip.
+    &ldquo;Important: Your benefits are at risk!&rdquo; accordion in the benefits panel.
+    Benefits show lapsing icons (green check + orange clock).
+  </div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button><span class="topbar-badge-count">2</span></div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account"><div class="topbar-avatar">JD</div><div class="topbar-account-info"><span class="topbar-account-name">John Doe</span><span class="topbar-account-sub">john.d</span></div><span class="topbar-chevron">&#9662;</span></div>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar">
+        <nav class="nav-menu">
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>My Info</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>My Students</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>Purchase History</a>
+          <a class="nav-item active" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Access Pass</a>
+          <a class="nav-item" href="#"><span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg></span>Payment Portal</a>
+        </nav>
+      </div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1>My Account</h1>
+        </div>
+
+        <div class="ap-selector">
+          <!-- Free panel -->
+          <div class="ap-panel">
+            <div class="ap-side unselected">
+              <div class="ap-plan-title">Free</div>
+              <span class="ap-select-btn unselected">Select</span>
+            </div>
+            <div class="ap-main">
+              <div class="ap-benefits-title">Basic Access Pass</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Included with any paid package of sessions.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>View and compare teacher availability.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Book sessions within 30 days from current date.</div>
+            </div>
+          </div>
+
+          <!-- Advanced panel (autopay disabled, grandfathered) -->
+          <div class="ap-panel">
+            <div class="ap-periods">
+              <!-- Monthly (current, selected, grandfathered) -->
+              <div class="ap-side selected">
+                <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+                <div class="ap-plan-title">Monthly</div>
+                <div class="ap-current-plan">(Your Current Plan)</div>
+                <div class="ap-alert-info">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  This access pass will end on: January 1, 2025.
+                </div>
+                <span class="ap-chip ap-chip-success">Locked-In Price</span>
+                <div class="ap-price">$9.00 / Monthly</div>
+                <div class="ap-price-sub">($108.00 / year)</div>
+                <span class="ap-chip ap-chip-warning mt-sm">New price</span>
+                <div class="ap-price" style="font-size: var(--fs-large);">$15.00 / Monthly</div>
+                <div class="ap-price-sub">($180.00 / year)</div>
+                <span class="ap-select-btn selected">Selected</span>
+              </div>
+              <!-- Renewal: Disabled bar -->
+              <div class="ap-renewal-bar">
+                <div>
+                  <span class="ap-renewal-label">
+                    Renewal: Disabled
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  </span>
+                  <span class="ap-renewal-sub">Select Yearly plan to lock-in your price</span>
+                </div>
+              </div>
+              <!-- Yearly (grandfathered) -->
+              <div class="ap-side unselected">
+                <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+                <div class="ap-plan-title">Yearly</div>
+                <span class="ap-chip ap-chip-success">Locked-In Price</span>
+                <div class="ap-price">$90.00 / Yearly</div>
+                <div class="ap-price-sub">($7.50 / month)</div>
+                <span class="ap-chip ap-chip-warning mt-sm">New price</span>
+                <div class="ap-price" style="font-size: var(--fs-large);">$162.00 / Yearly</div>
+                <span class="ap-select-btn unselected">Select</span>
+              </div>
+            </div>
+            <div class="ap-main no-offset">
+              <!-- Expiring warning accordion -->
+              <div class="ap-expiring-box mb-md">
+                <div class="ap-expiring-summary">
+                  <span class="ap-expiring-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Important: Your benefits are at risk!
+                  </span>
+                  <span class="ap-expiring-toggle">More details</span>
+                </div>
+                <div class="ap-expiring-details">
+                  <ul>
+                    <li>You will lose your Advanced Access Plan benefits after your Advanced Access Pass ends on <strong>January 1, 2025</strong>.</li>
+                    <li>Anything scheduled beyond <strong>January 1, 2025</strong> will be unscheduled and returned to your account.</li>
+                    <li>You will not be charged again for your Advanced Access Pass.</li>
+                    <li>Reactivate your access pass now to keep your locked-in <strong>$9.00 Monthly</strong> rate. After January 1, 2025, reactivating will be charged at the <strong>new current Monthly rate.</strong></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="ap-benefits-title" style="margin-top: 0;">Advanced Access Pass</div>
+              <div class="ap-alert-warning mb-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <strong>You are on a grandfathered plan that no longer exists.</strong> Changing your Pass Settings will subject you to updated pricing.
+              </div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px"><polyline points="20 6 9 17 4 12"/></svg><svg class="ap-benefit-icon lapsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Book out past 30 days.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px"><polyline points="20 6 9 17 4 12"/></svg><svg class="ap-benefit-icon lapsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>1 Advanced Access Pass is valid for up to 5 students to schedule out past 30 days.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px"><polyline points="20 6 9 17 4 12"/></svg><svg class="ap-benefit-icon lapsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Cancel your Advanced Access Pass anytime.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px"><polyline points="20 6 9 17 4 12"/></svg><svg class="ap-benefit-icon lapsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Lock in your current Advanced Pass rate as long as you have sessions.</div>
+              <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px"><polyline points="20 6 9 17 4 12"/></svg><svg class="ap-benefit-icon lapsing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>Auto Cancel - Your Advanced Access Pass renews if you or linked accounts have booked or unused sessions; otherwise, it ends with no charge on your next billing cycle.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ap-bottom-nav">
+          <button class="btn btn-out">Cancel</button>
+          <button class="btn btn-pri">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 4: Downgrade Confirmation Modal                      -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">4</span>
+    Downgrade to Basic Access Pass (Confirmation Modal)
+  </div>
+  <div class="section-desc">
+    Triggered when a user with a paid pass selects Free and clicks Continue. Lists the consequences
+    of downgrading. &ldquo;Cancel&rdquo; dismisses; &ldquo;Yes, Downgrade&rdquo; executes.
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--warn-500)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Downgrade to Basic Access Pass?
+        </div>
+        <div class="modal-sub">You are about to downgrade to the Basic Access Pass. This means:</div>
+        <div class="modal-info-box">
+          <strong>Session information</strong>
+          <ul>
+            <li>You will lose the ability to book beyond 30 days.</li>
+            <li>Your current access pass will be canceled.</li>
+            <li>Your autopay subscription will not renew at the next billing cycle.</li>
+          </ul>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Are you sure you want to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-danger">Yes, Downgrade</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 5: Upgrade from Free → Monthly (Confirmation Modal)  -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">5</span>
+    Upgrade to Advanced Access Pass &mdash; Monthly (Confirmation Modal)
+  </div>
+  <div class="section-desc">
+    Triggered when a user on the Free/Basic plan selects Monthly and clicks Continue.
+    The modal summarises the subscription they are about to start: price, billing frequency,
+    and the benefits they will gain. &ldquo;Cancel&rdquo; dismisses; &ldquo;Yes, Upgrade&rdquo; executes.
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ok-500)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>
+          Upgrade to Advanced Access Pass?
+        </div>
+        <div class="modal-sub">You are about to subscribe to the Advanced Access Pass. This means:</div>
+        <div class="modal-info-box">
+          <strong>Subscription details</strong>
+          <ul>
+            <li>You will be charged <strong>$9.00 / Monthly</strong> starting today.</li>
+            <li>Your subscription will auto-renew each month until canceled.</li>
+            <li>You can cancel your Advanced Access Pass anytime from this page.</li>
+          </ul>
+        </div>
+        <div class="modal-info-box" style="background: var(--ok-50); border-color: var(--ok-100);">
+          <strong style="color: var(--ok-600);">Benefits you will gain</strong>
+          <ul style="color: var(--ok-600);">
+            <li>Book out past 30 days.</li>
+            <li>Up to 5 students can share your Advanced Access Pass.</li>
+            <li>Lock in your current rate as long as you have sessions.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-pri">Yes, Upgrade</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 6: Upgrade from Free → Yearly (Confirmation Modal)   -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">6</span>
+    Upgrade to Advanced Access Pass &mdash; Yearly (Confirmation Modal)
+  </div>
+  <div class="section-desc">
+    Same as Section 5 but for the Yearly billing period. The modal highlights the annual
+    price and the savings compared to monthly billing.
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ok-500)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>
+          Upgrade to Advanced Access Pass?
+        </div>
+        <div class="modal-sub">You are about to subscribe to the Advanced Access Pass. This means:</div>
+        <div class="modal-info-box">
+          <strong>Subscription details</strong>
+          <ul>
+            <li>You will be charged <strong>$90.00 / Yearly</strong> ($7.50 / month) starting today.</li>
+            <li>Your subscription will auto-renew each year until canceled.</li>
+            <li>You can cancel your Advanced Access Pass anytime from this page.</li>
+          </ul>
+        </div>
+        <div class="modal-info-box" style="background: var(--ok-50); border-color: var(--ok-100);">
+          <strong style="color: var(--ok-600);">Benefits you will gain</strong>
+          <ul style="color: var(--ok-600);">
+            <li>Book out past 30 days.</li>
+            <li>Up to 5 students can share your Advanced Access Pass.</li>
+            <li>Lock in your current rate as long as you have sessions.</li>
+          </ul>
+        </div>
+        <div style="display: flex; align-items: center; gap: var(--sp-xs); margin-top: var(--sp-sm); padding: var(--sp-xs) var(--sp-sm); background: var(--ok-50); border-radius: var(--r-sm); font-size: var(--fs-small); font-weight: 600; color: var(--ok-600);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          You save $18.00/year compared to monthly billing
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-pri">Yes, Upgrade</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 7: Switch Monthly → Yearly (Confirmation Modal)      -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">7</span>
+    Switch Billing Period &mdash; Monthly &rarr; Yearly (Confirmation Modal)
+  </div>
+  <div class="section-desc">
+    User already has an active Monthly plan and selects Yearly. The modal explains the billing
+    change: prorated credit from remaining monthly period, new yearly charge, and the savings.
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--pri-500)" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Switch to Yearly billing?
+        </div>
+        <div class="modal-sub">You are about to change your Advanced Access Pass from Monthly to Yearly billing.</div>
+        <div class="modal-info-box">
+          <strong>Billing change</strong>
+          <ul>
+            <li>Your current Monthly subscription ($9.00/month) will be canceled.</li>
+            <li>A prorated credit of <strong>$6.00</strong> will be applied for the remaining 20 days of your current billing cycle.</li>
+            <li>You will be charged <strong>$90.00 / Yearly</strong> today, minus your prorated credit.</li>
+            <li>Your new billing date will be <strong>January 1, 2026</strong>.</li>
+          </ul>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-md);">
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--n-50); border: 1px solid var(--n-200);">
+            <div style="font-size: var(--fs-small); color: var(--text-3); margin-bottom: 2px;">Current plan</div>
+            <div style="font-size: var(--fs-large); font-weight: 700;">$9.00 / Monthly</div>
+            <div style="font-size: var(--fs-small); color: var(--text-3);">$108.00 / year</div>
+          </div>
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--ok-50); border: 1px solid var(--ok-100);">
+            <div style="font-size: var(--fs-small); color: var(--ok-600); margin-bottom: 2px;">New plan</div>
+            <div style="font-size: var(--fs-large); font-weight: 700; color: var(--ok-600);">$90.00 / Yearly</div>
+            <div style="font-size: var(--fs-small); color: var(--ok-600);">$7.50 / month &mdash; You save 30%</div>
+          </div>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Would you like to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-pri">Yes, Switch to Yearly</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 8: Upgrade Confirmation (Thank You)                  -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">8</span>
+    Upgrade Confirmation (Thank You)
+  </div>
+  <div class="section-desc">
+    Full-page confirmation after a successful upgrade. Shows the new plan details and next
+    billing date. Distinct from the downgrade confirmation &mdash; positive tone with a
+    &ldquo;Go to My Account&rdquo; CTA.
+  </div>
+  <div class="shell" style="min-height: 600px;">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button><span class="topbar-badge-count">2</span></div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account"><div class="topbar-avatar">JD</div><div class="topbar-account-info"><span class="topbar-account-name">John Doe</span><span class="topbar-account-sub">john.d</span></div><span class="topbar-chevron">&#9662;</span></div>
+      </div>
+    </div>
+    <div class="success-page">
+      <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <div class="success-title">Your Advanced Access Pass is now active!</div>
+      <div class="success-desc">You are subscribed to the Yearly plan at $90.00/year.</div>
+      <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--ok-50); border: 1px solid var(--ok-100); font-size: var(--fs-small); color: var(--ok-600); margin-bottom: var(--sp-lg); text-align: center;">
+        Your next billing date is <strong>January 1, 2026</strong>
+      </div>
+      <button class="btn btn-pri">Go to My Account</button>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 9: Downgrade Confirmation (Thank You)                -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">9</span>
+    Downgrade Confirmation (Thank You)
+  </div>
+  <div class="section-desc">
+    Full-page confirmation after a successful downgrade or cancellation.
+  </div>
+  <div class="shell" style="min-height: 600px;">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button><span class="topbar-badge-count">2</span></div>
+        <button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="topbar-account"><div class="topbar-avatar">JD</div><div class="topbar-account-info"><span class="topbar-account-name">John Doe</span><span class="topbar-account-sub">john.d</span></div><span class="topbar-chevron">&#9662;</span></div>
+      </div>
+    </div>
+    <div class="success-page">
+      <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <div class="success-title">Your Advanced Access Pass has been canceled</div>
+      <div class="success-desc">Your future payments have been stopped.</div>
+      <button class="btn btn-pri">Go to My Account</button>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 10: Mobile — Autopay Enabled (Yearly selected)       -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">10</span>
+    Mobile — Active Yearly Plan (Autopay Enabled)
+  </div>
+  <div class="section-desc">
+    Mobile layout: <code>AccessPassRadio</code> as a 3-column radio group (Basic / Monthly / Yearly).
+    &ldquo;Current Plan&rdquo; chip sits on the Yearly option. The selected period&rsquo;s card and
+    benefits render below the radio in a single-column stacked panel.
+  </div>
+  <div class="shell mobile-frame">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <button class="mobile-buy-btn">Buy Sessions</button>
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button><span class="topbar-badge-count">1</span></div>
+        <button class="mobile-hamburger" title="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar"></div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1 style="font-size: var(--fs-xxl);">Account</h1>
+        </div>
+
+        <div class="content-tabs">
+          <div class="content-tab"><svg class="content-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Purchase History</div>
+          <div class="content-tab active"><svg class="content-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Access Pass</div>
+          <div class="content-tab"><svg class="content-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 15l-2 2 2 2"/></svg>Payment</div>
+        </div>
+
+        <!-- Radio group -->
+        <div class="ap-radio-group mb-md">
+          <div class="ap-radio-option">
+            <div class="ap-radio-dot"></div>
+            <div class="ap-radio-label">Free</div>
+            <div class="ap-radio-sub">Basic</div>
+          </div>
+          <div class="ap-radio-option">
+            <div class="ap-radio-dot"></div>
+            <div class="ap-radio-label">Monthly</div>
+            <div class="ap-radio-sub">Advanced</div>
+          </div>
+          <div class="ap-radio-option active">
+            <div class="ap-current-plan-chip">Current Plan</div>
+            <div class="ap-radio-dot"></div>
+            <div class="ap-radio-label">Yearly</div>
+            <div class="ap-radio-sub">Advanced</div>
+          </div>
+        </div>
+
+        <!-- Selected plan card (Yearly) -->
+        <div class="ap-panel-compact mb-md">
+          <div class="ap-side selected">
+            <svg class="ap-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><rect x="5" y="18" width="14" height="2" rx="1"/></svg>
+            <div class="ap-plan-title">Yearly</div>
+            <div class="ap-current-plan">(Your Current Plan)</div>
+            <div class="ap-alert-info">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              This access pass will renew on: January 1, 2025.
+            </div>
+            <span class="ap-chip ap-chip-success">Your price now</span>
+            <div class="ap-price">$90.00 / Yearly</div>
+            <div class="ap-price-sub">($7.50 / month)</div>
+          </div>
+          <div class="ap-main no-offset" style="border-top: 1px solid var(--n-200);">
+            <div class="ap-benefits-title">Advanced Access Pass</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Book out past 30 days.</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Up to 5 students can share one Advanced Access Pass.</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Cancel your Advanced Access Pass anytime.</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Lock in your current Advanced Pass rate as long as you have sessions.</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Auto Cancel - Your Advanced Access Pass renews if you or linked accounts have booked or unused sessions; otherwise, it ends with no charge on your next billing cycle.</div>
+          </div>
+        </div>
+
+        <div class="ap-bottom-nav" style="justify-content: stretch;">
+          <button class="btn btn-out" style="flex: 1;">Cancel</button>
+          <button class="btn btn-pri" style="flex: 1;">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 11: Mobile — Free user                               -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">11</span>
+    Mobile — Free User (Basic Selected)
+  </div>
+  <div class="section-desc">
+    Mobile view for a user on the Free/Basic plan. The Free radio option is active with
+    &ldquo;Current Plan&rdquo; chip. The card shows the Basic benefits with green checks.
+  </div>
+  <div class="shell mobile-frame">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <button class="mobile-buy-btn">Buy Sessions</button>
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button><span class="topbar-badge-count">1</span></div>
+        <button class="mobile-hamburger" title="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="stage-body">
+      <div class="sidebar"></div>
+      <div class="main">
+        <div class="page-title">
+          <svg class="page-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:24px;height:24px;"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <h1 style="font-size: var(--fs-xxl);">Account</h1>
+        </div>
+
+        <div class="content-tabs">
+          <div class="content-tab">Purchase History</div>
+          <div class="content-tab active">Access Pass</div>
+          <div class="content-tab">Payment</div>
+        </div>
+
+        <div class="ap-radio-group mb-md">
+          <div class="ap-radio-option active">
+            <div class="ap-current-plan-chip">Current Plan</div>
+            <div class="ap-radio-dot"></div>
+            <div class="ap-radio-label">Free</div>
+            <div class="ap-radio-sub">Basic</div>
+          </div>
+          <div class="ap-radio-option">
+            <div class="ap-radio-dot"></div>
+            <div class="ap-radio-label">Monthly</div>
+            <div class="ap-radio-sub">Advanced</div>
+          </div>
+          <div class="ap-radio-option">
+            <div class="ap-radio-dot"></div>
+            <div class="ap-radio-label">Yearly</div>
+            <div class="ap-radio-sub">Advanced</div>
+          </div>
+        </div>
+
+        <div class="ap-panel-compact mb-md" style="border-color: var(--ok-500);">
+          <div class="ap-side selected">
+            <div class="ap-plan-title">Free</div>
+            <div class="ap-current-plan">(Your Current Plan)</div>
+            <span class="ap-select-btn selected">Selected</span>
+          </div>
+          <div class="ap-main no-offset" style="border-top: 1px solid var(--n-200);">
+            <div class="ap-benefits-title">Basic Access Pass</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Included with any paid package of sessions.</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>View and compare teacher availability.</div>
+            <div class="ap-benefit-item"><span class="ap-benefit-icons"><svg class="ap-benefit-icon granted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Book sessions within 30 days from current date.</div>
+          </div>
+        </div>
+
+        <div class="ap-bottom-nav" style="justify-content: stretch;">
+          <button class="btn btn-out" style="flex: 1;">Cancel</button>
+          <button class="btn btn-pri" style="flex: 1;">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 12: Mobile — Confirmation                            -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">12</span>
+    Mobile — Confirmation of Plan Change
+  </div>
+  <div class="section-desc">
+    Mobile version of the plan-change confirmation page.
+  </div>
+  <div class="shell mobile-frame" style="min-height: 500px;">
+    <div class="topbar">
+      <div class="topbar-logo"><span class="topbar-logo-text">HSA</span></div>
+      <div class="topbar-right">
+        <button class="mobile-buy-btn">Buy Sessions</button>
+        <div class="topbar-badge"><button class="topbar-icon-btn" title="Notifications"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button><span class="topbar-badge-count">1</span></div>
+        <button class="mobile-hamburger" title="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="success-page" style="padding: 48px var(--sp-md);">
+      <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 60px; height: 60px;">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <div class="success-title" style="font-size: var(--fs-xxl);">Your Advanced Access Pass has been canceled</div>
+      <div class="success-desc" style="font-size: var(--fs-med);">Your future payments have been stopped.</div>
+      <button class="btn btn-pri">Go to My Account</button>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

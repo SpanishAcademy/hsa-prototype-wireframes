@@ -420,6 +420,18 @@
     .v2-chip.paired .v2-chip-qty { color: var(--purple-500); }
     .dropdown-divider { height: 1px; background: var(--n-100); margin: 4px 0; }
 
+    /* ── Package metadata table (inside v2-cards, 1B) ── */
+    .v2-pkg-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .v2-pkg-table th { text-align: left; font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; padding: 6px 10px; border-bottom: 1px solid var(--n-200); }
+    .v2-pkg-table th.col-num { text-align: center; }
+    .v2-pkg-table td { padding: 8px 10px; border-bottom: 1px solid var(--n-100); font-size: 13px; color: var(--text-1); vertical-align: middle; }
+    .v2-pkg-table tr:last-child td { border-bottom: none; }
+    .v2-pkg-table td.col-num { text-align: center; font-weight: 600; }
+    .v2-pkg-table .pkg-name { font-weight: 600; color: var(--text-1); }
+    .v2-pkg-table .pkg-detail { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+    .v2-pkg-table .expires-soon { color: var(--warn-500); font-weight: 600; }
+    .v2-pkg-table .col-actions { text-align: right; white-space: nowrap; }
+
     /* ── Breadcrumb ── */
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: var(--fs-small); color: var(--text-3); margin-bottom: var(--sp-sm); }
     .breadcrumb a { color: var(--pri-500); text-decoration: none; font-weight: 500; }
@@ -631,16 +643,23 @@
     Desktop — My Students (Compact Variation)
   </div>
   <div class="section-desc">
-    Restructured around the <strong>Party &rarr; Package</strong> model from the domain docs. Credits
+    Restructured around the <strong>Party &rarr; Credit Balance</strong> model. Credits
     are assigned to <em>Parties</em> (the group of attendees), not directly to individual accounts.
     A single-student Party = an individual card; a two-student Party = a paired card.
     This eliminates the V1 duplication problem where paired credits appeared on both students&rsquo;
     cards (looking like 8 total when only 4 exist). Session type (individual / paired) is now
     <strong>implicit from the card type</strong> &mdash; solo cards have one avatar, pair cards have
-    overlapping avatars + a purple left-border accent &mdash; so chips just show count &times; duration
-    with no redundant &ldquo;individual&rdquo; / &ldquo;paired&rdquo; label.
-    Convert and Reassign remain in the overflow menu. The pair card&rsquo;s dropdown omits
-    Edit / Delete Student (those are per-account, not per-party) and shows the expanded menu.
+    overlapping avatars + a purple left-border accent.<br><br>
+    Packages are <strong>not tracked individually</strong> at this level. When a package is assigned
+    to a student or pair, its credits are added to the overall balance for that duration.
+    Booking classes subtracts from the pooled balance. So if two 30-packs of 50&nbsp;min credits
+    were purchased and 4 have been used, the card simply shows <strong>&ldquo;56 credits &middot;
+    50&nbsp;min&rdquo;</strong>.<br><br>
+    Each card uses <strong>credit balance chips</strong> grouped by duration, showing:
+    <strong>available credit count</strong>, <strong>session duration</strong>, and
+    <strong>scheduled count</strong> (how many of those credits are already booked).
+    The overflow menu on the card header provides student/pair-level actions
+    (Edit, Schedule, Convert, Reassign).
   </div>
   <div class="shell">
     <div class="topbar">
@@ -682,38 +701,40 @@
           </button>
         </div>
 
-        <!-- Jack Powell — individual party (solo card) -->
+        <!-- Jack Powell — individual party (solo card, pooled credit balance) -->
         <div class="v2-card">
           <div class="v2-card-body">
             <div class="v2-avatar green">JP</div>
             <div class="v2-info">
               <div class="v2-name">Jack Powell</div>
               <div class="v2-chips">
-                <span class="v2-chip">
+                <div class="v2-chip">
                   <svg class="v2-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span class="v2-chip-qty">3</span> &times; 50 min
-                </span>
+                  50 min &middot; <span class="v2-chip-qty">56</span> credits
+                  <span style="color: var(--text-3); margin-left: 2px;">&#183; 3 scheduled</span>
+                </div>
               </div>
             </div>
             <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
           </div>
         </div>
 
-        <!-- Diana Powell — individual party (solo card) -->
+        <!-- Diana Powell — individual party (solo card, multiple duration balances) -->
         <div class="v2-card">
           <div class="v2-card-body">
             <div class="v2-avatar purple">DP</div>
             <div class="v2-info">
               <div class="v2-name">Diana Powell</div>
               <div class="v2-chips">
-                <span class="v2-chip">
+                <div class="v2-chip">
                   <svg class="v2-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span class="v2-chip-qty">3</span> &times; 25 min
-                </span>
-                <span class="v2-chip">
+                  25 min &middot; <span class="v2-chip-qty">3</span> credits
+                  <span style="color: var(--text-3); margin-left: 2px;">&#183; 1 scheduled</span>
+                </div>
+                <div class="v2-chip">
                   <svg class="v2-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span class="v2-chip-qty">2</span> &times; 50 min
-                </span>
+                  50 min &middot; <span class="v2-chip-qty">2</span> credits
+                </div>
               </div>
             </div>
             <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
@@ -723,7 +744,7 @@
         <!-- Paired sessions subsection -->
         <div class="v2-subsection">Pairs</div>
 
-        <!-- Jack & Diana — paired party (pair card, dropdown open) -->
+        <!-- Jack & Diana — paired party (pair card, pooled credit balance, dropdown open) -->
         <div class="v2-card pair">
           <div class="v2-card-body">
             <div class="v2-avatar-pair">
@@ -733,10 +754,11 @@
             <div class="v2-info">
               <div class="v2-name">Jack &amp; Diana Powell</div>
               <div class="v2-chips">
-                <span class="v2-chip paired">
+                <div class="v2-chip paired">
                   <svg class="v2-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span class="v2-chip-qty">4</span> &times; 25 min
-                </span>
+                  25 min &middot; <span class="v2-chip-qty">11</span> credits
+                  <span style="color: var(--purple-500); opacity: .7; margin-left: 2px;">&#183; 2 scheduled</span>
+                </div>
               </div>
             </div>
             <div class="dropdown-anchor">
