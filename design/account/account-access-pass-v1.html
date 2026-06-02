@@ -772,13 +772,129 @@
     Downgrade to Basic Access Pass (Confirmation Modal)
   </div>
   <div class="section-desc">
-    Triggered when a user with a paid pass selects Free and clicks Continue. Lists the consequences
-    of downgrading. &ldquo;Cancel&rdquo; dismisses; &ldquo;Yes, Downgrade&rdquo; executes.
+    Triggered when a user with a paid pass selects Free and clicks Continue. The modal content
+    varies based on how long ago the subscription started (the <strong>refund window</strong>).
+    The implementation must check <code>subscription.start_date</code> (or the current period
+    start) against today to determine which variant to show.
     <br><br>
-    <strong>Stripe implementation:</strong> This maps to
-    <code>cancel_at_period_end: true</code> on the existing subscription &mdash; no proration,
-    no immediate charge. Benefits continue until the current period ends, then the subscription
-    lapses. The &ldquo;ends on&rdquo; date comes from <code>subscription.current_period_end</code>.
+    <strong>Refund policy:</strong>
+    <br>
+    <table style="font-size: 12px; border-collapse: collapse; margin: 8px 0; width: 100%;">
+      <thead><tr style="background: rgba(26,122,188,.08);">
+        <th style="text-align:left; padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.2);">Window</th>
+        <th style="text-align:left; padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.2);">Monthly</th>
+        <th style="text-align:left; padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.2);">Yearly</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.1);"><strong>0&ndash;7 days</strong></td><td style="padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.1);">Exempt (no refund)</td><td style="padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.1);">Full refund</td></tr>
+        <tr><td style="padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.1);"><strong>7&ndash;30 days</strong></td><td style="padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.1);">Exempt (no refund)</td><td style="padding: 4px 8px; border-bottom: 1px solid rgba(26,122,188,.1);">Prorated refund</td></tr>
+        <tr><td style="padding: 4px 8px;"><strong>30+ days</strong></td><td style="padding: 4px 8px;">No refund; benefits run to period end</td><td style="padding: 4px 8px;">No refund; benefits run to period end</td></tr>
+      </tbody>
+    </table>
+    Monthly subscriptions are <strong>exempt from the refund policy</strong> (confirmed by Ron) &mdash;
+    Monthly subscribers always see variant <strong>5c</strong> (no refund, benefits run to period end)
+    regardless of how recently they subscribed. Variants 5a and 5b only apply to <strong>Yearly</strong> subscribers.
+    <br><br>
+    <strong>Stripe implementation:</strong> For Yearly 0&ndash;30 day refunds, issue a partial or full refund
+    via <code>POST /v1/refunds</code> referencing the original charge, then cancel the subscription
+    immediately (<code>cancel</code>, not <code>cancel_at_period_end</code>). For 30+ days (and all
+    Monthly cancellations), use <code>cancel_at_period_end: true</code> &mdash; no refund, benefits
+    continue until period end.
+  </div>
+
+  <!-- 5a: Full refund (within first 7 days) -->
+  <div class="section-label" style="margin-top: 24px;">
+    <span class="section-num">5a</span>
+    Downgrade — Full Refund (within first 7 days)
+  </div>
+  <div class="section-desc">
+    User subscribed less than 7 days ago. They receive a full refund and lose access immediately.
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--warn-500)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Downgrade to Basic Access Pass?
+        </div>
+        <div class="modal-sub">You are about to downgrade to the Basic Access Pass.</div>
+        <div class="modal-info-box" style="background: var(--ok-50); border-color: var(--ok-100);">
+          <strong style="color: var(--ok-600);">You are within your 7-day refund window</strong>
+          <ul style="color: var(--ok-600);">
+            <li>You will receive a <strong>full refund of $90.00</strong> to your original payment method.</li>
+            <li>Refunds typically take 5&ndash;10 business days to appear on your statement.</li>
+          </ul>
+        </div>
+        <div class="modal-info-box">
+          <strong>What happens now</strong>
+          <ul>
+            <li>Your Advanced Access Pass will end immediately.</li>
+            <li>You will lose the ability to book beyond 30 days.</li>
+            <li>Any sessions scheduled past 30 days from today will be unscheduled and returned to your account.</li>
+          </ul>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Are you sure you want to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-danger">Yes, Downgrade &amp; Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5b: Prorated refund (7–30 days) -->
+  <div class="section-label" style="margin-top: 24px;">
+    <span class="section-num">5b</span>
+    Downgrade — Prorated Refund (7&ndash;30 days)
+  </div>
+  <div class="section-desc">
+    User subscribed between 7 and 30 days ago. They receive a prorated refund for the unused
+    portion and lose access immediately. Prorated amount is dynamic (calculated from subscription
+    start date and the current date).
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--warn-500)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Downgrade to Basic Access Pass?
+        </div>
+        <div class="modal-sub">You are about to downgrade to the Basic Access Pass.</div>
+        <div class="modal-info-box" style="background: var(--ok-50); border-color: var(--ok-100);">
+          <strong style="color: var(--ok-600);">You are eligible for a prorated refund</strong>
+          <ul style="color: var(--ok-600);">
+            <li>You have used 15 days of your Yearly subscription.</li>
+            <li>You will receive a <strong>prorated refund of $86.30</strong> to your original payment method.</li>
+            <li>Refunds typically take 5&ndash;10 business days to appear on your statement.</li>
+          </ul>
+        </div>
+        <div class="modal-info-box">
+          <strong>What happens now</strong>
+          <ul>
+            <li>Your Advanced Access Pass will end immediately.</li>
+            <li>You will lose the ability to book beyond 30 days.</li>
+            <li>Any sessions scheduled past 30 days from today will be unscheduled and returned to your account.</li>
+          </ul>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Are you sure you want to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-danger">Yes, Downgrade &amp; Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5c: No refund (30+ days) -->
+  <div class="section-label" style="margin-top: 24px;">
+    <span class="section-num">5c</span>
+    Downgrade — No Refund (30+ days)
+  </div>
+  <div class="section-desc">
+    User subscribed more than 30 days ago. No refund. Benefits continue until the end of the
+    current billing period. Stripe: <code>cancel_at_period_end: true</code>.
   </div>
   <div class="modal-overlay">
     <div class="modal">
@@ -824,6 +940,9 @@
     Triggered when a user on the Free/Basic plan selects Monthly and clicks Continue.
     The modal summarises the subscription they are about to start: price, billing frequency,
     and the benefits they will gain. &ldquo;Cancel&rdquo; dismisses; &ldquo;Yes, Upgrade&rdquo; executes.
+    <br><br>
+    <strong>Note:</strong> Monthly subscriptions are exempt from the refund policy (confirmed by Ron).
+    No refund policy box is shown in this modal.
   </div>
   <div class="modal-overlay">
     <div class="modal">
@@ -867,8 +986,9 @@
     Upgrade to Advanced Access Pass &mdash; Yearly (Confirmation Modal)
   </div>
   <div class="section-desc">
-    Same as Section 5 but for the Yearly billing period. The modal highlights the annual
-    price and the savings compared to monthly billing.
+    Same as Section 6 but for the Yearly billing period. The modal highlights the annual
+    price and the savings compared to monthly billing. Unlike Monthly (which is exempt), the
+    Yearly refund policy is surfaced here so the user knows the terms before committing.
   </div>
   <div class="modal-overlay">
     <div class="modal">
@@ -898,6 +1018,10 @@
         <div style="display: flex; align-items: center; gap: var(--sp-xs); margin-top: var(--sp-sm); padding: var(--sp-xs) var(--sp-sm); background: var(--ok-50); border-radius: var(--r-sm); font-size: var(--fs-small); font-weight: 600; color: var(--ok-600);">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           You save $18.00/year compared to monthly billing
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: var(--sp-xs); margin-top: var(--sp-xs); padding: var(--sp-xs) var(--sp-sm); background: var(--pri-50); border: 1px solid var(--pri-100); border-radius: var(--r-sm); font-size: var(--fs-small); color: var(--pri-700); line-height: 1.5;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span><strong>Refund policy:</strong> Full refund within 7 days. Prorated refund between 7&ndash;30 days. No refund after 30 days.</span>
         </div>
       </div>
       <div class="modal-footer">
@@ -965,6 +1089,173 @@
       <div class="modal-footer">
         <button class="btn btn-out">Cancel</button>
         <button class="btn btn-pri">Yes, Switch to Yearly</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================== -->
+  <!-- SECTION 8b: Switch Yearly → Monthly (Confirmation Modal)     -->
+  <!-- =========================================================== -->
+  <div class="section-label">
+    <span class="section-num">8b</span>
+    Switch Billing Period &mdash; Yearly &rarr; Monthly (Confirmation Modal)
+  </div>
+  <div class="section-desc">
+    User has an active Yearly plan and selects Monthly. The modal content varies based on
+    the refund window. This is a downgrade in billing commitment, so refund policy applies.
+    <br><br>
+    <strong>Refund window variants:</strong>
+    <br>&bull; <strong>0&ndash;7 days</strong> into yearly term &rarr; Full refund of yearly charge, new Monthly subscription starts today.
+    <br>&bull; <strong>7&ndash;30 days</strong> &rarr; Prorated refund of unused yearly portion, new Monthly subscription starts today.
+    <br>&bull; <strong>30+ days</strong> &rarr; No refund. Yearly benefits continue until period end, then Monthly kicks in automatically.
+    <br><br>
+    <strong>Stripe implementation (0&ndash;30 days):</strong> Refund via <code>POST /v1/refunds</code>,
+    cancel the yearly subscription, create a new Monthly subscription. Dollar amounts are dynamic.
+    <br>
+    <strong>Stripe implementation (30+ days):</strong> Schedule the subscription to switch price at
+    period end using <code>subscription_schedule</code> or update with
+    <code>proration_behavior: 'none'</code> and <code>billing_cycle_anchor: 'unchanged'</code>
+    so the price change takes effect at the next renewal.
+  </div>
+
+  <!-- 8b-i: Within 7 days (full refund) -->
+  <div class="section-label" style="margin-top: 24px;">
+    <span class="section-num">8b-i</span>
+    Yearly &rarr; Monthly — Full Refund (within 7 days)
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--pri-500)" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Switch to Monthly billing?
+        </div>
+        <div class="modal-sub">You are about to change your Advanced Access Pass from Yearly to Monthly billing.</div>
+        <div class="modal-info-box" style="background: var(--ok-50); border-color: var(--ok-100);">
+          <strong style="color: var(--ok-600);">You are within your 7-day refund window</strong>
+          <ul style="color: var(--ok-600);">
+            <li>You will receive a <strong>full refund of $90.00</strong> for your Yearly subscription.</li>
+            <li>Refunds typically take 5&ndash;10 business days to appear on your statement.</li>
+          </ul>
+        </div>
+        <div class="modal-info-box">
+          <strong>New subscription</strong>
+          <ul>
+            <li>You will be charged <strong>$9.00 / Monthly</strong> starting today.</li>
+            <li>Your subscription will auto-renew each month until canceled.</li>
+          </ul>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-md);">
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--n-50); border: 1px solid var(--n-200);">
+            <div style="font-size: var(--fs-small); color: var(--text-3); margin-bottom: 2px;">Current plan</div>
+            <div style="font-size: var(--fs-large); font-weight: 700;">$90.00 / Yearly</div>
+            <div style="font-size: var(--fs-small); color: var(--text-3);">$7.50 / month</div>
+          </div>
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--pri-50); border: 1px solid var(--pri-100);">
+            <div style="font-size: var(--fs-small); color: var(--pri-600); margin-bottom: 2px;">New plan</div>
+            <div style="font-size: var(--fs-large); font-weight: 700; color: var(--pri-600);">$9.00 / Monthly</div>
+            <div style="font-size: var(--fs-small); color: var(--pri-600);">$108.00 / year</div>
+          </div>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Would you like to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-pri">Yes, Switch to Monthly</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8b-ii: 7–30 days (prorated refund) -->
+  <div class="section-label" style="margin-top: 24px;">
+    <span class="section-num">8b-ii</span>
+    Yearly &rarr; Monthly — Prorated Refund (7&ndash;30 days)
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--pri-500)" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Switch to Monthly billing?
+        </div>
+        <div class="modal-sub">You are about to change your Advanced Access Pass from Yearly to Monthly billing.</div>
+        <div class="modal-info-box" style="background: var(--ok-50); border-color: var(--ok-100);">
+          <strong style="color: var(--ok-600);">You are eligible for a prorated refund</strong>
+          <ul style="color: var(--ok-600);">
+            <li>You have used 15 days of your Yearly subscription.</li>
+            <li>You will receive a <strong>prorated refund of $86.30</strong> for the unused portion.</li>
+            <li>Refunds typically take 5&ndash;10 business days to appear on your statement.</li>
+          </ul>
+        </div>
+        <div class="modal-info-box">
+          <strong>New subscription</strong>
+          <ul>
+            <li>You will be charged <strong>$9.00 / Monthly</strong> starting today.</li>
+            <li>Your subscription will auto-renew each month until canceled.</li>
+          </ul>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-md);">
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--n-50); border: 1px solid var(--n-200);">
+            <div style="font-size: var(--fs-small); color: var(--text-3); margin-bottom: 2px;">Current plan</div>
+            <div style="font-size: var(--fs-large); font-weight: 700;">$90.00 / Yearly</div>
+            <div style="font-size: var(--fs-small); color: var(--text-3);">$7.50 / month</div>
+          </div>
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--pri-50); border: 1px solid var(--pri-100);">
+            <div style="font-size: var(--fs-small); color: var(--pri-600); margin-bottom: 2px;">New plan</div>
+            <div style="font-size: var(--fs-large); font-weight: 700; color: var(--pri-600);">$9.00 / Monthly</div>
+            <div style="font-size: var(--fs-small); color: var(--pri-600);">$108.00 / year</div>
+          </div>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Would you like to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-pri">Yes, Switch to Monthly</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8b-iii: 30+ days (no refund, switch at period end) -->
+  <div class="section-label" style="margin-top: 24px;">
+    <span class="section-num">8b-iii</span>
+    Yearly &rarr; Monthly — No Refund (30+ days, switch at period end)
+  </div>
+  <div class="modal-overlay">
+    <div class="modal">
+      <button class="modal-close">&times;</button>
+      <div class="modal-body">
+        <div class="modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--pri-500)" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          Switch to Monthly billing?
+        </div>
+        <div class="modal-sub">You are about to change your Advanced Access Pass from Yearly to Monthly billing.</div>
+        <div class="modal-info-box">
+          <strong>Billing change</strong>
+          <ul>
+            <li>Your Yearly subscription will remain active until it expires on <strong>January 1, 2027</strong>.</li>
+            <li>After that date, you will be billed <strong>$9.00 / Monthly</strong> automatically.</li>
+            <li>Your Advanced Access Pass benefits continue uninterrupted &mdash; only the billing frequency changes.</li>
+          </ul>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--sp-sm); margin-bottom: var(--sp-md); align-items: center;">
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--n-50); border: 1px solid var(--n-200);">
+            <div style="font-size: var(--fs-small); color: var(--text-3); margin-bottom: 2px;">Current plan (until Jan 1, 2027)</div>
+            <div style="font-size: var(--fs-large); font-weight: 700;">$90.00 / Yearly</div>
+          </div>
+          <div style="font-size: var(--fs-large); color: var(--n-400);">&rarr;</div>
+          <div style="padding: var(--sp-sm) var(--sp-md); border-radius: var(--r-md); background: var(--pri-50); border: 1px solid var(--pri-100);">
+            <div style="font-size: var(--fs-small); color: var(--pri-600); margin-bottom: 2px;">Starting Jan 1, 2027</div>
+            <div style="font-size: var(--fs-large); font-weight: 700; color: var(--pri-600);">$9.00 / Monthly</div>
+          </div>
+        </div>
+        <div style="font-size: var(--fs-med); color: var(--text-2);">Would you like to continue?</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-out">Cancel</button>
+        <button class="btn btn-pri">Yes, Switch to Monthly</button>
       </div>
     </div>
   </div>
