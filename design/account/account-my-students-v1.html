@@ -888,9 +888,20 @@
     Modal — Convert / Assign (Original)
   </div>
   <div class="section-desc">
-    When clicking "Convert" on a session row, a modal shows a Before/After comparison.
+    When clicking &ldquo;Convert&rdquo; on a session row, a modal shows a Before/After comparison.
     The user can change the session type (Individual &rarr; Paired) and assign/pair students.
     Each account can only transfer once every 30 days. Unassigned packages cannot be converted.
+    <br><br>
+    <strong>Conversion system (weight-based):</strong> Each class type has a hidden internal weight.
+    Conversions use these weights &mdash; customers never see the math, ratios, or dollar amounts.
+    They only see: &ldquo;You are transferring X sessions and will receive Y sessions.&rdquo;
+    Standard rounding is used (3.2&rarr;3, 3.5&rarr;4, 3.8&rarr;4).
+    <br><br>
+    <strong>Weights:</strong> Individual 25m&nbsp;=&nbsp;1.0 (baseline), Individual 50m&nbsp;=&nbsp;~1.5,
+    Paired 25m&nbsp;=&nbsp;~1.4, Paired 50m&nbsp;=&nbsp;~2.0.
+    <br>
+    <strong>Not used:</strong> Historical purchase pricing, package-size-based conversion power,
+    promo/bulk-discount-based conversion rates.
   </div>
   <div class="shell" style="min-height: auto;">
     <div class="topbar">
@@ -927,7 +938,6 @@
                     <div class="convert-row"><svg class="convert-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="convert-row-label">Type:</span><span class="convert-row-value">Individual</span></div>
                     <div class="convert-row"><svg class="convert-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="convert-row-label">Duration:</span><span class="convert-row-value">25 min.</span></div>
                     <div class="convert-row"><svg class="convert-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg><span class="convert-row-label"># of Sessions:</span><span class="convert-row-value">15</span></div>
-                    <div class="convert-row"><svg class="convert-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="convert-row-label">Current Value:</span><span class="convert-row-value">$60.00 ($9.83/sess)</span></div>
                   </div>
                   <!-- Arrow -->
                   <div class="convert-arrow">
@@ -942,19 +952,18 @@
                         <select class="field-select"><option>Paired</option><option>Individual</option></select>
                         <select class="field-select"><option>25 min.</option><option>50 min.</option></select>
                       </div>
-                      <div class="convert-note">Previous: Individual, 25 min.</div>
                     </div>
                     <div class="field-group">
                       <label class="field-label">Assign to:</label>
                       <select class="field-select"><option>Jack Powell</option><option>Diana Powell</option></select>
                     </div>
                     <div class="field-group">
-                      <label class="field-label">Select to whom you are pairing with?</label>
+                      <label class="field-label">Pair with:</label>
                       <select class="field-select"><option>Diana Powell</option><option>Jack Powell</option></select>
                     </div>
-                    <div class="convert-row" style="margin-top: var(--sp-sm);"><svg class="convert-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg><span class="convert-row-label"># of Sessions:</span><span class="convert-row-value">7</span></div>
-                    <div class="convert-note" style="margin-left: 24px;">(Rounded up to the nearest whole number)</div>
-                    <div class="convert-row"><svg class="convert-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span class="convert-row-label">Current Value:</span><span class="convert-row-value">$60.00 ($29.83/sess)</span></div>
+                    <div style="margin-top: var(--sp-sm); padding: var(--sp-sm) var(--sp-md); background: var(--pri-50); border: 1px solid var(--pri-100); border-radius: var(--r-md); font-size: var(--fs-med); color: var(--text-1);">
+                      You are transferring <strong>15 sessions</strong> and will receive <strong>11 sessions</strong>.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -981,8 +990,11 @@
     Keeps the Before &rarr; After split layout but with cleaner visual treatment.
     The Before column is a read-only summary using subtle detail rows with separator lines.
     The After column is a clean form. Both columns share equal width under a compact
-    package header. Calculated results appear in a highlighted box within the After column.
-    The 30-day rule is a quiet footnote below the card.
+    package header. The 30-day rule is a quiet footnote below the card.
+    <br><br>
+    <strong>Key change from original:</strong> No dollar amounts shown anywhere. The result
+    highlight shows only session counts: &ldquo;You are transferring X sessions and will
+    receive Y sessions.&rdquo; Conversion uses hidden internal weights (see Section 3a description).
   </div>
   <div class="shell" style="min-height: auto;">
     <div class="topbar">
@@ -1043,11 +1055,6 @@
                       <span class="cv2-detail-label">Sessions</span>
                       <span class="cv2-detail-value">15</span>
                     </div>
-                    <div class="cv2-detail">
-                      <svg class="cv2-detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                      <span class="cv2-detail-label">Value</span>
-                      <span class="cv2-detail-value">$60.00 <span style="font-weight: 400; color: var(--text-3);">($4.00/sess)</span></span>
-                    </div>
                   </div>
 
                   <!-- ── AFTER (editable form) ── -->
@@ -1075,18 +1082,10 @@
                       <select class="field-select"><option selected>Diana Powell</option><option>Jack Powell</option></select>
                     </div>
 
-                    <!-- Calculated results -->
+                    <!-- Calculated result -->
                     <div class="cv2-result-highlight">
-                      <div class="cv2-detail" style="border-bottom: 1px solid var(--pri-100);">
-                        <svg class="cv2-detail-icon" viewBox="0 0 24 24" fill="none" stroke="var(--pri-500)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                        <span class="cv2-detail-label">Sessions</span>
-                        <span class="cv2-detail-value">7</span>
-                      </div>
-                      <div style="font-size: 11px; color: var(--text-3); padding: 2px 0 0 22px;">Rounded up to nearest whole</div>
-                      <div class="cv2-detail">
-                        <svg class="cv2-detail-icon" viewBox="0 0 24 24" fill="none" stroke="var(--pri-500)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        <span class="cv2-detail-label">Value</span>
-                        <span class="cv2-detail-value">$60.00 <span style="font-weight: 400; color: var(--text-3);">($8.57/sess)</span></span>
+                      <div style="font-size: var(--fs-med); color: var(--text-1); padding: 4px 0;">
+                        You are transferring <strong>15 sessions</strong> and will receive <strong>11 sessions</strong>.
                       </div>
                     </div>
                   </div>
@@ -1120,9 +1119,13 @@
   <div class="section-desc">
     Alternative that drops the side-by-side comparison entirely. A compact context card
     identifies the package at the top. The form flows top-down with pill toggles for session
-    type, standard dropdowns for assignment, and a live result preview showing calculated
-    sessions and value. Narrower modal (520px) since there's no split. The 30-day rule
+    type, standard dropdowns for assignment, and a live result preview showing the session
+    transfer summary. Narrower modal (520px) since there&rsquo;s no split. The 30-day rule
     is a subtle footnote rather than a prominent banner.
+    <br><br>
+    <strong>Key change:</strong> No dollar amounts anywhere &mdash; not in the context card, not in the
+    result preview. Customer sees only session counts. This variant is closest to the package
+    registration interface&rsquo;s simplified information style.
   </div>
   <div class="shell" style="min-height: auto;">
     <div class="topbar">
@@ -1166,11 +1169,6 @@
                     <span class="pkg-context-tag">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                       Jack Powell
-                    </span>
-                    <span class="pkg-context-dot"></span>
-                    <span class="pkg-context-tag">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                      $60.00
                     </span>
                   </div>
                 </div>
@@ -1218,24 +1216,12 @@
 
               <!-- Result preview -->
               <div class="result-preview">
-                <div class="result-preview-label">After conversion</div>
-                <div class="result-preview-grid">
-                  <div>
-                    <div class="result-item-label">Sessions</div>
-                    <div class="result-item-value">
-                      7
-                      <span class="result-change">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        from 15
-                      </span>
-                    </div>
-                    <div class="result-item-note">Rounded up to nearest whole</div>
-                  </div>
-                  <div>
-                    <div class="result-item-label">Package value</div>
-                    <div class="result-item-value">$60.00</div>
-                    <div class="result-item-note">$8.57 per session</div>
-                  </div>
+                <div class="result-preview-label">Transfer summary</div>
+                <div style="font-size: var(--fs-med); color: var(--text-1); margin-top: var(--sp-xs);">
+                  You are transferring <strong>15 sessions</strong> and will receive <strong>11 sessions</strong>.
+                </div>
+                <div style="font-size: var(--fs-med); color: var(--text-2); margin-top: var(--sp-xs);">
+                  Individual 25 min &rarr; Paired 25 min
                 </div>
               </div>
 
